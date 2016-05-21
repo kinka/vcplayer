@@ -34,6 +34,28 @@ export class Player {
 
 		owner.appendChild(this.el);
 	}
+	size(mW, mH) {
+		var vW = this.video.el.videoWidth,
+			vH = this.video.el.videoHeight;
+		var ratio = vW / vH;console.log(ratio, vW, vH, mW, mH)
+		var vertical = mW / mH < 1;
+		var dW, dH;
+
+		if (vertical) { // 高度优先
+			dH = mH;
+			dW = dH * ratio;
+		} else {
+			dW = mW;
+			dH = dW / ratio;
+		}
+
+		console.log(dW, dH)
+		this.video.width(dW);
+		this.video.height(dH);
+
+		this.el.style.width = dW + 'px';
+		this.el.style.height = dH + 'px';
+	}
 	setup() {
 
 	}
@@ -49,6 +71,9 @@ export class Player {
 				break;
 			case 'pause':
 				dom.removeClass(this.el, 'vcp-playing');
+				break;
+			case 'loadeddata':
+				this.size(this.options.width, this.options.height);
 				break;
 		}
 	}

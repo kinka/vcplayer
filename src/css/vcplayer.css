@@ -1,0 +1,88 @@
+.vcp-player {
+    position: relative;
+}
+
+.vcp-controls-panel {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    font-size: 16px;
+    height: 3em;
+    z-index: 1000;
+}
+.vcp-panel-bg {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: green;
+    opacity: 0.9;
+    z-index: 1000;
+}
+
+.vcp-playtoggle {
+    position: relative;
+    z-index: 1001;
+    width: 3em;
+    height: 100%;
+    margin-left: 9px;
+    float: left;
+    background-image: url(/src/img/play_btn.png);
+    background-image: url(/src/img/play_btn.svg), none;
+}
+.vcp-playtoggle:hover {
+    background-color: gray;
+    opacity: 0.9;
+}
+.vcp-playing .vcp-playtoggle {
+    background-image: url(/src/img/stop_btn.png);
+    background-image: url(/src/img/stop_btn.svg), none;
+}
+
+.vcp-slider {
+    position: relative;
+    width: 60%;
+    height: 100%;
+    z-index: 1001;
+}
+.vcp-slider .vcp-slider-track {
+    background-color: darkblue;
+    width: 100%;
+    height: 1em;
+    margin-top: 1em;
+    opacity: 0.8;
+}
+.vcp-slider .vcp-slider-thumb {
+    background-color: antiquewhite;
+    width: 0.8em;
+    height: 2em;
+    position: absolute;
+    left: 3%;
+    top: 0.5em;
+    margin-left: -0.4em;
+}
+.vcp-slider-vertical {
+    position: relative;
+    width: 3em;
+    height: 10em;
+    top: -7em;
+    z-index: 1001;
+    float: right;
+}
+.vcp-slider-vertical .vcp-slider-track {
+    background-color: aquamarine;
+    width: 1em;
+    height: 100%;
+    margin-left: 1em;
+    opacity: 0.8;
+}
+.vcp-slider-vertical .vcp-slider-thumb {
+    position: absolute;
+    background-color: aliceblue;
+    width: 2em;
+    height: 0.8em;
+    margin-top: -0.4em;
+    top: 0;
+    left: 0.5em;
+}

@@ -15,6 +15,14 @@ export default class H5Video extends Component {
 
 		return super.render(owner);
 	}
+	width(w) {
+		if (!w) return this.el.width;
+		else this.el.width = w;
+	}
+	height(h) {
+		if (!h) return this.el.height;
+		else this.el.height = h;
+	}
 	play() {
 		this.el.play();
 	}

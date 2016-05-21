@@ -7,7 +7,8 @@ export function bind(context, fn, uid) {
 	if (!fn.guid) fn.guid = guid();
 
 	var ret = function() {fn.apply(context, arguments)};
-	ret.guid = fn.guid;
+	// 多实例会共享同一个原型方法，于是乎guid也会一样，所以再加个uid主动做区分
+	ret.guid = uid ? uid + '_' + fn.guid : fn.guid;
 	return ret;
 }
 

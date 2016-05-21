@@ -35,7 +35,7 @@ function doPub(type, msg) {
  * @returns {*}
  */
 export function sub(type, target, cb) {
-	console.log(type, target, cb.guid);
+	// console.log(type, target, cb.guid);
 	if (!cb.guid) return console.error('callback function need guid');
 	fnCache[cb.guid] = cb;
 
@@ -50,6 +50,7 @@ export function unsub(type, cb) {
 		delete listeners['*'][cb.guid];
 
 		for (let t in listeners) {
+			if (!listeners.hasOwnProperty(t)) continue;
 			let fnObjs = listeners[t];
 			delete fnObjs[cb.guid];
 			if (util.isEmpty(fnObjs))
@@ -59,5 +60,5 @@ export function unsub(type, cb) {
 	} else {
 		delete listeners[type][cb.guid];
 	}
-	console.log(listeners)
+	// console.log(listeners)
 }

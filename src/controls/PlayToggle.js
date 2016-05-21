@@ -9,7 +9,7 @@ export default class PlayToggle extends Component {
 	}
 
 	render(owner) {
-		this.createEl('input', {type: 'button', 'class': 'vcp-playtoggle', value: 'play'});
+		this.createEl('div', {'class': 'vcp-playtoggle'});
 
 		return super.render(owner);
 	}
@@ -17,9 +17,7 @@ export default class PlayToggle extends Component {
 		this.on('click', this.onClick);
 		message.sub('play', 'video', util.bind(this, this.handleMsg));
 		message.sub('pause', 'video', util.bind(this, this.handleMsg));
-	}
-	destroy() {
-		message.unsub('*', this.handleMsg);
+		// setTimeout(util.bind(this, this.destroy), 1000)
 	}
 	onClick() {
 		var video = this.player.video;
@@ -29,6 +27,6 @@ export default class PlayToggle extends Component {
 			video.pause();
 	}
 	handleMsg(msg) {
-		console.log(this.__name, msg);
+		// console.log(this.__name, msg);
 	}
 }
