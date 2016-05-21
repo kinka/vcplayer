@@ -19,38 +19,48 @@ export default class Slider extends Component {
 		return super.render(owner);
 	}
 	setup() {
+		this.ownerDoc = document.body.ownerDocument;
 		this.on('mousedown', this.mousedown);
-		this.on('mouseup', this.mouseup);
 
-		this.on('mouseout', this.mouseup);
+		// this.on('mouseout', this.mouseup);
 	}
 	handleMsg(msg) {
 		
 	}
 	mousedown(e) {
-		var target = e.target || e.srcElement;
-		this.mousemove(e);
-		this.on('mousemove', this.mousemove);
+		e.preventDefault(); // 没加上这一句，就会偶尔出现拖动不了的情况，并且指针变成文字输入光标
+
+		this.pos = dom.findElPosition(this.el);
+
+		this.on(this.ownerDoc, 'mouseup', this.mouseup);
+		this.on(this.ownerDoc, 'mousemove', this.mousemove);
+
+		return false;
 	}
 	mouseup(e) {
 		var target = e.target || e.srcElement;
-		if (e.type == 'mouseout' && [this.el, this.thumb, this.track].indexOf(e.toElement) > -1) return;
 		// console.log(e.type, target.className, e.toElement.className, this);
-		this.off('mousemove', this.mousemove);
+		this.off(this.ownerDoc, 'mouseup', this.mouseup);
+		this.off(this.ownerDoc, 'mousemove', this.mousemove);
 	}
 	mousemove(e) {
-		var percent = 0;
+		var pos = dom.getPointerPosition(this.el, e, this.pos)
 		if (this.vertical) {
-			var offsetY = e.clientY - this.el.offsetTop;
-			percent = Math.round(offsetY / this.el.offsetHeight * 1000) / 10;console.log(e.clientY, this.el.offsetTop)
-			if (percent <= 0 || percent >= 100) return;
-			this.thumb.style.top = (100 - percent) + '%';
+			this.percent = 100 - Math.round(pos.y * 1000) / 10;
+			this.thumb.style.top = this.percent + '%';
+		} else {
+			this.percent = Math.round(pos.x * 1000) / 10;
+			this.thumb.style.left = this.percent + '%';
 		}
-		else {
-			var offsetX = e.clientX - this.el.offsetLeft;
-			percent = Math.round(offsetX / this.el.offsetWidth * 1000) / 10;
-			if (percent <= 0 || percent >= 100) return;
-			this.thumb.style.left = percent + '%';
-		}
+		message.pub({type: 'sliderchange', src: this.el, target: this.__type});
+	}
+	percent(p) {
+		if (!p) return this.percent;
+
+		this.percent = Math.round(parseFloat(p) * 1000) / 10;
+		if (this.vertical)
+			this.thumb.style.top = this.percent + '%';
+		else
+			this.thumb.style.left = this.percent + '%';
 	}
 }

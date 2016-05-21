@@ -44,8 +44,8 @@ export default class Component {
 		// 同个类的成员方法在不同实例中，guid仍然相同, 所以再加个对象guid加以区分
 		var guid = this.__getFnGuid(fn);
 		var firstInstance = !guid;
-		var firstInit = guid && !this.fnCache[guid];
-		if (firstInstance || firstInit) {
+		var firstUsed = guid && !this.fnCache[guid];
+		if (firstInstance || firstUsed) {
 			fn = util.bind(this, fn, this.__guid);
 			this.fnCache[fn.guid] = fn;
 			guid = fn.guid;

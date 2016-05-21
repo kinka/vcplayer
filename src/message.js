@@ -2,7 +2,7 @@ import * as util from './util'
 
 var listeners = {};
 var fnCache = {};
-
+// todo 1. jsdoc完善 2. 能够指定订阅对象，而不是类型
 /**
  * 发布事件
  * {type, src, target, ts}
