@@ -24,11 +24,13 @@ export default class Panel extends Component {
 		this.volume.render(this.el);
 		this.volume.percent(0.5);
 
-		message.sub('sliderchange', 'slider', util.bind(this, function(msg) {
-			console.log(msg);
-		}));
+		message.sub('sliderchange', this.volume, util.bind(this, this.handleMsg));
+		message.sub('sliderchange', this.slider, util.bind(this, this.handleMsg));
 
 		return super.render(owner);
+	}
+	handleMsg(msg) {
+		console.log(msg.src.percent());
 	}
 	setup() {
 		// add play toggle, progress, time label, volume/mute, fullscreen

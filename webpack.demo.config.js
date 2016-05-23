@@ -8,6 +8,7 @@ module.exports = {
         filename: 'demo.js',
         publicPath: '/dist/'
     },
+	devtool: "source-map",
     module: {
         loaders: [
 	        {

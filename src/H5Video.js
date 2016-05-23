@@ -48,7 +48,7 @@ export default class H5Video extends Component {
 	}
 	notify(e) {
 		// console.log(this.__name, e)
-		message.pub({type: e.type, src: this.el, target: this.__type, ts: e.timeStamp});
+		message.pub({type: e.type, src: this, ts: e.timeStamp});
 	}
 	destroy() {
 		super.destroy();

@@ -28,6 +28,9 @@ export default class Component {
 
 		return this.el;
 	}
+	guid() {
+		return this.__guid;
+	}
 	__getFnGuid(fn) {
 		if (fn.guid && String(fn.guid).indexOf('_') == -1) // 没有传bind方法进来，包装下
 			return this.__guid + '_' + fn.guid;
@@ -82,6 +85,9 @@ export default class Component {
 
 	}
 	destroy() {
+		if (this.handleMsg)
+			message.unsub('*', '*', this.handleMsg);
+
 		if (!this.cbs) return;
 		for (let hash in this.cbs) {
 			if (!this.cbs.hasOwnProperty(hash)) continue;
@@ -91,8 +97,5 @@ export default class Component {
 		}
 		this.fnCache = null;
 		this.cbs = null;
-
-		if (this.handleMsg)
-			message.unsub('*', this.handleMsg);
 	}
 }

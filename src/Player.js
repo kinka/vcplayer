@@ -15,9 +15,7 @@ export class Player {
 		var owner = options.owner;
 		if (!owner) return console.error('Player need a container');
 
-		this.subs = [];
-		this.subs.push(message.sub('*', '*', util.bind(this, this.handleMsg)));
-		this.subs.push(message.sub('*', '*', util.bind(this, this.options.listen)));
+		message.sub('*', '*', util.bind(this, this.handleMsg))
 
 		owner = dom.get(owner);
 		this.render(owner);
@@ -37,7 +35,8 @@ export class Player {
 	size(mW, mH) {
 		var vW = this.video.el.videoWidth,
 			vH = this.video.el.videoHeight;
-		var ratio = vW / vH;console.log(ratio, vW, vH, mW, mH)
+		var ratio = vW / vH;
+		console.log(ratio, vW, vH, mW, mH)
 		var vertical = mW / mH < 1;
 		var dW, dH;
 
@@ -61,8 +60,8 @@ export class Player {
 	}
 	destroy() {
 		this.video && this.video.destroy();
-		message.unsub('*', this.handleMsg);
-		message.unsub('*', this.options.listen);
+		this.panel && this.panel.destroy();
+		message.unsub('*', '*', this.handleMsg);
 	}
 	handleMsg(msg) {
 		switch (msg.type) {
@@ -76,5 +75,8 @@ export class Player {
 				this.size(this.options.width, this.options.height);
 				break;
 		}
+
+		if (!msg.private && this.options.listen)
+			this.options.listen(msg);
 	}
 }

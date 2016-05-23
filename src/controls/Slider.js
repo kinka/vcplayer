@@ -35,6 +35,7 @@ export default class Slider extends Component {
 		this.on(this.ownerDoc, 'mouseup', this.mouseup);
 		this.on(this.ownerDoc, 'mousemove', this.mousemove);
 
+		this.mousemove(e);
 		return false;
 	}
 	mouseup(e) {
@@ -46,21 +47,21 @@ export default class Slider extends Component {
 	mousemove(e) {
 		var pos = dom.getPointerPosition(this.el, e, this.pos)
 		if (this.vertical) {
-			this.percent = 100 - Math.round(pos.y * 1000) / 10;
-			this.thumb.style.top = this.percent + '%';
+			this.__percent = 100 - Math.round(pos.y * 1000) / 10;
+			this.thumb.style.top = this.__percent + '%';
 		} else {
-			this.percent = Math.round(pos.x * 1000) / 10;
-			this.thumb.style.left = this.percent + '%';
+			this.__percent = Math.round(pos.x * 1000) / 10;
+			this.thumb.style.left = this.__percent + '%';
 		}
-		message.pub({type: 'sliderchange', src: this.el, target: this.__type});
+		message.pub({type: 'sliderchange', src: this, private: true});
 	}
 	percent(p) {
-		if (!p) return this.percent;
+		if (!p) return this.__percent;
 
-		this.percent = Math.round(parseFloat(p) * 1000) / 10;
+		this.__percent = Math.round(parseFloat(p) * 1000) / 10;
 		if (this.vertical)
-			this.thumb.style.top = this.percent + '%';
+			this.thumb.style.top = this.__percent + '%';
 		else
-			this.thumb.style.left = this.percent + '%';
+			this.thumb.style.left = this.__percent + '%';
 	}
 }

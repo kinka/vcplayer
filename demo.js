@@ -27,7 +27,7 @@ window.player = new Player({
 	poster: 'https://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png',
 	listen: function(msg) {
 		if (msg.type == 'progress') return;
-		// console.log('global', msg)
+		console.log('global', msg)
 	}
 });
 window.dom = dom;
