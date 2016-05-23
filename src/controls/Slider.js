@@ -53,7 +53,7 @@ export default class Slider extends Component {
 			this.__percent = Math.round(pos.x * 1000) / 10;
 			this.thumb.style.left = this.__percent + '%';
 		}
-		message.pub({type: 'sliderchange', src: this, private: true});
+		this.pub({type: 'sliderchange', src: this, private: true});
 	}
 	percent(p) {
 		if (!p) return this.__percent;

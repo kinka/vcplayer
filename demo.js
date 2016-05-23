@@ -30,6 +30,20 @@ window.player = new Player({
 		console.log('global', msg)
 	}
 });
+
+/*window.player2 = new Player({
+	owner: 'demo_video2',
+	autoplay: false,
+	width: 300,
+	height: 400,
+	src: 'http://2527.vod.myqcloud.com/2527_bffd50081d9911e6b0f4d93c5d81f265.f20.mp4',
+	poster: 'https://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png',
+	listen: function(msg) {
+		if (msg.type == 'progress') return;
+		console.log('global2', msg)
+	}
+});*/
+
 window.dom = dom;
 dom.on(window, 'resize', function() {
 	player.size(300, 400);

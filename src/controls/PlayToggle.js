@@ -15,8 +15,8 @@ export default class PlayToggle extends Component {
 	}
 	setup() {
 		this.on('click', this.onClick);
-		message.sub('play', this.player.video, util.bind(this, this.handleMsg));
-		message.sub('pause', this.player.video, util.bind(this, this.handleMsg));
+		this.sub('play', this.player.video, util.bind(this, this.handleMsg));
+		this.sub('pause', this.player.video, util.bind(this, this.handleMsg));
 		// setTimeout(util.bind(this, this.destroy), 1000)
 	}
 	onClick() {

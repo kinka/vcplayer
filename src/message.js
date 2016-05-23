@@ -1,22 +1,43 @@
 import * as util from './util'
-import Component from './Component'
 
-var listeners = {};
-var fnCache = {};
+var Players = {};
+var fnCaches = {};
 
+function getListeners(scope) {
+	var guid = scope.guid;
+	if (!guid) {
+		console.error(scope, ' has no guid.');
+		return {};
+	}
+	Players[guid] = Players[guid] || {};
+	return Players[guid];
+}
+function getFnCache(scope) {
+	var guid = scope.guid;
+	if (!guid) {
+		console.error(scope, ' has no guid.');
+		return {};
+	}
+	fnCaches[guid] = fnCaches[guid] || {};
+	return fnCaches[guid];
+}
 /**
  * 发布事件
  * @param msg {Object}
  * @param msg.type 事件类型，sliderchange, play, stop等
- * @param msg.src 触发事件的对象，直接传源对象，会与sub时填入的target作对比
+ * @param msg.src 触发事件的对象(Component实例)，直接传源对象，会与sub时填入的target作对比
  * @param msg.ts 触发时间戳
  * @param msg.private 是否私有事件，私有事件会在Player接口对外回调时劫断消息
+ * @param scope 区分多个Player实例
  */
-export function pub(msg) {
-	doPub(msg.type, msg);
-	doPub('*', msg);
+export function pub(msg, scope) {console.log(Players)
+	doPub(msg.type, msg, scope);
+	doPub('*', msg, scope);
 }
-function doPub(type, msg) {
+function doPub(type, msg, scope) {
+	var listeners = getListeners(scope);
+	var fnCache = getFnCache(scope);
+
 	if (!listeners[type]) return;
 
 	let fnObjs = listeners[type];
@@ -41,10 +62,13 @@ function doPub(type, msg) {
  * @param target 指定消息源目标，其实可以为任意对象，只要src能匹配即可
  * @param cb {Function}
  * @param cb.guid
+ * @param scope 区分多个Player实例
  * @returns {*}
  */
-export function sub(type, target, cb) {
-	// console.log(type, target, cb.guid);
+export function sub(type, target, cb, scope) {
+	var listeners = getListeners(scope);
+	var fnCache = getFnCache(scope);
+
 	if (!cb.guid) return console.error('callback function need guid');
 	fnCache[cb.guid] = cb;
 
@@ -61,8 +85,12 @@ export function sub(type, target, cb) {
  * @param target 可指定目标，也可不指定(*)
  * @param cb
  * @param cb.guid 回调函数的唯一标识
+ * @param scope 区分多个Player实例
  */
-export function unsub(type, target, cb) {
+export function unsub(type, target, cb, scope) {
+	var listeners = getListeners(scope);
+	var fnCache = getFnCache(scope);
+
 	if (type != '*' && !listeners[type]) return;
 	if (type != '*' && !listeners[type][cb.guid]) return;
 

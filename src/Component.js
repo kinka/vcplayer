@@ -75,6 +75,15 @@ export default class Component {
 		dom.off(el, type, fn);
 		delete this.cbs[this.fnHash(guid, type)];
 	}
+	pub(msg) {
+		message.pub(msg, this.player);
+	}
+	sub(type, target, cb) {
+		message.sub(type, target, cb, this.player);
+	}
+	unsub(type, target, cb) {
+		message.unsub(type, target, cb, this.player);
+	}
 	fnHash(guid, type) {
 		return type + '_' + guid;
 	}

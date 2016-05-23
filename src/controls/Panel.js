@@ -24,8 +24,8 @@ export default class Panel extends Component {
 		this.volume.render(this.el);
 		this.volume.percent(0.5);
 
-		message.sub('sliderchange', this.volume, util.bind(this, this.handleMsg));
-		message.sub('sliderchange', this.slider, util.bind(this, this.handleMsg));
+		this.sub('sliderchange', this.volume, util.bind(this, this.handleMsg));
+		this.sub('sliderchange', this.slider, util.bind(this, this.handleMsg));
 
 		return super.render(owner);
 	}

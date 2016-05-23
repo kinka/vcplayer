@@ -15,13 +15,12 @@ export class Player {
 		var owner = options.owner;
 		if (!owner) return console.error('Player need a container');
 
-		message.sub('*', '*', util.bind(this, this.handleMsg))
+		this.guid = util.guid();
 
 		owner = dom.get(owner);
 		this.render(owner);
 
-		this.panel = new Panel(this);
-		this.panel.render(this.el);
+		message.sub('*', '*', util.bind(this, this.handleMsg), this);
 	}
 	render(owner) {
 		this.el = dom.createEl('div', {'class': 'vcp-player'});
@@ -31,12 +30,15 @@ export class Player {
 		this.video = h5;
 
 		owner.appendChild(this.el);
+
+		this.panel = new Panel(this);
+		this.panel.render(this.el);
 	}
 	size(mW, mH) {
 		var vW = this.video.el.videoWidth,
 			vH = this.video.el.videoHeight;
 		var ratio = vW / vH;
-		console.log(ratio, vW, vH, mW, mH)
+		// console.log(ratio, vW, vH, mW, mH)
 		var vertical = mW / mH < 1;
 		var dW, dH;
 
@@ -48,7 +50,7 @@ export class Player {
 			dH = dW / ratio;
 		}
 
-		console.log(dW, dH)
+		// console.log(dW, dH)
 		this.video.width(dW);
 		this.video.height(dH);
 
@@ -61,7 +63,7 @@ export class Player {
 	destroy() {
 		this.video && this.video.destroy();
 		this.panel && this.panel.destroy();
-		message.unsub('*', '*', this.handleMsg);
+		message.unsub('*', '*', this.handleMsg, this);
 	}
 	handleMsg(msg) {
 		switch (msg.type) {
