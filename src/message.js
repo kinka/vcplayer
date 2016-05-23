@@ -30,7 +30,7 @@ function getFnCache(scope) {
  * @param msg.private 是否私有事件，私有事件会在Player接口对外回调时劫断消息
  * @param scope 区分多个Player实例
  */
-export function pub(msg, scope) {console.log(Players)
+export function pub(msg, scope) {
 	doPub(msg.type, msg, scope);
 	doPub('*', msg, scope);
 }
