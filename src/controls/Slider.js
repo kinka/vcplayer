@@ -45,7 +45,7 @@ export default class Slider extends Component {
 		this.off(this.ownerDoc, 'mousemove', this.mousemove);
 	}
 	mousemove(e) {
-		var pos = dom.getPointerPosition(this.el, e, this.pos)
+		var pos = dom.getPointerPosition(this.el, e, this.pos);
 		if (this.vertical) {
 			this.__percent = 100 - Math.round(pos.y * 1000) / 10;
 			this.thumb.style.top = this.__percent + '%';

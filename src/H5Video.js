@@ -48,10 +48,10 @@ export default class H5Video extends Component {
 		this.on('error', this.notify);
 	}
 	notify(e) {
-		this.pub({type: e.type, src: this, event: e, ts: e.timeStamp});
+		this.pub({type: e.type, src: this, ts: e.timeStamp});
 	}
 	destroy() {
-		super.destroy();
 		this.el.parentNode.removeChild(this.el);
+		super.destroy();
 	}
 }

@@ -7,9 +7,11 @@ import Panel from './controls/Panel'
 
 /**
  * @param {options}
+ * @param options.owner {String} container id
+ * @param options.listener {Function}
  * @class
  */
-export class Player {
+export default class Player {
 	constructor(options) {
 		this.options = options;
 		var owner = options.owner;
@@ -20,6 +22,7 @@ export class Player {
 		owner = dom.get(owner);
 		this.render(owner);
 
+		this.listener = this.options.listener;
 		message.sub('*', '*', util.bind(this, this.handleMsg), this);
 	}
 	render(owner) {
@@ -65,6 +68,9 @@ export class Player {
 		this.panel && this.panel.destroy();
 		message.unsub('*', '*', this.handleMsg, this);
 	}
+	setListener(listener) {
+		this.listener = listener;
+	}
 	handleMsg(msg) {
 		switch (msg.type) {
 			case 'play':
@@ -78,7 +84,7 @@ export class Player {
 				break;
 		}
 
-		if (!msg.private && this.options.listen)
-			this.options.listen(msg);
+		if (!msg.private && this.listener)
+			this.listener(msg);
 	}
 }

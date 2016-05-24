@@ -23,6 +23,7 @@ export default class Panel extends Component {
 		this.volume = new Slider(this.player, true);
 		this.volume.render(this.el);
 		this.volume.percent(0.5);
+		this.volume.el.style.float = 'right';
 
 		this.sub('sliderchange', this.volume, util.bind(this, this.handleMsg));
 		this.sub('sliderchange', this.slider, util.bind(this, this.handleMsg));

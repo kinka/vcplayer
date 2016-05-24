@@ -95,7 +95,7 @@ export default class Component {
 	}
 	destroy() {
 		if (this.handleMsg)
-			message.unsub('*', '*', this.handleMsg);
+			this.unsub('*', '*', this.handleMsg);
 
 		if (!this.cbs) return;
 		for (let hash in this.cbs) {

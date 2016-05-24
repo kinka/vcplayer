@@ -83,7 +83,7 @@ export function sub(type, target, cb, scope) {
  * unsub 卸载消息订阅函数
  * @param type 可指定类型，也可不指定类型(*)
  * @param target 可指定目标，也可不指定(*)
- * @param cb
+ * @param cb {Function|String} * 则删除全部
  * @param cb.guid 回调函数的唯一标识
  * @param scope 区分多个Player实例
  */
@@ -98,6 +98,12 @@ export function unsub(type, target, cb, scope) {
 		if (type !== '*' && t != type) continue; // 没有指定具体事件类型，那就要遍历找到挂载的函数，再删除
 
 		if (!listeners.hasOwnProperty(t)) continue;
+		if (cb === '*') {
+			for (let id in listeners[t])
+				delete fnCache[id];
+			delete listeners[t];
+			continue;
+		}
 		let targets = listeners[t][cb.guid];
 		if (target === '*') targets = [];
 
@@ -110,9 +116,10 @@ export function unsub(type, target, cb, scope) {
 
 		if (targets.length == 0) {
 			delete listeners[t][cb.guid];
-			delete fnCache[cb.guid];
+			// delete fnCache[cb.guid];
 		}
 		if (util.isEmpty(listeners[t]))
 			delete listeners[t];
 	}
+	// console.log(arguments, JSON.stringify(fnCache), JSON.stringify(listeners))
 }
