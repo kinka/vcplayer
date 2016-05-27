@@ -3936,12 +3936,12 @@
 
 				cursor.CR();
 				process.stdout.write('\u001b[J');
-				process.stdout.write(color('progress', '  ' + options.open));
+				process.stdout.write(color('timeline', '  ' + options.open));
 				process.stdout.write(Array(n).join(options.complete));
 				process.stdout.write(Array(i).join(options.incomplete));
-				process.stdout.write(color('progress', options.close));
+				process.stdout.write(color('timeline', options.close));
 				if (options.verbose) {
-					process.stdout.write(color('progress', ' ' + complete + ' of ' + total));
+					process.stdout.write(color('timeline', ' ' + complete + ' of ' + total));
 				}
 			});
 

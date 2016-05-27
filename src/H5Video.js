@@ -15,6 +15,29 @@ export default class H5Video extends Component {
 
 		return super.render(owner);
 	}
+	setup() {
+		var events = [
+			'abort', 'canplay', 'canplaythrough', 'durationchange', 'emptied', 'ended', 'error', 'loadedmetadata', 'loadeddata',
+			'loadstart', 'pause', 'play', 'playing', 'timeline', 'ratechange', 'seeked', 'seeking', 'stalled', 'suspend', 'timeupdate',
+			'volumechange', 'waiting'
+		];
+		this.on('loadeddata', this.notify);
+		this.on('progress', this.notify);
+		this.on('play', this.notify);
+		this.on('pause', this.notify);
+		this.on('error', this.notify);
+		this.on('timeupdate', this.notify);
+	}
+	notify(e) {
+		if (e.type === 'error')
+			console.log(this.el.error);
+		this.pub({type: e.type, src: this, ts: e.timeStamp});
+	}
+	destroy() {
+		this.el.parentNode.removeChild(this.el);
+		super.destroy();
+	}
+	
 	width(w) {
 		if (!w) return this.el.width;
 		else this.el.width = w;
@@ -35,23 +58,19 @@ export default class H5Video extends Component {
 	paused() {
 		return this.el.paused;
 	}
-	setup() {
-		var events = [
-			'abort', 'canplay', 'canplaythrough', 'durationchange', 'emptied', 'ended', 'error', 'loadedmetadata', 'loadeddata',
-			'loadstart', 'pause', 'play', 'playing', 'progress', 'ratechange', 'seeked', 'seeking', 'stalled', 'suspend', 'timeupdate',
-			'volumechange', 'waiting'
-		];
-		this.on('loadeddata', this.notify);
-		// this.on('progress', this.notify);
-		this.on('play', this.notify);
-		this.on('pause', this.notify);
-		this.on('error', this.notify);
+	buffered() {
+		if (this.el.buffered.length >= 1)
+			return this.el.buffered.end(0);
+		else
+			return 0;
 	}
-	notify(e) {
-		this.pub({type: e.type, src: this, ts: e.timeStamp});
+	currentTime(time) {
+		if (time)
+			return this.el.currentTime = time;
+		else
+			return this.el.currentTime;
 	}
-	destroy() {
-		this.el.parentNode.removeChild(this.el);
-		super.destroy();
+	duration() {
+		return this.el.duration || 0;
 	}
 }

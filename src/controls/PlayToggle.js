@@ -27,6 +27,6 @@ export default class PlayToggle extends Component {
 			video.pause();
 	}
 	handleMsg(msg) {
-		console.log(this.__name, msg);
+		console.log(this.name, msg);
 	}
 }

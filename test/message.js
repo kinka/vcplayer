@@ -9,7 +9,7 @@ describe('message', function() {
 		player = new Player({
 			owner: 'demo_video',
 			autoplay: false,
-			width: 300,
+			width: 400,
 			height: 400,
 			src: 'http://2527.vod.myqcloud.com/2527_bffd50081d9911e6b0f4d93c5d81f265.f20.mp4',
 			poster: 'https://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png',

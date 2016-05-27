@@ -3,7 +3,13 @@ import * as dom from '../dom'
 import * as message from '../message'
 import * as util from '../util'
 
+const MSG = {Change: 'sliderchange'};
+/**
+ * @method percent
+ * @class Slider
+ */
 export default class Slider extends Component {
+	static get MSG() {return MSG;}
 	constructor(player, vertical) {
 		super(player, 'Slider', 'slider');
 		this.vertical = vertical || false;
@@ -47,21 +53,22 @@ export default class Slider extends Component {
 	mousemove(e) {
 		var pos = dom.getPointerPosition(this.el, e, this.pos);
 		if (this.vertical) {
-			this.__percent = 100 - Math.round(pos.y * 1000) / 10;
-			this.thumb.style.top = this.__percent + '%';
+			this.__percent = 1 - pos.y;
+			this.thumb.style.top = this.__percent * 100 + '%';
 		} else {
-			this.__percent = Math.round(pos.x * 1000) / 10;
-			this.thumb.style.left = this.__percent + '%';
+			this.__percent = pos.x;
+			this.thumb.style.left = this.__percent * 100 + '%';
 		}
-		this.pub({type: 'sliderchange', src: this, private: true});
+		this.__percent = Number(this.__percent.toFixed(3));
+		this.pub({type: MSG.Change, src: this, private: true});
 	}
 	percent(p) {
 		if (!p) return this.__percent;
-
-		this.__percent = Math.round(parseFloat(p) * 1000) / 10;
+		
+		this.__percent = p;
 		if (this.vertical)
-			this.thumb.style.top = this.__percent + '%';
+			this.thumb.style.top = this.__percent * 100 + '%';
 		else
-			this.thumb.style.left = this.__percent + '%';
+			this.thumb.style.left = this.__percent * 100+ '%';
 	}
 }

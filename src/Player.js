@@ -5,13 +5,16 @@ import * as message from './message'
 import H5Video from './H5Video'
 import Panel from './controls/Panel'
 
+const MSG = {TimeUpdate: 'timeupdate', Loaded: 'loadeddata', Progress: 'progress'};
 /**
  * @param {options}
  * @param options.owner {String} container id
  * @param options.listener {Function}
+ * @method currentTime
  * @class
  */
 export default class Player {
+	static get MSG() {return MSG;}
 	constructor(options) {
 		this.options = options;
 		var owner = options.owner;
@@ -86,5 +89,20 @@ export default class Player {
 
 		if (!msg.private && this.listener)
 			this.listener(msg);
+	}
+	
+	currentTime() {
+		return this.video.currentTime();
+	}
+	duration() {
+		return this.video.duration();
+	}
+	percent(p) {
+		if (!p) return this.video.currentTime() / this.video.duration();
+		this.video.currentTime(this.video.duration() * p);
+	}
+	buffered() {
+		if (!this.video.duration()) return 0;
+		return this.video.buffered() / this.video.duration();
 	}
 }
