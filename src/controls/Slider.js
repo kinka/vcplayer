@@ -11,7 +11,7 @@ const MSG = {Change: 'sliderchange'};
 export default class Slider extends Component {
 	static get MSG() {return MSG;}
 	constructor(player, vertical) {
-		super(player, 'Slider', 'slider');
+		super(player, 'Slider');
 		this.vertical = vertical || false;
 	}
 

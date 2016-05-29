@@ -4,19 +4,20 @@ import * as dom from '../dom'
 
 /**
  * @method percent
+ * @property {Slider} progress
  * @class Timeline
  */
 export default class Timeline extends Component {
 	constructor(player) {
-		super(player, 'Timeline', 'timeline');
+		super(player, 'Timeline');
 	}
 
 	render(owner) {
 		this.createEl('div', {'class': 'vcp-timeline'});
-		this.slider = new Slider(this.player, false);
-		this.slider.render(this.el);
+		this.progress = new Slider(this.player, false);
+		this.progress.render(this.el);
 
-		this.track = this.slider.track;
+		this.track = this.progress.track;
 		return super.render(owner);
 	}
 	setup() {
@@ -26,6 +27,6 @@ export default class Timeline extends Component {
 		this.track.style.width = b * 100 + '%';
 	}
 	percent(p) {
-		return this.slider.percent(p);
+		return this.progress.percent(p);
 	}
 }

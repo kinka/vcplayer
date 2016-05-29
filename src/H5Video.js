@@ -4,7 +4,7 @@ import * as message from './message'
 
 export default class H5Video extends Component {
 	constructor(player) {
-		super(player, 'H5Video', 'video');
+		super(player, 'H5Video');
 	}
 	
 	render(owner) {

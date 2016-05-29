@@ -18,14 +18,12 @@ import * as message from './message'
  * @class Component
  */
 export default class Component {
-	constructor(player, name, type) {
+	constructor(player, name) {
 		this.name = name;
-		this.type = type;
 		this.player = player;
 		this.options = player.options;
 		this.fnCache = {};
 		this.guid = util.guid();
-		// console.log(this.name, this.type, this.player.options);
 	}
 	createEl(tag, attrs, props) {
 		return this.el = dom.createEl(tag, attrs, props);

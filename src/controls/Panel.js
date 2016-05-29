@@ -15,7 +15,7 @@ import * as util from '../util'
  */
 export default class Panel extends Component {
 	constructor(player) {
-		super(player, 'Panel', 'panel');
+		super(player, 'Panel');
 	}
 	render(owner) {
 		this.createEl('div', {'class': 'vcp-controls-panel'});
@@ -32,12 +32,13 @@ export default class Panel extends Component {
 		this.volume.percent(0.5);
 		this.volume.el.style.float = 'right';
 
+		return super.render(owner);
+	}
+	setup() {// add play toggle, progress, time label, volume/mute, fullscreen
 		this.sub(Slider.MSG.Change, this.volume, util.bind(this, this.handleMsg));
-		this.sub(Slider.MSG.Change, this.timeline.slider, util.bind(this, this.handleMsg));
+		this.sub(Slider.MSG.Change, this.timeline.progress, util.bind(this, this.handleMsg));
 		this.sub(Player.MSG.TimeUpdate, '*', util.bind(this, this.handleMsg));
 		this.sub(Player.MSG.Progress, '*', util.bind(this, this.handleMsg));
-
-		return super.render(owner);
 	}
 	handleMsg(msg) {
 		switch (msg.type) {
@@ -48,13 +49,10 @@ export default class Panel extends Component {
 				this.timeline.buffered(this.player.buffered());
 				break;
 			case Slider.MSG.Change:
-				if (msg.src === this.timeline.slider)
+				if (msg.src === this.timeline.progress)
 					this.player.percent(this.timeline.percent());
 				break;
 		}
 		
-	}
-	setup() {
-		// add play toggle, progress, time label, volume/mute, fullscreen
 	}
 }

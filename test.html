@@ -1,12 +1,14 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Mocha Tests</title>
+  <title>VCPlayer Tests</title>
   <link href="/test/libs/mocha.css" rel="stylesheet" />
 </head>
 <body>
-  <div id="mocha"></div><div id="demo_video"></div>
-  <script src="/test/libs/jquery.min.js"></script>
+  <div id="mocha"></div>
+  <div id="demo_video"></div>
+
+  <!--<script src="/test/libs/jquery.min.js"></script>-->
   <script src="/test/libs/expect.js"></script>
   <script src="/test/libs/mocha.js"></script>
 
@@ -14,7 +16,7 @@
   <script type="text/javascript" src="/test/all.js"></script>
   <script>
     mocha.checkLeaks();
-    mocha.globals(['jQuery', 'window']);
+    mocha.globals([]);
     mocha.run();
   </script>
 </body>

@@ -5,7 +5,7 @@ import * as util from '../util'
 
 export default class PlayToggle extends Component {
 	constructor(player) {
-		super(player, 'PlayToggle', 'button');
+		super(player, 'PlayToggle');
 	}
 
 	render(owner) {
@@ -17,7 +17,6 @@ export default class PlayToggle extends Component {
 		this.on('click', this.onClick);
 		this.sub('play', this.player.video, util.bind(this, this.handleMsg));
 		this.sub('pause', this.player.video, util.bind(this, this.handleMsg));
-		// setTimeout(util.bind(this, this.destroy), 1000)
 	}
 	onClick() {
 		var video = this.player.video;
@@ -27,6 +26,6 @@ export default class PlayToggle extends Component {
 			video.pause();
 	}
 	handleMsg(msg) {
-		console.log(this.name, msg);
+		console.log(PlayToggle.name, msg);
 	}
 }
