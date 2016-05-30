@@ -35,22 +35,30 @@ export default class Panel extends Component {
 		return super.render(owner);
 	}
 	setup() {// add play toggle, progress, time label, volume/mute, fullscreen
-		this.sub(Slider.MSG.Change, this.volume, util.bind(this, this.handleMsg));
-		this.sub(Slider.MSG.Change, this.timeline.progress, util.bind(this, this.handleMsg));
-		this.sub(Player.MSG.TimeUpdate, '*', util.bind(this, this.handleMsg));
-		this.sub(Player.MSG.Progress, '*', util.bind(this, this.handleMsg));
+		var handler = util.bind(this, this.handleMsg);
+		// todo 可以批量添加事件
+		this.sub(Slider.MSG.Changing, this.volume, handler);
+		this.sub(Slider.MSG.Changed, this.timeline.progress, handler);
+		this.sub(Player.MSG.TimeUpdate, this.player.video, handler);
+		this.sub(Player.MSG.Progress, this.player.video, handler);
+		this.sub(Player.MSG.Loaded, this.player.video, handler);
 	}
 	handleMsg(msg) {
 		switch (msg.type) {
-			case Player.MSG.TimeUpdate:
+			case Player.MSG.Loaded:
 				this.timeline.percent(this.player.percent());
+				break;
+			case Player.MSG.TimeUpdate:
+				if (!this.timeline.scrubbing)
+					this.timeline.percent(this.player.percent());
 				break;
 			case Player.MSG.Progress:
 				this.timeline.buffered(this.player.buffered());
 				break;
-			case Slider.MSG.Change:
-				if (msg.src === this.timeline.progress)
+			case Slider.MSG.Changed:
+				if (msg.src === this.timeline.progress) {
 					this.player.percent(this.timeline.percent());
+				}
 				break;
 		}
 		

@@ -11,6 +11,8 @@ const MSG = {TimeUpdate: 'timeupdate', Loaded: 'loadeddata', Progress: 'progress
  * @param options.owner {String} container id
  * @param options.listener {Function}
  * @method currentTime
+ * @method duration
+ * @method buffered
  * @class
  */
 export default class Player {
@@ -98,11 +100,18 @@ export default class Player {
 		return this.video.duration();
 	}
 	percent(p) {
+		if (!this.video.duration()) return 0;
 		if (!p) return this.video.currentTime() / this.video.duration();
 		this.video.currentTime(this.video.duration() * p);
 	}
 	buffered() {
 		if (!this.video.duration()) return 0;
 		return this.video.buffered() / this.video.duration();
+	}
+	pause() {
+		this.video.pause();
+	}
+	play() {
+		this.video.play();
 	}
 }

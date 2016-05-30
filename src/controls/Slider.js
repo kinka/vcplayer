@@ -3,7 +3,7 @@ import * as dom from '../dom'
 import * as message from '../message'
 import * as util from '../util'
 
-const MSG = {Change: 'sliderchange'};
+const MSG = {Changing: 'sliderchanging', Changed: 'sliderchanged'};
 /**
  * @method percent
  * @class Slider
@@ -49,6 +49,7 @@ export default class Slider extends Component {
 		// console.log(e.type, target.className, e.toElement.className, this);
 		this.off(this.ownerDoc, 'mouseup', this.mouseup);
 		this.off(this.ownerDoc, 'mousemove', this.mousemove);
+		this.pub({type: MSG.Changed, src: this, private: true});
 	}
 	mousemove(e) {
 		var pos = dom.getPointerPosition(this.el, e, this.pos);
@@ -60,7 +61,7 @@ export default class Slider extends Component {
 			this.thumb.style.left = this.__percent * 100 + '%';
 		}
 		this.__percent = Number(this.__percent.toFixed(3));
-		this.pub({type: MSG.Change, src: this, private: true});
+		this.pub({type: MSG.Changing, src: this, private: true});
 	}
 	percent(p) {
 		if (!p) return this.__percent;
