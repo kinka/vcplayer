@@ -1,5 +1,6 @@
 import Component from '../Component'
 import PlayToggle from './PlayToggle'
+import FullscreenToggle from './FullscreenToggle'
 import Slider from './Slider'
 import Timeline from './Timeline'
 import Volume from './Volume'
@@ -11,6 +12,7 @@ import * as util from '../util'
  *
  * @property {Timeline} timeline
  * @property {Volume} volume
+ * @property {FullscreenToggle} fullscreen
  * @property {Player} player
  */
 export default class Panel extends Component {
@@ -27,6 +29,9 @@ export default class Panel extends Component {
 		this.timeline.render(this.el);
 		this.timeline.percent(this.player.percent());
 
+		this.fullscreen = new FullscreenToggle(this.player);
+		this.fullscreen.render(this.el);
+		
 		this.volume = new Volume(this.player);
 		this.volume.render(this.el);
 		this.volume.percent(this.options.volume);

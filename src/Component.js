@@ -10,8 +10,8 @@ import * as message from './message'
  * @property {String} type
  * @method render
  * @method createEl
- * @method on
- * @method off
+ * @method on 添加监听
+ * @method off 卸载监听
  * @method sub
  * @method pub
  * @method unsub
@@ -30,6 +30,7 @@ export default class Component {
 	}
 	render(owner) {
 		if (owner && this.el) {
+			this.owner = owner;
 			owner.appendChild(this.el);
 			this.setup();
 		}
@@ -62,6 +63,7 @@ export default class Component {
 		this.cbs[fnHash(guid, type)] = {guid: guid, el: el, type: type};
 		return fn;
 	}
+	
 	off(el, type, fn) {
 		if (typeof el === 'string') {
 			fn = type;

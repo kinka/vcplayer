@@ -21,7 +21,7 @@ import './src/css/vcplayer.css';
 window.player = new Player({
 	owner: 'demo_video',
 	autoplay: true,
-	width: 600,
+	width: 800,
 	height: 400,
 	controls: null,
 	volume: 0.5,
@@ -49,6 +49,6 @@ window.player = new Player({
 
 window.dom = dom;
 dom.on(window, 'resize', function() {
-	player.size(300, 400);
+	// player.size(document.documentElement.clientWidth, document.documentElement.clientHeight);
 });
 // setTimeout(function() {player.destroy()}, 1000)

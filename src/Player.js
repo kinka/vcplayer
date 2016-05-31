@@ -5,7 +5,6 @@ import * as message from './message'
 import H5Video from './H5Video'
 import Panel from './controls/Panel'
 
-const MSG = {TimeUpdate: 'timeupdate', Loaded: 'loadeddata', Progress: 'progress'};
 /**
  * @param {options}
  * @param options.owner {String} container id
@@ -18,7 +17,9 @@ const MSG = {TimeUpdate: 'timeupdate', Loaded: 'loadeddata', Progress: 'progress
  * @class
  */
 export default class Player {
-	static get MSG() {return MSG;}
+	static get MSG() {
+		return {TimeUpdate: 'timeupdate', Loaded: 'loadeddata', Progress: 'progress', FullScreen: 'fullscreen'};
+	}
 	constructor(options) {
 		this.options = options;
 		var owner = options.owner;
@@ -70,6 +71,9 @@ export default class Player {
 
 		this.el.style.width = dW + 'px';
 		this.el.style.height = dH + 'px';
+
+		this.width = dW;
+		this.height = dH;
 	}
 	setup() {
 
@@ -90,8 +94,17 @@ export default class Player {
 			case 'pause':
 				dom.removeClass(this.el, 'vcp-playing');
 				break;
-			case 'loadeddata':
+			case Player.MSG.Loaded:
 				this.size(this.options.width, this.options.height);
+				break;
+			case Player.MSG.FullScreen:
+				dom.toggleClass(this.el, 'vcp-fullscreen', msg.fullscreen);
+				if (msg.fullscreen) {
+					this.__lastSize = {w: this.width, h: this.height};
+					this.size(document.documentElement.clientWidth, document.documentElement.clientHeight);
+				} else {
+					this.size(this.__lastSize.w, this.__lastSize.h);
+				}
 				break;
 		}
 
@@ -125,5 +138,8 @@ export default class Player {
 	}
 	volume(p) {
 		return this.video.volume(p);
+	}
+	fullscreen(enter) {
+		return this.video.fullscreen(enter);
 	}
 }

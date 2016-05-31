@@ -47,6 +47,9 @@ export function removeClass(elem, classToRemove) {
 	else
 		elem.className = elem.className.replace(classRegExp(classToRemove), '');
 }
+export function toggleClass(elem, classToToggle, assert) {
+	assert ? addClass(elem, classToToggle) : removeClass(elem, classToToggle);
+}
 export function hasClass(elem, classToCheck) {
 	if (elem.classList)
 		return elem.classList.contains(classToCheck);

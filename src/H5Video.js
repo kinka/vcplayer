@@ -1,5 +1,7 @@
 import Component from './Component'
+import Player from './Player'
 import * as dom from './dom'
+import * as util from './util'
 import * as message from './message'
 
 export default class H5Video extends Component {
@@ -82,5 +84,25 @@ export default class H5Video extends Component {
 		if (p < 0) p = 0;
 		if (p > 1) p = 1;
 		return this.el.volume = p;
+	}
+	fullscreen(enter) {
+		if (typeof enter === 'undefined') return this.__isFullcreen || false;
+
+		var fsApi = util.FullscreenApi;
+		if (fsApi.requestFullscreen) {
+			if (enter) {
+				this.on(document, fsApi.fullscreenchange, util.bind(this, function documentFullscreenChange(e) {
+					this.__isFullcreen = !!(document[fsApi.fullscreenElement]); // 取消全屏的时候返回的是null, 由此可判断全屏状态
+
+					if (!this.__isFullcreen) {
+						this.off(document, fsApi.fullscreenchange, documentFullscreenChange);
+					}
+					this.pub({type: Player.MSG.FullScreen, src: this, ts: e.timestamp, fullscreen: this.__isFullcreen});
+				}));
+				this.owner[fsApi.requestFullscreen]();
+			} else {
+				document[fsApi.exitFullscreen]();
+			}
+		}
 	}
 }
