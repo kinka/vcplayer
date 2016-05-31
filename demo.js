@@ -20,9 +20,11 @@ import * as dom from './src/dom'
 import './src/css/vcplayer.css';
 window.player = new Player({
 	owner: 'demo_video',
-	autoplay: false,
+	autoplay: true,
 	width: 600,
 	height: 400,
+	controls: null,
+	volume: 0.5,
 	src: 'http://2527.vod.myqcloud.com/2527_bffd50081d9911e6b0f4d93c5d81f265.f20.mp4',
 	// src: 'http://2527.vod.myqcloud.com/2527_1bf8b2da449211e595f01db4637252be.f20.mp4',
 	poster: 'https://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png',

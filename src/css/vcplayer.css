@@ -17,12 +17,13 @@
     position: absolute;
     left: 0;
     top: 0;
-    background-color: green;
-    opacity: 0.9;
+    background-color: rgb(36, 36, 36);
+    opacity: 0.8;
     z-index: 1000;
 }
 
 .vcp-playtoggle {
+    cursor: pointer;
     position: relative;
     z-index: 1001;
     width: 3em;
@@ -33,7 +34,7 @@
     background-image: url(/src/img/play_btn.svg), none;
 }
 .vcp-playtoggle:hover {
-    background-color: gray;
+    background-color: slategray;
     opacity: 0.9;
 }
 .vcp-playing .vcp-playtoggle {
@@ -73,37 +74,42 @@
 }
 .vcp-slider-vertical {
     position: relative;
-    width: 3em;
+    width: 0.5em;
     height: 10em;
     top: -7em;
     z-index: 1001;
+    background-color: rgb(28, 28, 28);
+    opacity: 0.9;
 }
 .vcp-slider-vertical .vcp-slider-track {
-    background-color: aquamarine;
-    width: 1em;
+    background-color: rgb(18, 117, 207);
+    width: 0.5em;
     height: 100%;
-    margin-left: 1em;
     opacity: 0.8;
 }
 .vcp-slider-vertical .vcp-slider-thumb {
     cursor: pointer;
     position: absolute;
     background-color: aliceblue;
-    width: 2em;
+    width: 0.8em;
     height: 0.8em;
+    border-radius: 0.8em;
     margin-top: -0.4em;
     top: 0;
-    left: 0.5em;
+    left: -0.15em;
 }
 /* 时间线/进度条 */
 .vcp-timeline {
     top: 18px;
+    height: 12px;
     position: relative;
     z-index: 1001;
+    float: left;
+    width: 65%;
 }
 .vcp-timeline .vcp-slider {
     float: left;
-    width: 60%;
+    width: 85%;
 }
 .vcp-timeline .vcp-slider-track {
     display: block;
@@ -116,4 +122,53 @@
     float: left;
     color: white;
     padding-left: 9px;
+}
+/* 音量控制 */
+.vcp-volume {
+    height: 48px;
+    width: 48px;
+    cursor: pointer;
+    position: relative;
+    z-index: 1001;
+    float: left;
+    background-color: transparent;
+    opacity: 0.9;
+}
+.vcp-volume-icon {
+    background-image: url(/src/img/volume.png);
+    background-image: url(/src/img/volume.svg), none;
+    display: inline-block;
+    width: 48px;
+    height: 48px;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+.vcp-volume-muted .vcp-volume-icon {
+    background-image: url(/src/img/muted.png);
+    background-image: url(/src/img/muted.svg), none;
+}
+.vcp-volume .vcp-slider-vertical {
+    top: -10.4em;
+    left: 1em;
+    display: none;
+}
+.vcp-volume .vcp-slider-track {
+    position: absolute;
+    bottom: 0;
+}
+.vcp-volume:hover .vcp-slider-vertical {
+    display: block;
+}
+.vcp-volume .vcp-volume-bg {
+    height: 10.8em;
+    width: 2em;
+    position: absolute;
+    left: 0.25em;
+    top: -10.8em;
+    background: rgb(36,36,36);
+    display: none;
+}
+.vcp-volume:hover .vcp-volume-bg, .vcp-volume:hover .vcp-slider-vertical {
+    display: block;
 }

@@ -10,7 +10,7 @@ export default class H5Video extends Component {
 	render(owner) {
 		var options = this.player.options;
 		this.createEl('video',
-			{controls: true, preload: 'auto', poster: options.poster || '', autoplay: options.autoplay ? true : null},
+			{controls: options.controls, preload: 'auto', poster: options.poster || '', autoplay: options.autoplay ? true : null},
 			{src: options.src});
 
 		return super.render(owner);
@@ -72,5 +72,15 @@ export default class H5Video extends Component {
 	}
 	duration() {
 		return this.el.duration || 0;
+	}
+	mute(muted) {
+		if (typeof muted === 'undefined') return this.el.muted;
+		else return this.el.muted = muted;
+	}
+	volume(p) {
+		if (typeof p === 'undefined') return this.el.volume;
+		if (p < 0) p = 0;
+		if (p > 1) p = 1;
+		return this.el.volume = p;
 	}
 }

@@ -9,6 +9,8 @@ const MSG = {TimeUpdate: 'timeupdate', Loaded: 'loadeddata', Progress: 'progress
 /**
  * @param {options}
  * @param options.owner {String} container id
+ * @param options.controls {Boolean} 是否显示原生控件
+ * @param options.volume {Number} 音量初始化，传0则静音
  * @param options.listener {Function}
  * @method currentTime
  * @method duration
@@ -117,5 +119,11 @@ export default class Player {
 	}
 	play() {
 		this.video.play();
+	}
+	mute(muted) {
+		return this.video.mute(muted);
+	}
+	volume(p) {
+		return this.video.volume(p);
 	}
 }

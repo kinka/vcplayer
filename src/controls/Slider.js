@@ -65,7 +65,7 @@ export default class Slider extends Component {
 	}
 	percent(p) {
 		if (!p) return this.__percent;
-		
+
 		this.__percent = p;
 		if (this.vertical)
 			this.thumb.style.top = this.__percent * 100 + '%';

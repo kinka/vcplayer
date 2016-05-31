@@ -2,15 +2,15 @@ import Component from '../Component'
 import PlayToggle from './PlayToggle'
 import Slider from './Slider'
 import Timeline from './Timeline'
+import Volume from './Volume'
 import Player from '../Player'
 import * as dom from '../dom'
-import * as message from '../message'
 import * as util from '../util'
 
 /**
  *
- * @property {Slider} progress
- * @property {Slider} volume
+ * @property {Timeline} timeline
+ * @property {Volume} volume
  * @property {Player} player
  */
 export default class Panel extends Component {
@@ -27,10 +27,9 @@ export default class Panel extends Component {
 		this.timeline.render(this.el);
 		this.timeline.percent(this.player.percent());
 
-		this.volume = new Slider(this.player, true);
+		this.volume = new Volume(this.player);
 		this.volume.render(this.el);
-		this.volume.percent(0.5);
-		this.volume.el.style.float = 'right';
+		this.volume.percent(this.options.volume);
 
 		return super.render(owner);
 	}
