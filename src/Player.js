@@ -41,21 +41,25 @@ export default class Player {
 
 		this.panel = new Panel(this);
 		this.panel.render(this.el);
+
+		this.size(this.options.width, this.options.height);
 	}
 	size(mW, mH) {
 		var vW = this.video.el.videoWidth,
 			vH = this.video.el.videoHeight;
-		var ratio = vW / vH;
-		// console.log(ratio, vW, vH, mW, mH)
-		var vertical = mW / mH < 1;
-		var dW, dH;
+		var dW = mW, dH = mH;
+		if (vW && vH) {
+			var ratio = vW / vH;
+			// console.log(ratio, vW, vH, mW, mH)
+			var vertical = mW / mH < 1;
 
-		if (vertical) { // 高度优先
-			dH = mH;
-			dW = dH * ratio;
-		} else {
-			dW = mW;
-			dH = dW / ratio;
+			if (vertical) { // 高度优先
+				dH = mH;
+				dW = dH * ratio;
+			} else {
+				dW = mW;
+				dH = dW / ratio;
+			}
 		}
 
 		// console.log(dW, dH)

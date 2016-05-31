@@ -38,8 +38,11 @@ export default class Timeline extends Component {
 		}
 	}
 	syncLabel(p) { // 保持与进度条一致
-		var d = this.player.duration().toFixed(2);
-		this.timeLabel.innerHTML = (p*d).toFixed(2) + '/' + d;
+		var d = this.player.duration();
+		if (!d)
+			this.timeLabel.innerHTML = '';
+		else
+			this.timeLabel.innerHTML = util.covertTime(p*d) + '/' + util.covertTime(d);
 	}
 
 	buffered(b) {

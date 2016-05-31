@@ -60,7 +60,7 @@ export default class H5Video extends Component {
 	}
 	buffered() {
 		if (this.el.buffered.length >= 1)
-			return this.el.buffered.end(0);
+			return this.el.buffered.end(this.el.buffered.length - 1);
 		else
 			return 0;
 	}

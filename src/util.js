@@ -20,3 +20,21 @@ export function isEmpty(obj) {
 
 	return true;
 }
+
+export function covertTime(s) {
+	s = s | 0;
+	var h = 3600, m = 60;
+	var hours = (s / h) | 0;
+	var minutes = ( s - hours * h ) / m | 0; // 有个向下取整的效果
+	var sec = s - hours * h - minutes * m;
+
+	hours = hours > 0 ? (hours + ':') : '';
+	minutes = minutes > 0 ? (minutes + ':') : (hours > 0 ? '00:' : '');
+	sec = sec > 0 ? (sec + '') : '00';
+
+	hours = hours.length == 2 ? ('0' + hours) : hours;
+	minutes = minutes.length == 2 ? ('0' + minutes) : minutes;
+	sec = sec.length == 1 ? ('0' + sec) : sec;
+
+	return hours + minutes + sec
+}
