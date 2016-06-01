@@ -4,6 +4,8 @@ import * as dom from './dom'
 import * as util from './util'
 import * as message from './message'
 
+var fsApi = util.FullscreenApi;
+
 export default class H5Video extends Component {
 	constructor(player) {
 		super(player, 'H5Video');
@@ -33,6 +35,7 @@ export default class H5Video extends Component {
 	notify(e) {
 		if (e.type === 'error')
 			console.log(this.el.error);
+
 		this.pub({type: e.type, src: this, ts: e.timeStamp});
 	}
 	destroy() {
@@ -68,7 +71,7 @@ export default class H5Video extends Component {
 	}
 	currentTime(time) {
 		if (time)
-			return this.el.currentTime = time;
+			return this.el.currentTime = Math.min(time, this.buffered());
 		else
 			return this.el.currentTime;
 	}
@@ -85,24 +88,37 @@ export default class H5Video extends Component {
 		if (p > 1) p = 1;
 		return this.el.volume = p;
 	}
+	__documentFullscreenChange(e) {
+		this.__isFullcreen = !!(document[fsApi.fullscreenElement]); // 取消全屏的时候返回的是null, 由此可判断全屏状态
+
+		if (!this.__isFullcreen) {
+			this.off(document, fsApi.fullscreenchange, this.__documentFullscreenChange);
+		}
+		this.pub({type: Player.MSG.FullScreen, src: this, ts: e.timestamp, fullscreen: this.__isFullcreen});
+	}
 	fullscreen(enter) {
 		if (typeof enter === 'undefined') return this.__isFullcreen || false;
 
-		var fsApi = util.FullscreenApi;
 		if (fsApi.requestFullscreen) {
 			if (enter) {
-				this.on(document, fsApi.fullscreenchange, util.bind(this, function documentFullscreenChange(e) {
-					this.__isFullcreen = !!(document[fsApi.fullscreenElement]); // 取消全屏的时候返回的是null, 由此可判断全屏状态
-
-					if (!this.__isFullcreen) {
-						this.off(document, fsApi.fullscreenchange, documentFullscreenChange);
-					}
-					this.pub({type: Player.MSG.FullScreen, src: this, ts: e.timestamp, fullscreen: this.__isFullcreen});
-				}));
+				this.on(document, fsApi.fullscreenchange, util.bind(this, this.__documentFullscreenChange));
 				this.owner[fsApi.requestFullscreen]();
 			} else {
 				document[fsApi.exitFullscreen]();
 			}
+		} else { // 伪全屏,可以引导再按个F11
+			this.__isFullcreen = enter;
+
+			if (this.__isFullcreen) {
+				this.__origOverflow = document.documentElement.style.overflow;
+				document.documentElement.style.overflow = 'hidden'; // hide any scroll bars
+			} else {
+				document.documentElement.style.overflow = this.__origOverflow;
+			}
+
+
+			dom.toggleClass(document.body, 'vcp-full-window', enter);
+			this.pub({type: Player.MSG.FullScreen, src: this, fullscreen: this.__isFullcreen});
 		}
 	}
 }

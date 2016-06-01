@@ -43,7 +43,6 @@ export default class Volume extends Component {
 		var muted = typeof e === 'boolean' ? e : !(this.player.mute());
 		this.player.mute(muted);
 
-		dom.removeClass(this.el, 'vcp-volume-muted');
 		if (muted)
 			dom.addClass(this.el, 'vcp-volume-muted');
 		else

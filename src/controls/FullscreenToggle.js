@@ -17,10 +17,7 @@ export default class FullscreenToggle extends Component {
 		this.on('click', this.onClick);
 	}
 	onClick() {
-		if (this.player.fullscreen())
-			this.player.fullscreen(false);
-		else
-			this.player.fullscreen(true);
+		this.player.fullscreen(!this.player.fullscreen());
 	}
 	handleMsg(msg) {
 		console.log(FullscreenToggle.name, msg);

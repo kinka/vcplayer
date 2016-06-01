@@ -45,7 +45,7 @@ export function removeClass(elem, classToRemove) {
 	if (elem.classList)
 		elem.classList.remove(classToRemove);
 	else
-		elem.className = elem.className.replace(classRegExp(classToRemove), '');
+		elem.className = elem.className.replace(classRegExp(classToRemove), ' ');
 }
 export function toggleClass(elem, classToToggle, assert) {
 	assert ? addClass(elem, classToToggle) : removeClass(elem, classToToggle);

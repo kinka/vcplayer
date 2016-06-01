@@ -57,7 +57,7 @@ export default class Panel extends Component {
 					this.timeline.percent(this.player.percent());
 				break;
 			case Player.MSG.Progress:
-				this.timeline.buffered(this.player.buffered());
+				this.timeline.buffered(this.player.buffered()); // todo IE9 会最后一段时间就不触发progress了
 				break;
 			case Slider.MSG.Changed:
 				if (msg.src === this.timeline.progress) {

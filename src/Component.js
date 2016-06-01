@@ -10,8 +10,8 @@ import * as message from './message'
  * @property {String} type
  * @method render
  * @method createEl
- * @method on 添加监听
- * @method off 卸载监听
+ * @method {Function} on 添加监听
+ * @method {Function} off 卸载监听
  * @method sub
  * @method pub
  * @method unsub

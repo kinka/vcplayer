@@ -1,6 +1,24 @@
 .vcp-player {
     position: relative;
+    z-index: 0;
     font-family: Helvetica;
+    background-color: black;
+}
+.vcp-fullscreen.vcp-player, .vcp-fullscreen video {
+    width: 100%!important;
+    height: 100%!important;
+}
+/* 伪全屏 */
+body.vcp-full-window {
+    width: 100%!important;
+    height: 100%!important;
+    overflow-y: auto;
+}
+.vcp-full-window .vcp-player {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
 }
 
 .vcp-controls-panel {

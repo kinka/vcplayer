@@ -20,7 +20,7 @@ import * as dom from './src/dom'
 import './src/css/vcplayer.css';
 window.player = new Player({
 	owner: 'demo_video',
-	autoplay: true,
+	autoplay: null,
 	width: 800,
 	height: 400,
 	controls: null,
@@ -52,3 +52,6 @@ dom.on(window, 'resize', function() {
 	// player.size(document.documentElement.clientWidth, document.documentElement.clientHeight);
 });
 // setTimeout(function() {player.destroy()}, 1000)
+var prefetch = ['stop_btn', 'fullscreen_exit', 'muted'];
+for (var i=0; i<prefetch.length; i++)
+	new Image().src = '/src/img/' + prefetch[i] + '.svg';

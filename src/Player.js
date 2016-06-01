@@ -99,12 +99,6 @@ export default class Player {
 				break;
 			case Player.MSG.FullScreen:
 				dom.toggleClass(this.el, 'vcp-fullscreen', msg.fullscreen);
-				if (msg.fullscreen) {
-					this.__lastSize = {w: this.width, h: this.height};
-					this.size(document.documentElement.clientWidth, document.documentElement.clientHeight);
-				} else {
-					this.size(this.__lastSize.w, this.__lastSize.h);
-				}
 				break;
 		}
 
