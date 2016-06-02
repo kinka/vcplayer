@@ -31,10 +31,17 @@ export default class H5Video extends Component {
 		this.on('pause', this.notify);
 		this.on('error', this.notify);
 		this.on('timeupdate', this.notify);
+		this.on('ended', this.notify);
 	}
 	notify(e) {
-		if (e.type === 'error')
-			console.log(this.el.error);
+		switch (e.type) {
+			case 'error':
+				console.log(this.el.error);
+				break;
+			case 'ended':
+				this.pause(); // IE9 不会自动改变播放状态，导致伪全屏的时候出现黑屏
+				break;
+		}
 
 		this.pub({type: e.type, src: this, ts: e.timeStamp});
 	}
@@ -70,10 +77,11 @@ export default class H5Video extends Component {
 			return 0;
 	}
 	currentTime(time) {
-		if (time)
-			return this.el.currentTime = Math.min(time, this.buffered());
-		else
-			return this.el.currentTime;
+		if (time) {
+			return this.el.currentTime = time;
+		}
+
+		return this.el.currentTime;
 	}
 	duration() {
 		return this.el.duration || 0;
@@ -96,6 +104,10 @@ export default class H5Video extends Component {
 		}
 		this.pub({type: Player.MSG.FullScreen, src: this, ts: e.timestamp, fullscreen: this.__isFullcreen});
 	}
+	__onKeydown(event) {
+		if (event.keyCode === 27)
+			this.fullscreen(false);
+	}
 	fullscreen(enter) {
 		if (typeof enter === 'undefined') return this.__isFullcreen || false;
 
@@ -112,10 +124,11 @@ export default class H5Video extends Component {
 			if (this.__isFullcreen) {
 				this.__origOverflow = document.documentElement.style.overflow;
 				document.documentElement.style.overflow = 'hidden'; // hide any scroll bars
+				this.on(document, 'keydown', util.bind(this, this.__onKeydown));
 			} else {
 				document.documentElement.style.overflow = this.__origOverflow;
+				this.off(document, 'keydown', this.__onKeydown);
 			}
-
 
 			dom.toggleClass(document.body, 'vcp-full-window', enter);
 			this.pub({type: Player.MSG.FullScreen, src: this, fullscreen: this.__isFullcreen});

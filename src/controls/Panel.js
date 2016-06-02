@@ -51,6 +51,7 @@ export default class Panel extends Component {
 		switch (msg.type) {
 			case Player.MSG.Loaded:
 				this.timeline.percent(this.player.percent());
+				this.timeline.buffered(this.player.buffered());
 				break;
 			case Player.MSG.TimeUpdate:
 				if (!this.timeline.scrubbing)

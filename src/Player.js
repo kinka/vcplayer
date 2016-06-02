@@ -94,6 +94,9 @@ export default class Player {
 			case 'pause':
 				dom.removeClass(this.el, 'vcp-playing');
 				break;
+			case 'ended':
+				
+				break;
 			case Player.MSG.Loaded:
 				this.size(this.options.width, this.options.height);
 				break;
@@ -106,8 +109,8 @@ export default class Player {
 			this.listener(msg);
 	}
 	
-	currentTime() {
-		return this.video.currentTime();
+	currentTime(time) {
+		return this.video.currentTime(time);
 	}
 	duration() {
 		return this.video.duration();

@@ -29,8 +29,8 @@ window.player = new Player({
 	// src: 'http://2527.vod.myqcloud.com/2527_1bf8b2da449211e595f01db4637252be.f20.mp4',
 	poster: 'https://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png',
 	listener: function(msg) {
-		if (msg.type == 'timeline') return;
-		// console.log('global', msg)
+		if (msg.type == 'timeupdate') return;
+		console.log('global', msg.type, msg.fullscreen)
 	}
 });
 
