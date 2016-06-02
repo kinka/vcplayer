@@ -3,13 +3,12 @@ import * as dom from '../dom'
 import * as message from '../message'
 import * as util from '../util'
 
-const MSG = {Changing: 'sliderchanging', Changed: 'sliderchanged'};
+export var MSG = {Changing: 'sliderchanging', Changed: 'sliderchanged'};
 /**
  * @method percent
  * @class Slider
  */
 export default class Slider extends Component {
-	static get MSG() {return MSG;}
 	constructor(player, vertical) {
 		super(player, 'Slider');
 		this.vertical = vertical || false;

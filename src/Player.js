@@ -5,6 +5,7 @@ import * as message from './message'
 import H5Video from './H5Video'
 import Panel from './controls/Panel'
 
+export var MSG = {TimeUpdate: 'timeupdate', Loaded: 'loadeddata', Progress: 'progress', FullScreen: 'fullscreen'};
 /**
  * @param {options}
  * @param options.owner {String} container id
@@ -17,9 +18,6 @@ import Panel from './controls/Panel'
  * @class
  */
 export default class Player {
-	static get MSG() {
-		return {TimeUpdate: 'timeupdate', Loaded: 'loadeddata', Progress: 'progress', FullScreen: 'fullscreen'};
-	}
 	constructor(options) {
 		this.options = options;
 		var owner = options.owner;
@@ -97,10 +95,10 @@ export default class Player {
 			case 'ended':
 				
 				break;
-			case Player.MSG.Loaded:
+			case MSG.Loaded:
 				this.size(this.options.width, this.options.height);
 				break;
-			case Player.MSG.FullScreen:
+			case MSG.FullScreen:
 				dom.toggleClass(this.el, 'vcp-fullscreen', msg.fullscreen);
 				break;
 		}

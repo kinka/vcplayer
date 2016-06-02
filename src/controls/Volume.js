@@ -1,4 +1,4 @@
-import Slider from './Slider'
+import Slider, {MSG as SliderMSG} from './Slider'
 import Component from '../Component'
 import * as dom from '../dom'
 import * as util from '../util'
@@ -28,14 +28,14 @@ export default class Volume extends Component {
 		return super.render(owner);
 	}
 	setup() {
-		this.sub(Slider.MSG.Changing, this.volume, util.bind(this, this.handleMsg));
-		this.sub(Slider.MSG.Changed, this.volume, util.bind(this, this.handleMsg));
+		this.sub(SliderMSG.Changing, this.volume, util.bind(this, this.handleMsg));
+		this.sub(SliderMSG.Changed, this.volume, util.bind(this, this.handleMsg));
 		this.on(this.icon, 'click', this.muteClick);
 	}
 	handleMsg(msg) {
-		if (msg.type === Slider.MSG.Changing) {
+		if (msg.type === SliderMSG.Changing) {
 			this.syncTrack(this.percent());
-		} else if (msg.type === Slider.MSG.Changed) {
+		} else if (msg.type === SliderMSG.Changed) {
 
 		}
 	}

@@ -1,10 +1,10 @@
 import Component from '../Component'
 import PlayToggle from './PlayToggle'
 import FullscreenToggle from './FullscreenToggle'
-import Slider from './Slider'
+import {MSG as SliderMSG} from './Slider'
 import Timeline from './Timeline'
 import Volume from './Volume'
-import Player from '../Player'
+import Player, {MSG as PlayerMSG} from '../Player'
 import * as dom from '../dom'
 import * as util from '../util'
 
@@ -41,26 +41,26 @@ export default class Panel extends Component {
 	setup() {// add play toggle, progress, time label, volume/mute, fullscreen
 		var handler = util.bind(this, this.handleMsg);
 		// todo 可以批量添加事件
-		this.sub(Slider.MSG.Changing, this.volume, handler);
-		this.sub(Slider.MSG.Changed, this.timeline.progress, handler);
-		this.sub(Player.MSG.TimeUpdate, this.player.video, handler);
-		this.sub(Player.MSG.Progress, this.player.video, handler);
-		this.sub(Player.MSG.Loaded, this.player.video, handler);
+		this.sub(SliderMSG.Changing, this.volume, handler);
+		this.sub(SliderMSG.Changed, this.timeline.progress, handler);
+		this.sub(PlayerMSG.TimeUpdate, this.player.video, handler);
+		this.sub(PlayerMSG.Progress, this.player.video, handler);
+		this.sub(PlayerMSG.Loaded, this.player.video, handler);
 	}
 	handleMsg(msg) {
 		switch (msg.type) {
-			case Player.MSG.Loaded:
+			case PlayerMSG.Loaded:
 				this.timeline.percent(this.player.percent());
 				this.timeline.buffered(this.player.buffered());
 				break;
-			case Player.MSG.TimeUpdate:
+			case PlayerMSG.TimeUpdate:
 				if (!this.timeline.scrubbing)
 					this.timeline.percent(this.player.percent());
 				break;
-			case Player.MSG.Progress:
+			case PlayerMSG.Progress:
 				this.timeline.buffered(this.player.buffered()); // todo IE9 会最后一段时间就不触发progress了
 				break;
-			case Slider.MSG.Changed:
+			case SliderMSG.Changed:
 				if (msg.src === this.timeline.progress) {
 					this.player.percent(this.timeline.percent());
 				}

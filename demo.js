@@ -30,7 +30,7 @@ window.player = new Player({
 	poster: 'https://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png',
 	listener: function(msg) {
 		if (msg.type == 'timeupdate') return;
-		console.log('global', msg.type, msg.fullscreen)
+		console.log('global', msg.type)
 	}
 });
 

@@ -1,4 +1,4 @@
-import Slider from './Slider'
+import Slider, {MSG as SliderMSG} from './Slider'
 import Component from '../Component'
 import * as dom from '../dom'
 import * as util from '../util'
@@ -26,14 +26,14 @@ export default class Timeline extends Component {
 		return super.render(owner);
 	}
 	setup() {
-		this.sub(Slider.MSG.Changing, this.progress, util.bind(this, this.handleMsg));
-		this.sub(Slider.MSG.Changed, this.progress, util.bind(this, this.handleMsg));
+		this.sub(SliderMSG.Changing, this.progress, util.bind(this, this.handleMsg));
+		this.sub(SliderMSG.Changed, this.progress, util.bind(this, this.handleMsg));
 	}
 	handleMsg(msg) {
-		if (msg.type === Slider.MSG.Changing) {
+		if (msg.type === SliderMSG.Changing) {
 			this.scrubbing = true;
 			this.syncLabel(this.percent());
-		} else if (msg.type === Slider.MSG.Changed) {
+		} else if (msg.type === SliderMSG.Changed) {
 			this.scrubbing = false;
 		}
 	}
