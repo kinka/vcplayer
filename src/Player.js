@@ -3,9 +3,11 @@ import * as dom from './dom'
 import * as util from './util'
 import * as message from './message'
 import H5Video from './H5Video'
+import FlashVideo from './FlashVideo'
 import Panel from './controls/Panel'
 
-export var MSG = {TimeUpdate: 'timeupdate', Loaded: 'loadeddata', Progress: 'progress', FullScreen: 'fullscreen'};
+export var MSG = {TimeUpdate: 'timeupdate', Loaded: 'loadeddata', Progress: 'progress', FullScreen: 'fullscreen',
+				Play: 'play', Pause: 'pause', Ended: 'ended'};
 /**
  * @param {options}
  * @param options.owner {String} container id
@@ -34,9 +36,16 @@ export default class Player {
 	render(owner) {
 		this.el = dom.createEl('div', {'class': 'vcp-player'});
 
-		var h5 = new H5Video(this);
-		h5.render(this.el);
-		this.video = h5;
+		if (false && browser.HASVIDEO) {
+			var h5 = new H5Video(this);
+			h5.render(this.el);
+			this.video = h5;
+		} else {
+			var flash = new FlashVideo(this);
+			flash.render(this.el);
+			this.video = flash;
+		}
+		if (!this.video) return console.error('create video failed');
 
 		owner.appendChild(this.el);
 
@@ -46,8 +55,8 @@ export default class Player {
 		this.size(this.options.width, this.options.height);
 	}
 	size(mW, mH) {
-		var vW = this.video.el.videoWidth,
-			vH = this.video.el.videoHeight;
+		var vW = this.video.width(),
+			vH = this.video.height();
 		var dW = mW, dH = mH;
 		if (vW && vH) {
 			var ratio = vW / vH;
@@ -86,14 +95,15 @@ export default class Player {
 	}
 	handleMsg(msg) {
 		switch (msg.type) {
-			case 'play':
+			case MSG.Play:
 				dom.addClass(this.el, 'vcp-playing');
 				break;
-			case 'pause':
+			case MSG.Pause:
 				dom.removeClass(this.el, 'vcp-playing');
 				break;
-			case 'ended':
-				
+			case MSG.Ended:
+				dom.removeClass(this.el, 'vcp-playing');
+				console.log('ended');
 				break;
 			case MSG.Loaded:
 				this.size(this.options.width, this.options.height);

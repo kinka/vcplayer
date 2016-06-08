@@ -117,8 +117,8 @@ export function getPointerPosition(el, event, pos) {
 
 	let boxY = box.top;
 	let boxX = box.left;
-	let pageY = event.pageY;
-	let pageX = event.pageX;
+	let pageY = event.pageY || event.clientY;
+	let pageX = event.pageX || event.clientX;
 
 	if (event.changedTouches) {
 		pageX = event.changedTouches[0].pageX;

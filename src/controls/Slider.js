@@ -33,7 +33,7 @@ export default class Slider extends Component {
 		
 	}
 	mousedown(e) {
-		e.preventDefault(); // 没加上这一句，就会偶尔出现拖动不了的情况，并且指针变成文字输入光标
+		e.preventDefault && e.preventDefault(); // 没加上这一句，就会偶尔出现拖动不了的情况，并且指针变成文字输入光标
 
 		this.pos = dom.findElPosition(this.el);
 

@@ -17,7 +17,18 @@ for (var i = 0; i<events.length; i++) {
 v.src = "http://2527.vod.myqcloud.com/2527_56c5226c165c11e697add7d1c60ca413.f20.mp4";*/
 import Player from './src/Player'
 import * as dom from './src/dom'
+import * as browser from './src/browser'
 import './src/css/vcplayer.css';
+
+window.xxlog = window.xxlog || console.log;
+console.log = function(a,b,c,d,e,f) {
+	try {if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].indexOf('INFO:') > -1) return;} catch (e) {}
+	if (browser.IS_IE8 || browser.IS_IE9)
+		window.xxlog(a || '',b || '',c||'',d||'',e||'',f||'');
+	else
+		xxlog.apply(this, arguments);
+};
+
 window.player = new Player({
 	owner: 'demo_video',
 	autoplay: null,
@@ -30,7 +41,7 @@ window.player = new Player({
 	poster: 'https://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png',
 	listener: function(msg) {
 		if (msg.type == 'timeupdate') return;
-		console.log('global', msg.type)
+		// console.log('global', msg.type, msg.src)
 	}
 });
 

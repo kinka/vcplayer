@@ -2,7 +2,7 @@ var webpack = require('webpack');
 var path = require('path');
 
 module.exports = {
-    entry: ['es5-shim', 'es5-shim/es5-sham', './demo.js'],
+    entry: [/*'es5-shim', 'es5-shim/es5-sham', */'./demo.js'],
     output: {
         path: path.join(__dirname, '/dist'),
         filename: 'demo.js',
