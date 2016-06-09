@@ -1,5 +1,5 @@
 import Component from './Component'
-import Player from './Player'
+import Player, {MSG as PlayerMSG} from './Player'
 import * as dom from './dom'
 import * as util from './util'
 import * as message from './message'
@@ -49,7 +49,12 @@ export default class H5Video extends Component {
 		this.el.parentNode.removeChild(this.el);
 		super.destroy();
 	}
-	
+	videoWidth() {
+		return this.el.videoWidth;
+	}
+	videoHeight() {
+		return this.el.videoHeight;
+	}
 	width(w) {
 		if (!w) return this.el.width;
 		else this.el.width = w;
@@ -96,42 +101,8 @@ export default class H5Video extends Component {
 		if (p > 1) p = 1;
 		return this.el.volume = p;
 	}
-	__documentFullscreenChange(e) {
-		this.__isFullcreen = !!(document[fsApi.fullscreenElement]); // 取消全屏的时候返回的是null, 由此可判断全屏状态
 
-		if (!this.__isFullcreen) {
-			this.off(document, fsApi.fullscreenchange, this.__documentFullscreenChange);
-		}
-		this.pub({type: Player.MSG.FullScreen, src: this, ts: e.timestamp, fullscreen: this.__isFullcreen});
-	}
-	__onKeydown(event) {
-		if (event.keyCode === 27)
-			this.fullscreen(false);
-	}
 	fullscreen(enter) {
-		if (typeof enter === 'undefined') return this.__isFullcreen || false;
-
-		if (fsApi.requestFullscreen) {
-			if (enter) {
-				this.on(document, fsApi.fullscreenchange, util.bind(this, this.__documentFullscreenChange));
-				this.owner[fsApi.requestFullscreen]();
-			} else {
-				document[fsApi.exitFullscreen]();
-			}
-		} else { // 伪全屏,可以引导再按个F11
-			this.__isFullcreen = enter;
-
-			if (this.__isFullcreen) {
-				this.__origOverflow = document.documentElement.style.overflow;
-				document.documentElement.style.overflow = 'hidden'; // hide any scroll bars
-				this.on(document, 'keydown', util.bind(this, this.__onKeydown));
-			} else {
-				document.documentElement.style.overflow = this.__origOverflow;
-				this.off(document, 'keydown', this.__onKeydown);
-			}
-
-			dom.toggleClass(document.body, 'vcp-full-window', enter);
-			this.pub({type: Player.MSG.FullScreen, src: this, fullscreen: this.__isFullcreen});
-		}
+		return util.doFullscreen(this.player, enter, this.owner);
 	}
 }

@@ -55,8 +55,8 @@ export default class Player {
 		this.size(this.options.width, this.options.height);
 	}
 	size(mW, mH) {
-		var vW = this.video.width(),
-			vH = this.video.height();
+		var vW = this.video.videoWidth(),
+			vH = this.video.videoHeight();
 		var dW = mW, dH = mH;
 		if (vW && vH) {
 			var ratio = vW / vH;

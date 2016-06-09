@@ -50,9 +50,11 @@ export default class FlashVideo extends Component {
             </embed>
         </object>
 		`;
+		this.owner = owner;
 	}
 	setup() {
 		this.on('error', this.notify);
+		this.sub(PlayerMSG.FullScreen, '*', util.bind(this, this.handleMsg));
 /*
 		var events = [
 			'abort', 'canplay', 'canplaythrough', 'durationchange', 'emptied', 'ended', 'error', 'loadedmetadata', 'loadeddata',
@@ -67,6 +69,14 @@ export default class FlashVideo extends Component {
 		this.on('timeupdate', this.notify);
 		this.on('ended', this.notify);*/
 	}
+
+	/**
+	 *
+	 * @param eventName
+	 * @param info
+	 * @property info.bytesLoaded
+	 * @property info.bytesTotal
+	 */
 	notify(eventName, info) {
 		try {
 			var e = {type: eventName, timeStamp: +new Date()};
@@ -108,6 +118,14 @@ export default class FlashVideo extends Component {
 					break;
 				case 'mediaTime':
 					e.type = PlayerMSG.TimeUpdate;
+					this.__bytesTotal = info.bytesTotal;
+					this.__videoWidth = info.videoWidth;
+					this.__videoHeight = info.videoHeight;
+					if (this.__bytesloaded != info.bytesLoaded) {
+						this.__bytesloaded = info.bytesLoaded;
+						this.pub({type: PlayerMSG.Progress, src: this, ts: e.timeStamp});
+					}
+
 					break;
 			}
 
@@ -116,16 +134,32 @@ export default class FlashVideo extends Component {
 			console.log(eventName, e);
 		}
 	}
+	handleMsg(msg) {
+		switch (msg.type) {
+			case PlayerMSG.FullScreen:
+				
+				break;
+		}
+	}
 	destroy() {
 		this.el.parentNode.removeChild(this.el);
 		super.destroy();
 	}
-	
+	videoWidth() {
+		return this.__videoWidth;
+	}
+	videoHeight() {
+		return this.__videoHeight;
+	}
 	width(w) {
-		return 640;
+		if (typeof w === 'undefined') return this.el && this.el.width;
+		w = '100%';
+		return this.el && (this.el.width = w);
 	}
 	height(h) {
-		return 360;
+		if (typeof h === 'undefined') return this.el && this.el.height;
+		h = '100%';
+		return this.el && (this.el.height = h);
 	}
 	play() {
 		if (this.__stopped) this.currentTime(0);
@@ -141,7 +175,8 @@ export default class FlashVideo extends Component {
 		return !this.__playing;
 	}
 	buffered() {
-		return 20;
+		var p = (this.__bytesloaded || 0) / (this.__bytesTotal || 1);
+		return this.duration() * p;
 	}
 	currentTime(time) {
 		if (typeof time === 'undefined') return this.el.getPosition();
@@ -152,13 +187,16 @@ export default class FlashVideo extends Component {
 		return this.el && this.el.getDuration();
 	}
 	mute(muted) {
-
+		if (typeof muted === 'undefined') return false;
+		this.volume(muted ? 0 : 0.5);
 	}
 	volume(p) {
-
+		if (typeof p === 'undefined') return 0.5;
+		this.el && this.el.playerVolume(p);
 	}
-	fullscreen(enter) {
 
+	fullscreen(enter) {
+		return util.doFullscreen(this.player, enter, this.owner);
 	}
 }
 
@@ -174,6 +212,7 @@ export default class FlashVideo extends Component {
  * @property {Function} el.playerLoad
  * @property {Function} el.getbufferLength
  * @property {Function} el.playerSeek
+ * @property {Function} el.playerVolume
  */
 function getFlashMovieObject(movieName) {
 	if (window.document[movieName])	{

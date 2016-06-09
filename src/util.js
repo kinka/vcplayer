@@ -1,3 +1,7 @@
+import * as dom from './dom'
+import * as message from './message'
+import {MSG as PlayerMSG} from './Player'
+
 var __guid = 1;
 export function guid() {
 	return __guid++;
@@ -114,5 +118,44 @@ for (let i = 0; i < apiMap.length; i++) {
 if (browserApi) {
 	for (let i=0; i<browserApi.length; i++) {
 		FullscreenApi[specApi[i]] = browserApi[i];
+	}
+}
+function documentFullscreenChange(e) {
+	doFullscreen.__isFullcreen = !!(document[FullscreenApi.fullscreenElement]); // 取消全屏的时候返回的是null, 由此可判断全屏状态
+
+	if (!doFullscreen.__isFullcreen) {
+		dom.off(document, FullscreenApi.fullscreenchange, documentFullscreenChange);
+	}
+	message.pub({type: PlayerMSG.FullScreen, src: 'util', ts: e.timestamp, fullscreen: doFullscreen.__isFullcreen}, doFullscreen.player);
+}
+function onKeydown(event) {
+	if (event.keyCode === 27)
+		doFullscreen(doFullscreen.player, false);
+}
+export function doFullscreen(player, enter, owner) {
+	if (typeof enter === 'undefined') return doFullscreen.__isFullcreen || false;
+
+	doFullscreen.player = player;
+	if (FullscreenApi.requestFullscreen) {
+		if (enter) {
+			dom.on(document, FullscreenApi.fullscreenchange, documentFullscreenChange);
+			owner && owner[FullscreenApi.requestFullscreen]();
+		} else {
+			document[FullscreenApi.exitFullscreen]();
+		}
+	} else { // 伪全屏,可以引导再按个F11
+		doFullscreen.__isFullcreen = enter;
+
+		if (doFullscreen.__isFullcreen) {
+			doFullscreen.__origOverflow = document.documentElement.style.overflow;
+			document.documentElement.style.overflow = 'hidden'; // hide any scroll bars
+			dom.on(document, 'keydown', onKeydown);
+		} else {
+			document.documentElement.style.overflow = doFullscreen.__origOverflow;
+			dom.off(document, 'keydown', onKeydown);
+		}
+
+		dom.toggleClass(document.body, 'vcp-full-window', enter);
+		message.pub({type: PlayerMSG.FullScreen, src: 'util', fullscreen: doFullscreen.__isFullcreen}, doFullscreen.player);
 	}
 }
