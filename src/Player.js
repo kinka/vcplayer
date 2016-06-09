@@ -5,6 +5,7 @@ import * as message from './message'
 import H5Video from './H5Video'
 import FlashVideo from './FlashVideo'
 import Panel from './controls/Panel'
+import BigPlay from './controls/BigPlay'
 
 export var MSG = {TimeUpdate: 'timeupdate', Loaded: 'loadeddata', Progress: 'progress', FullScreen: 'fullscreen',
 				Play: 'play', Pause: 'pause', Ended: 'ended'};
@@ -51,6 +52,9 @@ export default class Player {
 
 		this.panel = new Panel(this);
 		this.panel.render(this.el);
+
+		this.bigplay = new BigPlay(this);
+		this.bigplay.render(this.el);
 
 		this.size(this.options.width, this.options.height);
 	}
@@ -109,7 +113,10 @@ export default class Player {
 				this.size(this.options.width, this.options.height);
 				break;
 			case MSG.FullScreen:
-				dom.toggleClass(this.el, 'vcp-fullscreen', msg.fullscreen);
+				var self = this;
+				setTimeout(function() { // fix IE9 按esc toggle 时背景图片出不来
+					dom.toggleClass(self.el, 'vcp-fullscreen', msg.fullscreen);
+				}, 0);
 				break;
 		}
 
