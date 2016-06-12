@@ -97,6 +97,10 @@ export default class FlashVideo extends Component {
 					this.__playing = false;
 					this.__stopped = true;
 					e.type = PlayerMSG.Ended;
+				} else if (info.message.indexOf('SeekStart.Notify') > -1) {
+					e.type = PlayerMSG.Seeking;
+				} else if (info.message.indexOf('Seek.Notify') > -1) {
+					e.type = PlayerMSG.Seeked;
 				}
 			}
 
@@ -137,7 +141,7 @@ export default class FlashVideo extends Component {
 	handleMsg(msg) {
 		switch (msg.type) {
 			case PlayerMSG.FullScreen:
-				
+
 				break;
 		}
 	}

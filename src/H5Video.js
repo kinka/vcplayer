@@ -14,7 +14,7 @@ export default class H5Video extends Component {
 	render(owner) {
 		var options = this.player.options;
 		this.createEl('video',
-			{controls: options.controls, preload: 'auto', poster: options.poster || '', autoplay: options.autoplay ? true : null},
+			{controls: options.controls, preload: 'auto', autoplay: options.autoplay ? true : null},
 			{src: options.src});
 
 		return super.render(owner);
@@ -32,6 +32,8 @@ export default class H5Video extends Component {
 		this.on('error', this.notify);
 		this.on('timeupdate', this.notify);
 		this.on('ended', this.notify);
+		this.on('seeking', this.notify);
+		this.on('seeked', this.notify);
 	}
 	notify(e) {
 		switch (e.type) {

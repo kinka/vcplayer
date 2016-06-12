@@ -70,6 +70,9 @@ body.vcp-full-window {
     width: 100%;
     height: 100%;
     position: absolute;
+    background-color: white\0;
+    filter: alpha(opacity=0); /*奇怪的IE8/9鼠标事件穿透*/
+    z-index: 1000;
     top: 0;
     left: 0;
 }
@@ -225,4 +228,11 @@ body.vcp-full-window {
 .vcp-fullscreen .vcp-fullscreen-toggle {
     background-image: url(/src/img/fullscreen_exit.png);
     background-image: url(/src/img/fullscreen_exit.svg), none;
+}
+
+.vcp-loading {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-top: -48px;
 }

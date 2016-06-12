@@ -6,9 +6,10 @@ import H5Video from './H5Video'
 import FlashVideo from './FlashVideo'
 import Panel from './controls/Panel'
 import BigPlay from './controls/BigPlay'
+import Loading from './controls/Loading'
 
 export var MSG = {TimeUpdate: 'timeupdate', Loaded: 'loadeddata', Progress: 'progress', FullScreen: 'fullscreen',
-				Play: 'play', Pause: 'pause', Ended: 'ended'};
+				Play: 'play', Pause: 'pause', Ended: 'ended', Seeking: 'seeking', Seeked: 'seeked'};
 /**
  * @param {options}
  * @param options.owner {String} container id
@@ -37,7 +38,7 @@ export default class Player {
 	render(owner) {
 		this.el = dom.createEl('div', {'class': 'vcp-player'});
 
-		if (false && browser.HASVIDEO) {
+		if (browser.HASVIDEO) {
 			var h5 = new H5Video(this);
 			h5.render(this.el);
 			this.video = h5;
@@ -50,11 +51,14 @@ export default class Player {
 
 		owner.appendChild(this.el);
 
+		this.bigplay = new BigPlay(this);
+		this.bigplay.render(this.el);
+
 		this.panel = new Panel(this);
 		this.panel.render(this.el);
 
-		this.bigplay = new BigPlay(this);
-		this.bigplay.render(this.el);
+		this.loading = new Loading(this);
+		this.loading.render(this.el);
 
 		this.size(this.options.width, this.options.height);
 	}
@@ -110,7 +114,14 @@ export default class Player {
 				console.log('ended');
 				break;
 			case MSG.Loaded:
+				this.loading.hide();
 				this.size(this.options.width, this.options.height);
+				break;
+			case MSG.Seeking:
+				this.loading.show();
+				break;
+			case MSG.Seeked:
+				this.loading.hide();
 				break;
 			case MSG.FullScreen:
 				var self = this;
