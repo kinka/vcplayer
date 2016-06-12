@@ -38,7 +38,7 @@ export default class Player {
 	render(owner) {
 		this.el = dom.createEl('div', {'class': 'vcp-player'});
 
-		if (browser.HASVIDEO) {
+		if (false && browser.HASVIDEO) {
 			var h5 = new H5Video(this);
 			h5.render(this.el);
 			this.video = h5;
@@ -96,7 +96,10 @@ export default class Player {
 	destroy() {
 		this.video && this.video.destroy();
 		this.panel && this.panel.destroy();
+		this.bigplay && this.bigplay.destroy();
+		this.loading && this.loading.destroy();
 		message.unsub('*', '*', this.handleMsg, this);
+		this.video = this.panel = this.bigplay = this.loading = null;
 	}
 	setListener(listener) {
 		this.listener = listener;

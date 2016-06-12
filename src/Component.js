@@ -106,6 +106,12 @@ export default class Component {
 		}
 		this.fnCache = null;
 		this.cbs = null;
+
+		try {
+			this.el.parentNode.removeChild(this.el);
+		} catch (e) {
+
+		}
 	}
 }
 

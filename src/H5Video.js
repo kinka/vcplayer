@@ -47,10 +47,7 @@ export default class H5Video extends Component {
 
 		this.pub({type: e.type, src: this, ts: e.timeStamp});
 	}
-	destroy() {
-		this.el.parentNode.removeChild(this.el);
-		super.destroy();
-	}
+
 	videoWidth() {
 		return this.el.videoWidth;
 	}

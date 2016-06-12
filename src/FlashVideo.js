@@ -145,10 +145,6 @@ export default class FlashVideo extends Component {
 				break;
 		}
 	}
-	destroy() {
-		this.el.parentNode.removeChild(this.el);
-		super.destroy();
-	}
 	videoWidth() {
 		return this.__videoWidth;
 	}
