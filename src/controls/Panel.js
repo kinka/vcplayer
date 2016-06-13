@@ -3,6 +3,7 @@ import PlayToggle from './PlayToggle'
 import FullscreenToggle from './FullscreenToggle'
 import {MSG as SliderMSG} from './Slider'
 import Timeline from './Timeline'
+import Timelabel from './Timelabel'
 import Volume from './Volume'
 import Player, {MSG as PlayerMSG} from '../Player'
 import * as dom from '../dom'
@@ -24,6 +25,9 @@ export default class Panel extends Component {
 		this.el.appendChild(dom.createEl('div', {'class': 'vcp-panel-bg'}));
 		this.playToggle = new PlayToggle(this.player);
 		this.playToggle.render(this.el);
+		
+		this.timelabel = new Timelabel(this.player);
+		this.timelabel.render(this.el);
 
 		this.timeline = new Timeline(this.player);
 		this.timeline.render(this.el);

@@ -3,8 +3,6 @@ import Player, {MSG as PlayerMSG} from './Player'
 import * as dom from './dom'
 import * as util from './util'
 
-var fsApi = util.FullscreenApi;
-
 /**
  *
  * @class FlashVideo
@@ -54,20 +52,6 @@ export default class FlashVideo extends Component {
 	}
 	setup() {
 		this.on('error', this.notify);
-		this.sub(PlayerMSG.FullScreen, '*', util.bind(this, this.handleMsg));
-/*
-		var events = [
-			'abort', 'canplay', 'canplaythrough', 'durationchange', 'emptied', 'ended', 'error', 'loadedmetadata', 'loadeddata',
-			'loadstart', 'pause', 'play', 'playing', 'timeline', 'ratechange', 'seeked', 'seeking', 'stalled', 'suspend', 'timeupdate',
-			'volumechange', 'waiting'
-		];
-		this.on('loadeddata', this.notify);
-		this.on('progress', this.notify);
-		this.on('play', this.notify);
-		this.on('pause', this.notify);
-		this.on('error', this.notify);
-		this.on('timeupdate', this.notify);
-		this.on('ended', this.notify);*/
 	}
 
 	/**
@@ -113,6 +97,7 @@ export default class FlashVideo extends Component {
 					this.setup();
 					this.el.setAutoPlay(this.options.autoplay);
 					this.el.playerLoad(this.options.src);
+					return;
 					break;
 				case 'canPlay':
 					e.type = PlayerMSG.Loaded;
@@ -139,11 +124,7 @@ export default class FlashVideo extends Component {
 		}
 	}
 	handleMsg(msg) {
-		switch (msg.type) {
-			case PlayerMSG.FullScreen:
 
-				break;
-		}
 	}
 	videoWidth() {
 		return this.__videoWidth;

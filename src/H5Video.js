@@ -81,11 +81,9 @@ export default class H5Video extends Component {
 			return 0;
 	}
 	currentTime(time) {
-		if (time) {
-			return this.el.currentTime = time;
-		}
-
-		return this.el.currentTime;
+		if (typeof time === 'undefined') return this.el.currentTime;
+		
+		return this.el.currentTime = time;
 	}
 	duration() {
 		return this.el.duration || 0;

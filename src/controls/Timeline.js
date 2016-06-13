@@ -20,9 +20,6 @@ export default class Timeline extends Component {
 		this.progress.render(this.el);
 		this.track = this.progress.track;
 
-		this.timeLabel = dom.createEl('span', {'class': 'vcp-timeline-label'});
-		this.el.appendChild(this.timeLabel);
-
 		return super.render(owner);
 	}
 	setup() {
@@ -39,10 +36,10 @@ export default class Timeline extends Component {
 	}
 	syncLabel(p) { // 保持与进度条一致
 		var d = this.player.duration();
-		if (!d)
-			this.timeLabel.innerHTML = '';
-		else
-			this.timeLabel.innerHTML = util.covertTime(p*d) + '/' + util.covertTime(d);
+		var time = '';
+		if (d)
+			time = util.covertTime(p*d) + '/' + util.covertTime(d);
+		this.pub({type: 'timelabel', src: 'timeline', label: time, private: true});
 	}
 
 	buffered(b) {

@@ -15,8 +15,8 @@ export default class BigPlay extends Component {
 	}
 	setup() {
 		this.on('click', this.onClick);
-		this.sub('play', this.player.video, util.bind(this, this.handleMsg));
-		this.sub('pause', this.player.video, util.bind(this, this.handleMsg));
+		// this.sub('play', this.player.video, util.bind(this, this.handleMsg));
+		// this.sub('pause', this.player.video, util.bind(this, this.handleMsg));
 	}
 	onClick() {
 		var video = this.player.video;

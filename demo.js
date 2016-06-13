@@ -17,6 +17,7 @@ for (var i = 0; i<events.length; i++) {
 v.src = "http://2527.vod.myqcloud.com/2527_56c5226c165c11e697add7d1c60ca413.f20.mp4";*/
 import Player from './src/Player'
 import * as dom from './src/dom'
+import Volume from './src/controls/Volume'
 import * as browser from './src/browser'
 import './src/css/vcplayer.css';
 
@@ -37,11 +38,11 @@ window.player = new Player({
 	controls: null,
 	volume: 0.5,
 	src: 'http://2527.vod.myqcloud.com/2527_bffd50081d9911e6b0f4d93c5d81f265.f20.mp4',
-	// src: 'http://2527.vod.myqcloud.com/2527_1bf8b2da449211e595f01db4637252be.f20.mp4',
+	src: 'http://2527.vod.myqcloud.com/2527_1bf8b2da449211e595f01db4637252be.f20.mp4',
 	poster: 'https://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png',
 	listener: function(msg) {
-		if (msg.type == 'timeupdate') return;
-		// console.log('global', msg.type, msg.src)
+		if (msg.type == 'timeupdate' || msg.type == 'progress' || msg.type === 'printLog') return;
+		console.log('global', msg.type, msg.src)
 	}
 });
 
@@ -59,6 +60,7 @@ window.player = new Player({
 });*/
 
 window.dom = dom;
+window.Volume = Volume;
 dom.on(window, 'resize', function() {
 	// player.size(document.documentElement.clientWidth, document.documentElement.clientHeight);
 });
