@@ -33,8 +33,8 @@ console.log = function(a,b,c,d,e,f) {
 window.player = new Player({
 	owner: 'demo_video',
 	autoplay: null,
-	width: 800,
-	height: 400,
+	// width: 800,
+	// height: 400,
 	controls: null,
 	volume: 0.5,
 	src: 'http://2527.vod.myqcloud.com/2527_bffd50081d9911e6b0f4d93c5d81f265.f20.mp4',
@@ -42,7 +42,7 @@ window.player = new Player({
 	poster: 'https://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png',
 	listener: function(msg) {
 		if (msg.type == 'timeupdate' || msg.type == 'progress' || msg.type === 'printLog') return;
-		console.log('global', msg.type, msg.src)
+		console.log('global', msg.type, msg.info)
 	}
 });
 

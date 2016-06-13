@@ -31,14 +31,12 @@ export default class Panel extends Component {
 
 		this.timeline = new Timeline(this.player);
 		this.timeline.render(this.el);
-		this.timeline.percent(this.player.percent());
 
 		this.fullscreen = new FullscreenToggle(this.player);
 		this.fullscreen.render(this.el);
 		
 		this.volume = new Volume(this.player);
 		this.volume.render(this.el);
-		this.volume.percent(this.options.volume);
 
 		return super.render(owner);
 	}
@@ -56,6 +54,7 @@ export default class Panel extends Component {
 			case PlayerMSG.Loaded:
 				this.timeline.percent(this.player.percent());
 				this.timeline.buffered(this.player.buffered());
+				this.volume.percent(this.options.volume);
 				break;
 			case PlayerMSG.TimeUpdate:
 				if (!this.timeline.scrubbing)

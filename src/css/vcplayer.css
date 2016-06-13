@@ -147,7 +147,7 @@ body.vcp-full-window {
     width: 100%;
 }
 .vcp-timeline .vcp-slider-thumb {
-    display: none;
+    top: -3px;
 }
 .vcp-timeline .vcp-slider {
     margin-top: 8px;

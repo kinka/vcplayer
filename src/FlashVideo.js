@@ -12,14 +12,14 @@ export default class FlashVideo extends Component {
 		super(player, 'FlashVideo');
 
 		var self = this;
-		window.flashlsCallback = function(eventName, args) {
+		window.flashCallback = function(eventName, args) {
 			self.notify(eventName, args && args[0]);
 		};
 	}
 	
 	render(owner) {
 		var swfurl = 'http://imgcache.qq.com/open/qcloud/video/player/release/QCPlayer.swf';
-		swfurl = 'http://test.qzs.qq.com/iot/demo/player/QCplayer.swf';
+		swfurl = 'http://test.qzs.qq.com/iot/demo/player/QCPlayer.swf';
 		var options = this.player.options;
 		var wmode = 'opaque';
 		var id = 'obj_vcplayer_' + this.player.guid;
@@ -60,37 +60,16 @@ export default class FlashVideo extends Component {
 	 * @param info
 	 * @property info.bytesLoaded
 	 * @property info.bytesTotal
+	 * @property info.playState
+	 * @property info.seekState
 	 */
 	notify(eventName, info) {
 		try {
 			var e = {type: eventName, timeStamp: +new Date()};
-			if (eventName == 'printLog') {
-				if (info.message.indexOf('onMetaData') > -1) {
-					e.type = 'MetaData';
-				} else if (info.message.indexOf('Play.Start') > -1 || info.message.indexOf('Unpause') > -1) {
-					this.__playing = true;
-					this.__stopped = false;
-					e.type = PlayerMSG.Play;
-				} else if (info.message.indexOf('Seek.Complete') > -1) {
-					this.play();
-				} else if (info.message.indexOf('Pause') > -1) {
-					this.__playing = false;
-					this.__stopped = false;
-					e.type = PlayerMSG.Pause;
-				} else if (info.message.indexOf('Stop') > -1) {
-					this.__playing = false;
-					this.__stopped = true;
-					e.type = PlayerMSG.Ended;
-				} else if (info.message.indexOf('SeekStart.Notify') > -1) {
-					e.type = PlayerMSG.Seeking;
-				} else if (info.message.indexOf('Seek.Notify') > -1) {
-					e.type = PlayerMSG.Seeked;
-				}
-			}
 
-			if (eventName != 'mediaTime' && eventName != 'printLog' && eventName != 'canPlay')
-				console.log(eventName, info);
-
+			// if (eventName != 'mediaTime' && eventName != 'printLog' && eventName != 'netStatus')
+			// 	console.log(eventName, info);
+			var keepPrivate = (eventName == 'printLog' || eventName == 'canPlay');
 			switch (e.type) {
 				case 'ready':
 					this.el = getFlashMovieObject(this.__id);
@@ -99,26 +78,59 @@ export default class FlashVideo extends Component {
 					this.el.playerLoad(this.options.src);
 					return;
 					break;
-				case 'canPlay':
+				case 'metaData':
 					e.type = PlayerMSG.Loaded;
+					this.__videoWidth = info.videoWidth;
+					this.__videoHeight = info.videoHeight;
+					this.__duration = info.duration;
+					this.__bytesTotal = info.bytesTotal;
 					break;
-				case 'MetaData':
-
+				case 'playState':
+					if (info.playState == 'PLAYING') {
+						this.__playing = true;
+						this.__stopped = false;
+						e.type = PlayerMSG.Play;
+					} else if (info.playState == 'PAUSED') {
+						this.__playing = false;
+						this.__stopped = false;
+						e.type = PlayerMSG.Pause;
+					} else if (info.playState == 'STOP') {
+						this.__playing = false;
+						this.__stopped = true;
+						e.type = PlayerMSG.Ended;
+					}
+					break;
+				case 'seekState':
+					if (info.seekState == 'SEEKING') {
+						e.type = PlayerMSG.Seeking;
+					} else if (info.seekState == 'SEEKED' && info.playState == 'PAUSED') {
+						this.play();
+						this.__prevPlayState = info.playState;
+					}
+					break;
+				case 'netStatus':
+					if (info.code == 'NetStream.Buffer.Full') {
+						if (this.__prevPlayState == 'PAUSED') {
+							this.pause();
+							this.__prevPlayState = null;
+						}
+						e.type = PlayerMSG.Seeked;
+					}
 					break;
 				case 'mediaTime':
 					e.type = PlayerMSG.TimeUpdate;
-					this.__bytesTotal = info.bytesTotal;
-					this.__videoWidth = info.videoWidth;
-					this.__videoHeight = info.videoHeight;
 					if (this.__bytesloaded != info.bytesLoaded) {
 						this.__bytesloaded = info.bytesLoaded;
 						this.pub({type: PlayerMSG.Progress, src: this, ts: e.timeStamp});
 					}
 
 					break;
+				case 'error':
+					
+					break;
 			}
 
-			this.pub({type: e.type, src: this, ts: e.timeStamp});
+			!keepPrivate && this.pub({type: e.type, src: this, ts: e.timeStamp, info: info});
 		} catch (e) {
 			console.log(eventName, e);
 		}
@@ -144,7 +156,7 @@ export default class FlashVideo extends Component {
 	}
 	play() {
 		if (this.__stopped) this.currentTime(0);
-		this.el.playerPlay();
+		this.el.playerResume();
 	}
 	pause() {
 		this.el.playerPause();
@@ -165,7 +177,7 @@ export default class FlashVideo extends Component {
 
 	}
 	duration() {
-		return this.el && this.el.getDuration();
+		return this.__duration;
 	}
 	mute(muted) {
 		if (typeof muted === 'undefined') return false;
@@ -188,12 +200,14 @@ export default class FlashVideo extends Component {
  * @property {Function} el.getDuration
  * @property {Function} el.getPosition
  * @property {Function} el.playerPlay
+ * @property {Function} el.playerResume
  * @property {Function} el.playerPause
  * @property {Function} el.setAutoPlay
  * @property {Function} el.playerLoad
  * @property {Function} el.getbufferLength
  * @property {Function} el.playerSeek
  * @property {Function} el.playerVolume
+ * @property {Function} el.getPlayState
  */
 function getFlashMovieObject(movieName) {
 	if (window.document[movieName])	{

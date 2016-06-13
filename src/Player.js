@@ -8,7 +8,7 @@ import Panel from './controls/Panel'
 import BigPlay from './controls/BigPlay'
 import Loading from './controls/Loading'
 
-export var MSG = {TimeUpdate: 'timeupdate', Loaded: 'loadeddata', Progress: 'progress', FullScreen: 'fullscreen',
+export var MSG = {Error: 'error', TimeUpdate: 'timeupdate', Loaded: 'loadeddata', Progress: 'progress', FullScreen: 'fullscreen',
 				Play: 'play', Pause: 'pause', Ended: 'ended', Seeking: 'seeking', Seeked: 'seeked'};
 /**
  * @param {options}
@@ -38,7 +38,7 @@ export default class Player {
 	render(owner) {
 		this.el = dom.createEl('div', {'class': 'vcp-player'});
 
-		if (true && browser.HASVIDEO) {
+		if (false && browser.HASVIDEO) {
 			var h5 = new H5Video(this);
 			h5.render(this.el);
 			this.video = h5;
@@ -60,9 +60,11 @@ export default class Player {
 		this.loading = new Loading(this);
 		this.loading.render(this.el);
 
+		this.options.width = this.options.width || owner.offsetWidth;
+		this.options.height = this.options.height || owner.offsetHeight;
 		this.size(this.options.width, this.options.height);
 	}
-	size(mW, mH) {
+	size(mW, mH) {console.log(mW, mH)
 		var vW = this.video.videoWidth(),
 			vH = this.video.videoHeight();
 		var dW = mW, dH = mH;
