@@ -64,7 +64,7 @@ export default class Player {
 		this.options.height = this.options.height || owner.offsetHeight;
 		this.size(this.options.width, this.options.height);
 	}
-	size(mW, mH) {console.log(mW, mH)
+	size(mW, mH) {
 		var vW = this.video.videoWidth(),
 			vH = this.video.videoHeight();
 		var dW = mW, dH = mH;

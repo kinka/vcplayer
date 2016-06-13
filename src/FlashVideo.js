@@ -18,6 +18,8 @@ export default class FlashVideo extends Component {
 	}
 	
 	render(owner) {
+		this.__timebase = +new Date();
+
 		var swfurl = 'http://imgcache.qq.com/open/qcloud/video/player/release/QCPlayer.swf';
 		swfurl = 'http://test.qzs.qq.com/iot/demo/player/QCPlayer.swf';
 		var options = this.player.options;
@@ -53,7 +55,26 @@ export default class FlashVideo extends Component {
 	setup() {
 		this.on('error', this.notify);
 	}
-
+	doPolling() {
+		clearInterval(this.__timer);
+		this.__timer = setInterval(this.interval.bind(this), 500);
+	}
+	endPolling() {
+		clearInterval(this.__timer);
+	}
+	interval() {
+		var info = this.el.getState();
+		if (this.__bytesloaded != info.bytesLoaded) {
+			this.__bytesloaded = info.bytesLoaded;
+			this.pub({type: PlayerMSG.Progress, src: this, ts: +new Date()});
+		}
+		if (this.__bytesloaded >= this.__bytesTotal)
+			this.endPolling();
+	}
+	destroy() {
+		this.endPolling();
+		super.destroy();
+	}
 	/**
 	 *
 	 * @param eventName
@@ -65,7 +86,7 @@ export default class FlashVideo extends Component {
 	 */
 	notify(eventName, info) {
 		try {
-			var e = {type: eventName, timeStamp: +new Date()};
+			var e = {type: eventName, ts: Math.round(+new Date() - this.__timebase)};
 
 			// if (eventName != 'mediaTime' && eventName != 'printLog' && eventName != 'netStatus')
 			// 	console.log(eventName, info);
@@ -76,6 +97,7 @@ export default class FlashVideo extends Component {
 					this.setup();
 					this.el.setAutoPlay(this.options.autoplay);
 					this.el.playerLoad(this.options.src);
+					this.__timebase = new Date() - info * 1000;
 					return;
 					break;
 				case 'metaData':
@@ -84,6 +106,7 @@ export default class FlashVideo extends Component {
 					this.__videoHeight = info.videoHeight;
 					this.__duration = info.duration;
 					this.__bytesTotal = info.bytesTotal;
+					this.doPolling();
 					break;
 				case 'playState':
 					if (info.playState == 'PLAYING') {
@@ -115,26 +138,24 @@ export default class FlashVideo extends Component {
 							this.__prevPlayState = null;
 						}
 						e.type = PlayerMSG.Seeked;
+					} else if (info.code == 'NetStream.Seek.Complete') { // 播放到结尾再点播放会自动停止,所以force play again
+						this.play();
 					}
 					break;
 				case 'mediaTime':
 					e.type = PlayerMSG.TimeUpdate;
-					if (this.__bytesloaded != info.bytesLoaded) {
-						this.__bytesloaded = info.bytesLoaded;
-						this.pub({type: PlayerMSG.Progress, src: this, ts: e.timeStamp});
-					}
-
 					break;
 				case 'error':
 					
 					break;
 			}
 
-			!keepPrivate && this.pub({type: e.type, src: this, ts: e.timeStamp, info: info});
+			!keepPrivate && this.pub({type: e.type, src: this, ts: e.ts, info: info});
 		} catch (e) {
 			console.log(eventName, e);
 		}
 	}
+
 	handleMsg(msg) {
 
 	}
@@ -208,6 +229,7 @@ export default class FlashVideo extends Component {
  * @property {Function} el.playerSeek
  * @property {Function} el.playerVolume
  * @property {Function} el.getPlayState
+ * @property {Function} el.getState
  */
 function getFlashMovieObject(movieName) {
 	if (window.document[movieName])	{
