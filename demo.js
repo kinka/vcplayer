@@ -42,7 +42,7 @@ window.player = new Player({
 	poster: 'https://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png',
 	listener: function(msg) {
 		if (msg.type == 'timeupdate' || msg.type == 'progress' || msg.type === 'printLog') return;
-		console.log(msg.ts, 'g ', msg.type, msg.info)
+		console.log(msg.ts, 'g ', msg.type, msg.detail)
 	}
 });
 

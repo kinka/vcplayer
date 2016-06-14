@@ -106,51 +106,55 @@ export default class FlashVideo extends Component {
 					this.__videoHeight = info.videoHeight;
 					this.__duration = info.duration;
 					this.__bytesTotal = info.bytesTotal;
+					this.__prevPlayState = null;
 					this.doPolling();
 					break;
 				case 'playState':
 					if (info.playState == 'PLAYING') {
 						this.__playing = true;
-						this.__stopped = false;
 						e.type = PlayerMSG.Play;
 					} else if (info.playState == 'PAUSED') {
 						this.__playing = false;
-						this.__stopped = false;
 						e.type = PlayerMSG.Pause;
 					} else if (info.playState == 'STOP') {
 						this.__playing = false;
-						this.__stopped = true;
 						e.type = PlayerMSG.Ended;
+						this.__prevPlayState = null;
 					}
 					break;
 				case 'seekState':
 					if (info.seekState == 'SEEKING') {
 						e.type = PlayerMSG.Seeking;
-					} else if (info.seekState == 'SEEKED' && info.playState == 'PAUSED') {
+					} else if (info.seekState == 'SEEKED' && (info.playState == 'PAUSED'
+							|| info.playState == 'STOP' // 播放结束后seek状态不变更，所以强制play以恢复正常状态
+						)) {
 						this.play();
 						this.__prevPlayState = info.playState;
 					}
 					break;
 				case 'netStatus':
 					if (info.code == 'NetStream.Buffer.Full') {
-						if (this.__prevPlayState == 'PAUSED') {
+						if (this.__prevPlayState == 'PAUSED' || this.__prevPlayState == 'STOP') {
 							this.pause();
-							this.__prevPlayState = null;
 						}
+						this.__prevPlayState = null;
 						e.type = PlayerMSG.Seeked;
 					} else if (info.code == 'NetStream.Seek.Complete') { // 播放到结尾再点播放会自动停止,所以force play again
-						this.play();
+						// todo 不确定 需要重新解决下这个问题
+						// this.play(true);
+					} else {
+						return; // 信息太多了。。。
 					}
 					break;
 				case 'mediaTime':
 					e.type = PlayerMSG.TimeUpdate;
 					break;
 				case 'error':
-					
+					info = {reason: info.code};
 					break;
 			}
 
-			!keepPrivate && this.pub({type: e.type, src: this, ts: e.ts, info: info});
+			!keepPrivate && this.pub({type: e.type, src: this, ts: e.ts, detail: info});
 		} catch (e) {
 			console.log(eventName, e);
 		}
@@ -175,15 +179,15 @@ export default class FlashVideo extends Component {
 		h = '100%';
 		return this.el && (this.el.height = h);
 	}
-	play() {
-		if (this.__stopped) this.currentTime(0);
+	play(replay) {
+		if (replay) this.currentTime(0);
 		this.el.playerResume();
 	}
 	pause() {
 		this.el.playerPause();
 	}
 	stop() {
-
+		this.el.playerStop();
 	}
 	paused() {
 		return !this.__playing;
@@ -228,6 +232,7 @@ export default class FlashVideo extends Component {
  * @property {Function} el.getbufferLength
  * @property {Function} el.playerSeek
  * @property {Function} el.playerVolume
+ * @property {Function} el.playerStop
  * @property {Function} el.getPlayState
  * @property {Function} el.getState
  */

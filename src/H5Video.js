@@ -36,16 +36,20 @@ export default class H5Video extends Component {
 		this.on('seeked', this.notify);
 	}
 	notify(e) {
+		var msg = {type: e.type, src: this, ts: e.timeStamp};
+
 		switch (e.type) {
 			case 'error':
-				console.log(this.el.error);
+				var Props = {1: 'MEDIA_ERR_ABORTED', 2: 'MEDIA_ERR_DECODE', 3: 'MEDIA_ERR_NETWORK', 4: 'MEDIA_ERR_SRC_NOT_SUPPORTED'};
+				msg.detail = this.el.error;
+				msg.detail.reason = Props[msg.detail.code];
 				break;
 			case 'ended':
 				this.pause(); // IE9 不会自动改变播放状态，导致伪全屏的时候出现黑屏
 				break;
 		}
 
-		this.pub({type: e.type, src: this, ts: e.timeStamp});
+		this.pub(msg);
 	}
 
 	videoWidth() {
