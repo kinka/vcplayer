@@ -116,7 +116,6 @@ export default class Player {
 				break;
 			case MSG.Ended:
 				dom.removeClass(this.el, 'vcp-playing');
-				console.log('ended');
 				break;
 			case MSG.Loaded:
 				this.loading.hide();

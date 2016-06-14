@@ -112,12 +112,15 @@ export default class FlashVideo extends Component {
 				case 'playState':
 					if (info.playState == 'PLAYING') {
 						this.__playing = true;
+						this.__stopped = false;
 						e.type = PlayerMSG.Play;
 					} else if (info.playState == 'PAUSED') {
 						this.__playing = false;
+						this.__stopped = false;
 						e.type = PlayerMSG.Pause;
 					} else if (info.playState == 'STOP') {
 						this.__playing = false;
+						this.__stopped = true;
 						e.type = PlayerMSG.Ended;
 						this.__prevPlayState = null;
 					}
@@ -130,6 +133,8 @@ export default class FlashVideo extends Component {
 						)) {
 						this.play();
 						this.__prevPlayState = info.playState;
+					} else {
+						return;
 					}
 					break;
 				case 'netStatus':
@@ -140,8 +145,8 @@ export default class FlashVideo extends Component {
 						this.__prevPlayState = null;
 						e.type = PlayerMSG.Seeked;
 					} else if (info.code == 'NetStream.Seek.Complete') { // 播放到结尾再点播放会自动停止,所以force play again
-						// todo 不确定 需要重新解决下这个问题
-						// this.play(true);
+						this.play();
+						return;
 					} else {
 						return; // 信息太多了。。。
 					}
@@ -179,8 +184,8 @@ export default class FlashVideo extends Component {
 		h = '100%';
 		return this.el && (this.el.height = h);
 	}
-	play(replay) {
-		if (replay) this.currentTime(0);
+	play() {
+		if (this.__stopped) this.currentTime(0);
 		this.el.playerResume();
 	}
 	pause() {
