@@ -27,7 +27,7 @@ export default class FlashVideo extends Component {
 		var id = 'obj_vcplayer_' + this.player.guid;
 		this.__id = id;
 		owner.innerHTML = `
-		<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="" id="${id}" width="${options.width}" height="${options.height}">
+		<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="" id="${id}" width="100%" height="100%">
             <param name="movie"  value="${swfurl}" />
             <param name="quality" value="autohigh" />
             <param name="swliveconnect" value="true" />
@@ -37,7 +37,7 @@ export default class FlashVideo extends Component {
             <param name="wmode" value="${wmode}" />
             <param name="FlashVars" value="url=" />
 
-            <embed src="${swfurl}" width="${options.width}" height="${options.height}" name="${id}"
+            <embed src="${swfurl}" width="100%" height="100%" name="${id}"
                    quality="autohigh"
                    bgcolor="#000"
                    align="middle" allowFullScreen="true"
@@ -51,6 +51,8 @@ export default class FlashVideo extends Component {
         </object>
 		`;
 		this.owner = owner;
+		this.cover = dom.createEl('div', {'class': 'vcp-pre-flash'});
+		this.owner.appendChild(this.cover);
 	}
 	setup() {
 		this.on('error', this.notify);
@@ -98,6 +100,7 @@ export default class FlashVideo extends Component {
 					this.el.setAutoPlay(this.options.autoplay);
 					this.el.playerLoad(this.options.src);
 					this.__timebase = new Date() - info * 1000;
+					this.owner.removeChild(this.cover);
 					return;
 					break;
 				case 'metaData':
@@ -107,6 +110,10 @@ export default class FlashVideo extends Component {
 					this.__duration = info.duration;
 					this.__bytesTotal = info.bytesTotal;
 					this.__prevPlayState = null;
+					this.__m3u8 = info.type === 'm3u8';
+					if (this.__m3u8) {
+						!this.options.autoplay && this.currentTime(0);
+					}
 					this.doPolling();
 					break;
 				case 'playState':
@@ -123,16 +130,23 @@ export default class FlashVideo extends Component {
 						this.__stopped = true;
 						e.type = PlayerMSG.Ended;
 						this.__prevPlayState = null;
+					} else {
+						return;
 					}
 					break;
 				case 'seekState':
 					if (info.seekState == 'SEEKING') {
 						e.type = PlayerMSG.Seeking;
-					} else if (info.seekState == 'SEEKED' && (info.playState == 'PAUSED'
+					} else if (info.seekState == 'SEEKED') {
+						if (!this.__m3u8 // m3u8倒没有这个问题
+							&& info.playState == 'PAUSED'
 							|| info.playState == 'STOP' // 播放结束后seek状态不变更，所以强制play以恢复正常状态
-						)) {
-						this.play();
-						this.__prevPlayState = info.playState;
+						) {
+							this.play();
+							this.__prevPlayState = info.playState;
+						}
+
+						e.type = PlayerMSG.Seeked;
 					} else {
 						return;
 					}
@@ -148,7 +162,7 @@ export default class FlashVideo extends Component {
 						this.play();
 						return;
 					} else {
-						return; // 信息太多了。。。
+						// return; // 信息太多了。。。
 					}
 					break;
 				case 'mediaTime':

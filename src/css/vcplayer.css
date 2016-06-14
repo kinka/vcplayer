@@ -21,6 +21,10 @@ body.vcp-full-window {
     top: 0;
 }
 
+/* chrome flash 成功加载到DOM之前会闪白屏，所以加个黑屏遮一遮 */
+.vcp-pre-flash {
+    z-index: 1000; background: black; width: 100%; height: 100%; position: absolute; top: 0; left: 0;
+}
 .vcp-controls-panel {
     position: absolute;
     bottom: 0;
