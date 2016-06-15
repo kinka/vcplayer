@@ -36,6 +36,7 @@ export default class Timeline extends Component {
 	}
 	syncLabel(p) { // 保持与进度条一致
 		var d = this.player.duration();
+		p = Math.min(p, 1);
 		var time = '';
 		if (d)
 			time = util.covertTime(p*d) + '/' + util.covertTime(d);
@@ -43,10 +44,12 @@ export default class Timeline extends Component {
 	}
 
 	buffered(b) {
+		b = Math.min(b, 1);
 		this.track.style.width = b * 100 + '%';
 	}
 	percent(p) {
 		if (typeof p === 'undefined') return this.progress.percent() || 0;
+		p = Math.min(p, 1); // flash m3u8 返回的duration不大对，但是进度条要保证不溢出
 		this.syncLabel(p);
 		return this.progress.percent(p);
 	}

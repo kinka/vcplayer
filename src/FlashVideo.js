@@ -66,12 +66,23 @@ export default class FlashVideo extends Component {
 	}
 	interval() {
 		var info = this.el.getState();
-		if (this.__bytesloaded != info.bytesLoaded) {
-			this.__bytesloaded = info.bytesLoaded;
-			this.pub({type: PlayerMSG.Progress, src: this, ts: +new Date()});
+		if (this.__m3u8) {
+			var tmp = this.currentTime() + info.bufferLength;
+			if (this.__buffered !== tmp) {
+				this.__buffered = tmp;
+				this.pub({type: PlayerMSG.Progress, src: this, ts: new Date() - this.__timebase});
+			}
+
+			if (this.__buffered >= this.duration())
+				this.endPolling();
+		} else {
+			if (this.__bytesloaded != info.bytesLoaded) {
+				this.__bytesloaded = info.bytesLoaded;
+				this.pub({type: PlayerMSG.Progress, src: this, ts: new Date() - this.__timebase});
+			}
+			if (this.__bytesloaded >= this.__bytesTotal)
+				this.endPolling();
 		}
-		if (this.__bytesloaded >= this.__bytesTotal)
-			this.endPolling();
 	}
 	destroy() {
 		this.endPolling();
@@ -85,6 +96,8 @@ export default class FlashVideo extends Component {
 	 * @property info.bytesTotal
 	 * @property info.playState
 	 * @property info.seekState
+	 * @property info.bufferLength
+	 * @property info.backBufferLength
 	 */
 	notify(eventName, info) {
 		try {
@@ -92,6 +105,11 @@ export default class FlashVideo extends Component {
 
 			// if (eventName != 'mediaTime' && eventName != 'printLog' && eventName != 'netStatus')
 			// 	console.log(eventName, info);
+			// 修正flash m3u8的metaData时机
+			if (!this.__real_loaded && eventName == 'mediaTime' && info.videoWidth != 0) {
+				e.type = 'metaData';
+				this.__real_loaded = true;
+			}
 			var keepPrivate = (eventName == 'printLog' || eventName == 'canPlay');
 			switch (e.type) {
 				case 'ready':
@@ -100,7 +118,6 @@ export default class FlashVideo extends Component {
 					this.el.setAutoPlay(this.options.autoplay);
 					this.el.playerLoad(this.options.src);
 					this.__timebase = new Date() - info * 1000;
-					this.owner.removeChild(this.cover);
 					return;
 					break;
 				case 'metaData':
@@ -113,8 +130,14 @@ export default class FlashVideo extends Component {
 					this.__m3u8 = info.type === 'm3u8';
 					if (this.__m3u8) {
 						!this.options.autoplay && this.currentTime(0);
+						this.__real_loaded = (this.__videoWidth != 0);
+						if (!this.__real_loaded) return; // not yet
 					}
 					this.doPolling();
+					var self = this;
+					setTimeout(function() {
+						self.owner.removeChild(self.cover);// faded out?
+					}, 500);
 					break;
 				case 'playState':
 					if (info.playState == 'PLAYING') {
@@ -162,10 +185,12 @@ export default class FlashVideo extends Component {
 						this.play();
 						return;
 					} else {
-						// return; // 信息太多了。。。
+						return; // 信息太多了。。。
 					}
 					break;
 				case 'mediaTime':
+					this.__videoWidth = info.videoWidth;
+					this.__videoHeight = info.videoHeight;
 					e.type = PlayerMSG.TimeUpdate;
 					break;
 				case 'error':
@@ -212,8 +237,13 @@ export default class FlashVideo extends Component {
 		return !this.__playing;
 	}
 	buffered() {
-		var p = (this.__bytesloaded || 0) / (this.__bytesTotal || 1);
-		return this.duration() * p;
+		var p;
+		if (this.__m3u8) {
+			return this.__buffered;
+		} else {
+			p = (this.__bytesloaded || 0) / (this.__bytesTotal || 1);
+			return this.duration() * p;
+		}
 	}
 	currentTime(time) {
 		if (typeof time === 'undefined') return this.el.getPosition();
