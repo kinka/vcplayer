@@ -130,3 +130,23 @@ export function getPointerPosition(el, event, pos) {
 
 	return position;
 }
+
+export function loadScript(src, callback) {
+	var tag = document.createElement("script");
+
+	tag.onload = tag.onreadystatechange = function() {
+		if (!this.readyState || this.readyState === "loaded" || this.readyState === "complete") {
+			if (typeof callback == "function") {
+				callback();
+			}
+			tag.onload = tag.onreadystatechange = null;
+
+			if (tag.parentNode) {
+				tag.parentNode.removeChild(tag);
+			}
+		}
+	};
+
+	tag.src = src;
+	document.getElementsByTagName("head")[0].appendChild(tag);
+}

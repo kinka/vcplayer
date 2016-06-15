@@ -13,10 +13,20 @@ export default class H5Video extends Component {
 	
 	render(owner) {
 		var options = this.player.options;
-		this.createEl('video',
-			{controls: options.controls, preload: 'auto', autoplay: options.autoplay ? true : null},
-			{src: options.src});
-
+		this.createEl('video', {controls: options.controls, preload: 'auto', autoplay: options.autoplay ? true : null});
+		var isM3u8 = options.src.indexOf('.m3u8') > -1;
+		if (isM3u8) {
+			var self = this;
+			dom.loadScript('/dist/libs/hls.js', function() {
+				if (!Hls.isSupported())
+					return self.notify.call(self, {type: 'error', code: 4});
+				var hls = new Hls();
+				hls.loadSource(options.src);
+				hls.attachMedia(self.el);
+			});
+		} else {
+			this.el.src = options.src;
+		}
 		return super.render(owner);
 	}
 	setup() {
@@ -41,7 +51,7 @@ export default class H5Video extends Component {
 		switch (e.type) {
 			case 'error':
 				var Props = {1: 'MEDIA_ERR_ABORTED', 2: 'MEDIA_ERR_DECODE', 3: 'MEDIA_ERR_NETWORK', 4: 'MEDIA_ERR_SRC_NOT_SUPPORTED'};
-				msg.detail = this.el.error;
+				msg.detail = (this.el && this.el.error) || {code: e.code};
 				msg.detail.reason = Props[msg.detail.code];
 				break;
 			case 'ended':
