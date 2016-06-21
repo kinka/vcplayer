@@ -45,12 +45,16 @@ export default class Timeline extends Component {
 
 	buffered(b) {
 		b = Math.min(b, 1);
+		this.__buffered = b;
 		this.track.style.width = b * 100 + '%';
 	}
 	percent(p) {
 		if (typeof p === 'undefined') return this.progress.percent() || 0;
 		p = Math.min(p, 1); // flash m3u8 返回的duration不大对，但是进度条要保证不溢出
 		this.syncLabel(p);
+		// 修正hls.js 和 IE9 下progress事件触发不彻底
+		if (this.__buffered < p) this.buffered(this.player.buffered());
+		
 		return this.progress.percent(p);
 	}
 }

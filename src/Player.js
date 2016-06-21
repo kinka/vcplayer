@@ -6,6 +6,7 @@ import H5Video from './H5Video'
 import FlashVideo from './FlashVideo'
 import Panel from './controls/Panel'
 import BigPlay from './controls/BigPlay'
+import Poster from './controls/Poster'
 import Loading from './controls/Loading'
 
 export var MSG = {Error: 'error', TimeUpdate: 'timeupdate', Loaded: 'loadeddata', Progress: 'progress', FullScreen: 'fullscreen',
@@ -16,6 +17,7 @@ export var MSG = {Error: 'error', TimeUpdate: 'timeupdate', Loaded: 'loadeddata'
  * @param options.controls {Boolean} 是否显示原生控件
  * @param options.volume {Number} 音量初始化，传0则静音
  * @param options.listener {Function}
+ * @param options.poster {Object|String}
  * @method currentTime
  * @method duration
  * @method buffered
@@ -38,7 +40,7 @@ export default class Player {
 	render(owner) {
 		this.el = dom.createEl('div', {'class': 'vcp-player'});
 
-		if (true && browser.HASVIDEO) {
+		if (false && browser.HASVIDEO) {
 			var h5 = new H5Video(this);
 			h5.render(this.el);
 			this.video = h5;
@@ -51,6 +53,9 @@ export default class Player {
 
 		owner.appendChild(this.el);
 
+		this.poster = new Poster(this);
+		this.poster.render(this.el);
+		
 		this.bigplay = new BigPlay(this);
 		this.bigplay.render(this.el);
 

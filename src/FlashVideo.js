@@ -106,7 +106,7 @@ export default class FlashVideo extends Component {
 			// if (eventName != 'mediaTime' && eventName != 'printLog' && eventName != 'netStatus')
 			// 	console.log(eventName, info);
 			// 修正flash m3u8的metaData时机
-			if (!this.__real_loaded && eventName == 'mediaTime' && info.videoWidth != 0) {
+			if (this.__m3u8 && !this.__real_loaded && eventName == 'mediaTime' && info.videoWidth != 0) {
 				e.type = 'metaData';
 				this.__real_loaded = true;
 			}
@@ -134,9 +134,12 @@ export default class FlashVideo extends Component {
 						if (!this.__real_loaded) return; // not yet
 					}
 					this.doPolling();
+					
 					var self = this;
+					if (!self.cover) break;
 					setTimeout(function() {
 						self.owner.removeChild(self.cover);// faded out?
+						self.cover = null;
 					}, 500);
 					break;
 				case 'playState':

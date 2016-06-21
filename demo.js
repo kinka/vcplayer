@@ -42,6 +42,10 @@ window.player = new Player({
 	src: 'http://184.72.239.149/vod/smil:BigBuckBunny.smil/playlist.m3u8',
 	src: 'http://2527.vod.myqcloud.com/2527_542d5a28222411e6aadec1104f4fc9b9.f220.av.m3u8',
 	poster: 'https://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png',
+	poster: {
+		src: 'http://www.imagesbuddy.com/images/130/2014/01/whatever-garfield-face-graphic.jpg',
+		// style: 'stretch'
+	},
 	listener: function(msg) {
 		if (msg.type == 'timeupdate' || msg.type == 'progress' || msg.type === 'printLog') return;
 		console.log(msg.ts, 'g ', msg.type, msg.detail)

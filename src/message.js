@@ -28,6 +28,7 @@ function getFnCache(scope) {
  * @param msg.src 触发事件的对象(Component实例)，直接传源对象，会与sub时填入的target作对比
  * @param msg.ts 触发时间戳
  * @param msg.private 是否私有事件，私有事件会在Player接口对外回调时劫断消息
+ * @param msg.detail 
  * @param scope 区分多个Player实例
  */
 export function pub(msg, scope) {
