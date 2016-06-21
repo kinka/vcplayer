@@ -44,7 +44,10 @@ window.player = new Player({
 	poster: 'https://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png',
 	poster: {
 		src: 'http://www.imagesbuddy.com/images/130/2014/01/whatever-garfield-face-graphic.jpg',
-		// style: 'stretch'
+		start: 'http://www.imagesbuddy.com/images/130/2014/01/whatever-im-late-anyway-clock-graphic.jpg',
+		pause: 'http://www.imagesbuddy.com/images/130/2014/01/whatever-garfield-face-graphic.jpg',
+		end: 'http://www.imagesbuddy.com/images/130/2014/01/whatever-girl-graphic.jpg',
+		style: 'stretch'
 	},
 	listener: function(msg) {
 		if (msg.type == 'timeupdate' || msg.type == 'progress' || msg.type === 'printLog') return;

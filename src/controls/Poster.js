@@ -19,25 +19,16 @@ export default class Poster extends Component {
 
 		var poster = this.poster;
 		if (poster) {
-			this.pic = dom.createEl('img', {'class': 'vcp-poster-pic', 'src': poster.src});
-			let self = this;
-			let stretch = self.poster.style == 'stretch';
+			this.pic = dom.createEl('img', {'class': 'vcp-poster-pic'});
+			let stretch = this.poster.style == 'stretch';
 			if (stretch) {
-				self.pic.style.cssText = 'width: 100%; height: 100%;';
+				this.pic.style.cssText = 'width: 100%; height: 100%;';
 			} else {
-				self.pic.style.cssText = '';
+				this.pic.style.cssText = '';
 			}
-			this.pic.onload = function() {
-				self.pic.onload = null;
-				self.show();
-
-				if (stretch) return;
-
-				var left = '-' + (self.pic.width / 2) + 'px',
-					top = '-' + (self.pic.height / 2) + 'px';
-				self.pic.style.cssText += `left: 50%; top: 50%; margin-left: ${left}; margin-top: ${top};`;
-			};
 			this.el.appendChild(this.pic);
+
+			this.setPoster(this.poster.start);
 		}
 
 		return super.render(owner);
@@ -57,17 +48,43 @@ export default class Poster extends Component {
 		switch (msg.type) {
 			case PlayerMsg.Loaded:
 				this.__loaded = true;
+				this.setPoster(this.poster.start);
 				break;
 			case PlayerMsg.Play:
-				if (!this.__loaded) return;
+				if (!this.__loaded) break;
 				this.hide();
 				break;
 			case PlayerMsg.Pause:
+				if (!this.__loaded) break;
+				this.setPoster(this.poster.pause);
+				break;
 			case PlayerMsg.Ended:
-				if (!this.__loaded) return;
-				this.show();
+				if (!this.__loaded) break;
+				this.setPoster(this.poster.end);
 				break;
 		}
+	}
+	setPoster(src) {
+		if (this.__preload) this.__preload.onload = null; // 图片加载是异步的，所以要清除迟到的onload
+		this.__preload = new Image();
+
+		var img = this.__preload;
+
+		let self = this;
+		img.onload = function() {
+			self.pic.src = img.src;
+			self.show();
+
+			let stretch = self.poster.style == 'stretch';
+			if (stretch) return;
+
+			var left = '-' + (img.width / 2) + 'px',
+				top = '-' + (img.height / 2) + 'px';
+
+			self.pic.style.cssText = `left: 50%; top: 50%; margin-left: ${left}; margin-top: ${top};`;
+		};
+
+		img.src = src || this.poster.src;
 	}
 	toggle(display) {
 		clearTimeout(this.__tid); // 防止跳变
