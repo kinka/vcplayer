@@ -1,6 +1,6 @@
 import * as dom from './dom'
 import * as message from './message'
-import {MSG as PlayerMSG} from './Player'
+import {MSG as PlayerMSG} from './message'
 
 var __guid = 1;
 export function guid() {

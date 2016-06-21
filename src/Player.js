@@ -1,4 +1,4 @@
-import * as browser from './browser'
+import * as bb from './browser'
 import * as dom from './dom'
 import * as util from './util'
 import * as message from './message'
@@ -9,8 +9,8 @@ import BigPlay from './controls/BigPlay'
 import Poster from './controls/Poster'
 import Loading from './controls/Loading'
 
-export var MSG = {Error: 'error', TimeUpdate: 'timeupdate', Loaded: 'loadeddata', Progress: 'progress', FullScreen: 'fullscreen',
-				Play: 'play', Pause: 'pause', Ended: 'ended', Seeking: 'seeking', Seeked: 'seeked'};
+export var MSG = message.MSG;
+export var browser = bb;
 /**
  * @param {options}
  * @param options.owner {String} container id
@@ -23,7 +23,7 @@ export var MSG = {Error: 'error', TimeUpdate: 'timeupdate', Loaded: 'loadeddata'
  * @method buffered
  * @class
  */
-export default class Player {
+export class Player {
 	constructor(options) {
 		this.options = options;
 		var owner = options.owner;

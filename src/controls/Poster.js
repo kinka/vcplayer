@@ -1,7 +1,7 @@
 import Component from '../Component'
 import * as dom from '../dom'
 import * as util from '../util'
-import {MSG as PlayerMsg} from '../Player'
+import {MSG as PlayerMsg} from '../message'
 
 export default class Poster extends Component {
 	constructor(player) {
@@ -65,6 +65,10 @@ export default class Poster extends Component {
 		}
 	}
 	setPoster(src) {
+		try{
+		src = src || this.poster.src;
+		if (!src) return;
+
 		if (this.__preload) this.__preload.onload = null; // 图片加载是异步的，所以要清除迟到的onload
 		this.__preload = new Image();
 
@@ -84,7 +88,7 @@ export default class Poster extends Component {
 			self.pic.style.cssText = `left: 50%; top: 50%; margin-left: ${left}; margin-top: ${top};`;
 		};
 
-		img.src = src || this.poster.src;
+		img.src = src;}catch (e) {console.log(e)}
 	}
 	toggle(display) {
 		clearTimeout(this.__tid); // 防止跳变

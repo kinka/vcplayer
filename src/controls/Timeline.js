@@ -54,7 +54,7 @@ export default class Timeline extends Component {
 		this.syncLabel(p);
 		// 修正hls.js 和 IE9 下progress事件触发不彻底
 		if (this.__buffered < p) this.buffered(this.player.buffered());
-		
+
 		return this.progress.percent(p);
 	}
 }

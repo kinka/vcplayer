@@ -5,7 +5,7 @@ import {MSG as SliderMSG} from './Slider'
 import Timeline from './Timeline'
 import Timelabel from './Timelabel'
 import Volume from './Volume'
-import Player, {MSG as PlayerMSG} from '../Player'
+import {MSG as PlayerMSG} from '../message'
 import * as dom from '../dom'
 import * as util from '../util'
 

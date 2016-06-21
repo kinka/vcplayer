@@ -1,5 +1,5 @@
 import Component from './Component'
-import Player, {MSG as PlayerMSG} from './Player'
+import {MSG as PlayerMSG} from './message'
 import * as dom from './dom'
 import * as util from './util'
 
@@ -100,9 +100,8 @@ export default class FlashVideo extends Component {
 	 * @property info.backBufferLength
 	 */
 	notify(eventName, info) {
+		var e = {type: eventName, ts: Math.round(+new Date() - this.__timebase)};
 		try {
-			var e = {type: eventName, ts: Math.round(+new Date() - this.__timebase)};
-
 			// if (eventName != 'mediaTime' && eventName != 'printLog' && eventName != 'netStatus')
 			// 	console.log(eventName, info);
 			// 修正flash m3u8的metaData时机
@@ -134,7 +133,7 @@ export default class FlashVideo extends Component {
 						if (!this.__real_loaded) return; // not yet
 					}
 					this.doPolling();
-					
+
 					var self = this;
 					if (!self.cover) break;
 					setTimeout(function() {
@@ -202,8 +201,8 @@ export default class FlashVideo extends Component {
 			}
 
 			!keepPrivate && this.pub({type: e.type, src: this, ts: e.ts, detail: info});
-		} catch (e) {
-			console.log(eventName, e);
+		} catch (err) {
+			console.log(eventName + ' ' + e.type, err);
 		}
 	}
 
@@ -242,7 +241,7 @@ export default class FlashVideo extends Component {
 	buffered() {
 		var p;
 		if (this.__m3u8) {
-			return this.__buffered;
+			return this.__buffered || 0;
 		} else {
 			p = (this.__bytesloaded || 0) / (this.__bytesTotal || 1);
 			return this.duration() * p;

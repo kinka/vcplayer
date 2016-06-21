@@ -1,8 +1,6 @@
 import Component from './Component'
-import Player, {MSG as PlayerMSG} from './Player'
 import * as dom from './dom'
 import * as util from './util'
-import * as message from './message'
 
 var fsApi = util.FullscreenApi;
 
