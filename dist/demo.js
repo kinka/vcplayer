@@ -71,30 +71,22 @@
 	          
 	          v.src = "http://2527.vod.myqcloud.com/2527_56c5226c165c11e697add7d1c60ca413.f20.mp4";*/
 	
+	// var Player = vcp.Player, browser = vcp.browser;
 	
-	var _Player = __webpack_require__(2);
 	
-	var _Player2 = _interopRequireDefault(_Player);
+	var _player = __webpack_require__(2);
 	
-	var _browser = __webpack_require__(3);
-	
-	var browser = _interopRequireWildcard(_browser);
-	
-	__webpack_require__(16);
-	
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+	__webpack_require__(20);
 	
 	window.xxlog = window.xxlog || console.log;
 	console.log = function (a, b, c, d, e, f) {
 		try {
 			if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].indexOf('INFO:') > -1) return;
 		} catch (e) {}
-		if (browser.IS_IE8 || browser.IS_IE9) window.xxlog(a || '', b || '', c || '', d || '', e || '', f || '');else xxlog.apply(this, arguments);
+		if (_player.browser.IS_IE8 || _player.browser.IS_IE9) window.xxlog(a || '', b || '', c || '', d || '', e || '', f || '');else xxlog.apply(this, arguments);
 	};
 	
-	window.player = new _Player2["default"]((_ref = {
+	window.player = new _player.Player((_ref = {
 		owner: 'demo_video',
 		autoplay: null,
 		// width: 800,
@@ -103,11 +95,7 @@
 		volume: 0.2,
 		src: 'http://2527.vod.myqcloud.com/2527_bffd50081d9911e6b0f4d93c5d81f265.f20.mp4'
 	}, _ref['src'] = 'http://2527.vod.myqcloud.com/2527_1bf8b2da449211e595f01db4637252be.f20.mp4', _ref['src'] = 'http://184.72.239.149/vod/smil:BigBuckBunny.smil/playlist.m3u8', _ref['src'] = 'http://2527.vod.myqcloud.com/2527_542d5a28222411e6aadec1104f4fc9b9.f220.av.m3u8', _ref.poster = 'https://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png', _ref['poster'] = {
-		// src: 'http://www.imagesbuddy.com/images/130/2014/01/whatever-garfield-face-graphic.jpg',
-		// start: 'http://www.imagesbuddy.com/images/130/2014/01/whatever-im-late-anyway-clock-graphic.jpg',
-		// pause: 'http://www.imagesbuddy.com/images/130/2014/01/whatever-garfield-face-graphic.jpg',
-		// end: 'http://www.imagesbuddy.com/images/130/2014/01/whatever-girl-graphic.jpg',
-		// style: 'stretch'
+		src: 'http://www.imagesbuddy.com/images/130/2014/01/whatever-garfield-face-graphic.jpg'
 	}, _ref.listener = function listener(msg) {
 		if (msg.type == 'timeupdate' || msg.type == 'progress' || msg.type === 'printLog') return;
 		console.log(msg.ts, 'g ', msg.type, msg.detail);
@@ -135,11 +123,11 @@
 	'use strict';
 	
 	exports.__esModule = true;
-	exports.MSG = undefined;
+	exports.Player = exports.browser = exports.MSG = undefined;
 	
 	var _browser = __webpack_require__(3);
 	
-	var browser = _interopRequireWildcard(_browser);
+	var bb = _interopRequireWildcard(_browser);
 	
 	var _dom = __webpack_require__(4);
 	
@@ -165,15 +153,15 @@
 	
 	var _Panel2 = _interopRequireDefault(_Panel);
 	
-	var _BigPlay = __webpack_require__(20);
+	var _BigPlay = __webpack_require__(17);
 	
 	var _BigPlay2 = _interopRequireDefault(_BigPlay);
 	
-	var _Poster = __webpack_require__(24);
+	var _Poster = __webpack_require__(18);
 	
 	var _Poster2 = _interopRequireDefault(_Poster);
 	
-	var _Loading = __webpack_require__(21);
+	var _Loading = __webpack_require__(19);
 	
 	var _Loading2 = _interopRequireDefault(_Loading);
 	
@@ -183,8 +171,8 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var MSG = exports.MSG = { Error: 'error', TimeUpdate: 'timeupdate', Loaded: 'loadeddata', Progress: 'progress', FullScreen: 'fullscreen',
-		Play: 'play', Pause: 'pause', Ended: 'ended', Seeking: 'seeking', Seeked: 'seeked' };
+	var MSG = exports.MSG = message.MSG;
+	var browser = exports.browser = bb;
 	/**
 	 * @param {options}
 	 * @param options.owner {String} container id
@@ -198,7 +186,7 @@
 	 * @class
 	 */
 	
-	var Player = function () {
+	var Player = exports.Player = function () {
 		function Player(options) {
 			_classCallCheck(this, Player);
 	
@@ -368,8 +356,6 @@
 	
 		return Player;
 	}();
-	
-	exports["default"] = Player;
 
 /***/ },
 /* 3 */
@@ -624,8 +610,6 @@
 	
 	var message = _interopRequireWildcard(_message);
 	
-	var _Player = __webpack_require__(2);
-	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
 	
 	var __guid = 1;
@@ -718,7 +702,7 @@
 		if (!doFullscreen.__isFullcreen) {
 			dom.off(document, FullscreenApi.fullscreenchange, documentFullscreenChange);
 		}
-		message.pub({ type: _Player.MSG.FullScreen, src: 'util', ts: e.timestamp, fullscreen: doFullscreen.__isFullcreen }, doFullscreen.player);
+		message.pub({ type: _message.MSG.FullScreen, src: 'util', ts: e.timestamp, fullscreen: doFullscreen.__isFullcreen }, doFullscreen.player);
 	}
 	function onKeydown(event) {
 		if (event.keyCode === 27) doFullscreen(doFullscreen.player, false);
@@ -748,7 +732,7 @@
 			}
 	
 			dom.toggleClass(document.body, 'vcp-full-window', enter);
-			message.pub({ type: _Player.MSG.FullScreen, src: 'util', fullscreen: doFullscreen.__isFullcreen }, doFullscreen.player);
+			message.pub({ type: _message.MSG.FullScreen, src: 'util', fullscreen: doFullscreen.__isFullcreen }, doFullscreen.player);
 		}
 	}
 
@@ -759,6 +743,7 @@
 	'use strict';
 	
 	exports.__esModule = true;
+	exports.MSG = undefined;
 	exports.pub = pub;
 	exports.sub = sub;
 	exports.unsub = unsub;
@@ -768,6 +753,9 @@
 	var util = _interopRequireWildcard(_util);
 	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
+	
+	var MSG = exports.MSG = { Error: 'error', TimeUpdate: 'timeupdate', Loaded: 'loadeddata', Progress: 'progress', FullScreen: 'fullscreen',
+		Play: 'play', Pause: 'pause', Ended: 'ended', Seeking: 'seeking', Seeked: 'seeked' };
 	
 	var Players = {};
 	var fnCaches = {};
@@ -797,7 +785,7 @@
 	 * @param msg.src 触发事件的对象(Component实例)，直接传源对象，会与sub时填入的target作对比
 	 * @param msg.ts 触发时间戳
 	 * @param msg.private 是否私有事件，私有事件会在Player接口对外回调时劫断消息
-	 * @param msg.detail 
+	 * @param msg.detail
 	 * @param scope 区分多个Player实例
 	 */
 	function pub(msg, scope) {
@@ -901,10 +889,6 @@
 	
 	var _Component3 = _interopRequireDefault(_Component2);
 	
-	var _Player = __webpack_require__(2);
-	
-	var _Player2 = _interopRequireDefault(_Player);
-	
 	var _dom = __webpack_require__(4);
 	
 	var dom = _interopRequireWildcard(_dom);
@@ -912,10 +896,6 @@
 	var _util = __webpack_require__(5);
 	
 	var util = _interopRequireWildcard(_util);
-	
-	var _message = __webpack_require__(6);
-	
-	var message = _interopRequireWildcard(_message);
 	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
 	
@@ -1218,9 +1198,7 @@
 	
 	var _Component3 = _interopRequireDefault(_Component2);
 	
-	var _Player = __webpack_require__(2);
-	
-	var _Player2 = _interopRequireDefault(_Player);
+	var _message = __webpack_require__(6);
 	
 	var _dom = __webpack_require__(4);
 	
@@ -1294,14 +1272,14 @@
 				var tmp = this.currentTime() + info.bufferLength;
 				if (this.__buffered !== tmp) {
 					this.__buffered = tmp;
-					this.pub({ type: _Player.MSG.Progress, src: this, ts: new Date() - this.__timebase });
+					this.pub({ type: _message.MSG.Progress, src: this, ts: new Date() - this.__timebase });
 				}
 	
 				if (this.__buffered >= this.duration()) this.endPolling();
 			} else {
 				if (this.__bytesloaded != info.bytesLoaded) {
 					this.__bytesloaded = info.bytesLoaded;
-					this.pub({ type: _Player.MSG.Progress, src: this, ts: new Date() - this.__timebase });
+					this.pub({ type: _message.MSG.Progress, src: this, ts: new Date() - this.__timebase });
 				}
 				if (this.__bytesloaded >= this.__bytesTotal) this.endPolling();
 			}
@@ -1325,9 +1303,8 @@
 	
 	
 		FlashVideo.prototype.notify = function notify(eventName, info) {
+			var e = { type: eventName, ts: Math.round(+new Date() - this.__timebase) };
 			try {
-				var e = { type: eventName, ts: Math.round(+new Date() - this.__timebase) };
-	
 				// if (eventName != 'mediaTime' && eventName != 'printLog' && eventName != 'netStatus')
 				// 	console.log(eventName, info);
 				// 修正flash m3u8的metaData时机
@@ -1346,7 +1323,7 @@
 						return;
 						break;
 					case 'metaData':
-						e.type = _Player.MSG.Loaded;
+						e.type = _message.MSG.Loaded;
 						this.__videoWidth = info.videoWidth;
 						this.__videoHeight = info.videoHeight;
 						this.__duration = info.duration;
@@ -1371,15 +1348,15 @@
 						if (info.playState == 'PLAYING') {
 							this.__playing = true;
 							this.__stopped = false;
-							e.type = _Player.MSG.Play;
+							e.type = _message.MSG.Play;
 						} else if (info.playState == 'PAUSED') {
 							this.__playing = false;
 							this.__stopped = false;
-							e.type = _Player.MSG.Pause;
+							e.type = _message.MSG.Pause;
 						} else if (info.playState == 'STOP') {
 							this.__playing = false;
 							this.__stopped = true;
-							e.type = _Player.MSG.Ended;
+							e.type = _message.MSG.Ended;
 							this.__prevPlayState = null;
 						} else {
 							return;
@@ -1387,7 +1364,7 @@
 						break;
 					case 'seekState':
 						if (info.seekState == 'SEEKING') {
-							e.type = _Player.MSG.Seeking;
+							e.type = _message.MSG.Seeking;
 						} else if (info.seekState == 'SEEKED') {
 							if (!this.__m3u8 // m3u8倒没有这个问题
 							 && info.playState == 'PAUSED' || info.playState == 'STOP' // 播放结束后seek状态不变更，所以强制play以恢复正常状态
@@ -1396,7 +1373,7 @@
 									this.__prevPlayState = info.playState;
 								}
 	
-							e.type = _Player.MSG.Seeked;
+							e.type = _message.MSG.Seeked;
 						} else {
 							return;
 						}
@@ -1407,7 +1384,7 @@
 								this.pause();
 							}
 							this.__prevPlayState = null;
-							e.type = _Player.MSG.Seeked;
+							e.type = _message.MSG.Seeked;
 						} else if (info.code == 'NetStream.Seek.Complete') {
 							// 播放到结尾再点播放会自动停止,所以force play again
 							this.play();
@@ -1419,7 +1396,7 @@
 					case 'mediaTime':
 						this.__videoWidth = info.videoWidth;
 						this.__videoHeight = info.videoHeight;
-						e.type = _Player.MSG.TimeUpdate;
+						e.type = _message.MSG.TimeUpdate;
 						break;
 					case 'error':
 						info = { reason: info.code };
@@ -1427,8 +1404,8 @@
 				}
 	
 				!keepPrivate && this.pub({ type: e.type, src: this, ts: e.ts, detail: info });
-			} catch (e) {
-				console.log(eventName, e);
+			} catch (err) {
+				console.log(eventName + ' ' + e.type, err);
 			}
 		};
 	
@@ -1474,7 +1451,7 @@
 		FlashVideo.prototype.buffered = function buffered() {
 			var p;
 			if (this.__m3u8) {
-				return this.__buffered;
+				return this.__buffered || 0;
 			} else {
 				p = (this.__bytesloaded || 0) / (this.__bytesTotal || 1);
 				return this.duration() * p;
@@ -1491,13 +1468,14 @@
 		};
 	
 		FlashVideo.prototype.mute = function mute(muted) {
-			if (typeof muted === 'undefined') return false;
-			this.volume(muted ? 0 : 0.5);
+			if (typeof muted === 'undefined') return this.volume() == 0;
+			this.volume(muted ? 0 : this.__lastVol);
 		};
 	
 		FlashVideo.prototype.volume = function volume(p) {
-			if (typeof p === 'undefined') return 0.5;
+			if (typeof p === 'undefined') return this.el && this.el.getState().volume;
 			this.el && this.el.playerVolume(p);
+			p != 0 && (this.__lastVol = p);
 		};
 	
 		FlashVideo.prototype.fullscreen = function fullscreen(enter) {
@@ -1565,17 +1543,15 @@
 	
 	var _Timeline2 = _interopRequireDefault(_Timeline);
 	
-	var _Timelabel = __webpack_require__(23);
+	var _Timelabel = __webpack_require__(15);
 	
 	var _Timelabel2 = _interopRequireDefault(_Timelabel);
 	
-	var _Volume = __webpack_require__(15);
+	var _Volume = __webpack_require__(16);
 	
 	var _Volume2 = _interopRequireDefault(_Volume);
 	
-	var _Player = __webpack_require__(2);
-	
-	var _Player2 = _interopRequireDefault(_Player);
+	var _message = __webpack_require__(6);
 	
 	var _dom = __webpack_require__(4);
 	
@@ -1639,22 +1615,22 @@
 			// todo 可以批量添加事件
 			this.sub(_Slider.MSG.Changing, this.volume, handler);
 			this.sub(_Slider.MSG.Changed, this.timeline.progress, handler);
-			this.sub(_Player.MSG.TimeUpdate, this.player.video, handler);
-			this.sub(_Player.MSG.Progress, this.player.video, handler);
-			this.sub(_Player.MSG.Loaded, this.player.video, handler);
+			this.sub(_message.MSG.TimeUpdate, this.player.video, handler);
+			this.sub(_message.MSG.Progress, this.player.video, handler);
+			this.sub(_message.MSG.Loaded, this.player.video, handler);
 		};
 	
 		Panel.prototype.handleMsg = function handleMsg(msg) {
 			switch (msg.type) {
-				case _Player.MSG.Loaded:
+				case _message.MSG.Loaded:
 					this.timeline.percent(this.player.percent());
 					this.timeline.buffered(this.player.buffered());
 					this.volume.percent(this.options.volume);
 					break;
-				case _Player.MSG.TimeUpdate:
+				case _message.MSG.TimeUpdate:
 					if (!this.timeline.scrubbing) this.timeline.percent(this.player.percent());
 					break;
-				case _Player.MSG.Progress:
+				case _message.MSG.Progress:
 					this.timeline.buffered(this.player.buffered()); // todo IE9 会最后一段时间就不触发progress了
 					break;
 				case _Slider.MSG.Changed:
@@ -1858,21 +1834,22 @@
 			return _this;
 		}
 	
-		Slider.prototype.render = function render(owner) {
+		Slider.prototype.render = function render(owner, enabled) {
 			var sliderClass = this.vertical ? 'vcp-slider-vertical' : 'vcp-slider';
 			this.createEl('div', { 'class': sliderClass });
 			this.track = dom.createEl('div', { 'class': 'vcp-slider-track' });
 			this.thumb = dom.createEl('div', { 'class': 'vcp-slider-thumb' });
 			this.el.appendChild(this.track);
 			this.el.appendChild(this.thumb);
+			this.enabled = typeof enabled == 'undefined' ? true : enabled;
 			return _Component.prototype.render.call(this, owner);
 		};
 	
 		Slider.prototype.setup = function setup() {
+			if (!this.enabled) return;
+	
 			this.ownerDoc = document.body.ownerDocument;
 			this.on('mousedown', this.mousedown);
-	
-			// this.on('mouseout', this.mouseup);
 		};
 	
 		Slider.prototype.handleMsg = function handleMsg(msg) {};
@@ -1973,15 +1950,19 @@
 		}
 	
 		Timeline.prototype.render = function render(owner) {
+			this.enabled = !this.options.isLive;
+	
 			this.createEl('div', { 'class': 'vcp-timeline' });
 			this.progress = new _Slider2["default"](this.player, false);
-			this.progress.render(this.el);
+			this.progress.render(this.el, this.enabled);
 			this.track = this.progress.track;
 	
 			return _Component.prototype.render.call(this, owner);
 		};
 	
 		Timeline.prototype.setup = function setup() {
+			if (!this.enabled) return;
+	
 			this.sub(_Slider.MSG.Changing, this.progress, util.bind(this, this.handleMsg));
 			this.sub(_Slider.MSG.Changed, this.progress, util.bind(this, this.handleMsg));
 		};
@@ -2005,12 +1986,16 @@
 		};
 	
 		Timeline.prototype.buffered = function buffered(b) {
+			if (!this.enabled) return;
+	
 			b = Math.min(b, 1);
 			this.__buffered = b;
 			this.track.style.width = b * 100 + '%';
 		};
 	
 		Timeline.prototype.percent = function percent(p) {
+			if (!this.enabled) return;
+	
 			if (typeof p === 'undefined') return this.progress.percent() || 0;
 			p = Math.min(p, 1); // flash m3u8 返回的duration不大对，但是进度条要保证不溢出
 			this.syncLabel(p);
@@ -2027,6 +2012,75 @@
 
 /***/ },
 /* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	exports.__esModule = true;
+	
+	var _Slider = __webpack_require__(13);
+	
+	var _Slider2 = _interopRequireDefault(_Slider);
+	
+	var _Component2 = __webpack_require__(8);
+	
+	var _Component3 = _interopRequireDefault(_Component2);
+	
+	var _dom = __webpack_require__(4);
+	
+	var dom = _interopRequireWildcard(_dom);
+	
+	var _util = __webpack_require__(5);
+	
+	var util = _interopRequireWildcard(_util);
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	/**
+	 * @method percent
+	 * @property {Slider} progress
+	 * @property {Boolean} scrubbing
+	 * @class Timeline
+	 */
+	
+	var Timelabel = function (_Component) {
+		_inherits(Timelabel, _Component);
+	
+		function Timelabel(player) {
+			_classCallCheck(this, Timelabel);
+	
+			return _possibleConstructorReturn(this, _Component.call(this, player, 'Timelabel'));
+		}
+	
+		Timelabel.prototype.render = function render(owner) {
+			this.createEl('span', { 'class': 'vcp-timelabel' });
+	
+			return _Component.prototype.render.call(this, owner);
+		};
+	
+		Timelabel.prototype.setup = function setup() {
+			this.sub('timelabel', 'timeline', util.bind(this, this.handleMsg));
+		};
+	
+		Timelabel.prototype.handleMsg = function handleMsg(msg) {
+			this.el.innerHTML = msg.label;
+		};
+	
+		return Timelabel;
+	}(_Component3["default"]);
+	
+	exports["default"] = Timelabel;
+
+/***/ },
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2104,6 +2158,7 @@
 		Volume.prototype.muteClick = function muteClick(e) {
 			var muted = typeof e === 'boolean' ? e : !this.player.mute();
 			this.player.mute(muted);
+			this.__muted = muted;
 	
 			if (muted) dom.addClass(this.el, 'vcp-volume-muted');else dom.removeClass(this.el, 'vcp-volume-muted');
 		};
@@ -2111,7 +2166,11 @@
 		Volume.prototype.syncTrack = function syncTrack(p) {
 			this.track.style.height = p * 100 + '%';
 			this.player.volume(p);
-			this.muteClick(p == 0);
+			if (p == 0) {
+				this.muteClick(true);
+			} else if (p > 0 && this.__muted) {
+				this.muteClick(false);
+			}
 		};
 	
 		Volume.prototype.percent = function percent(p) {
@@ -2127,16 +2186,440 @@
 	exports["default"] = Volume;
 
 /***/ },
-/* 16 */
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	exports.__esModule = true;
+	
+	var _Component2 = __webpack_require__(8);
+	
+	var _Component3 = _interopRequireDefault(_Component2);
+	
+	var _dom = __webpack_require__(4);
+	
+	var dom = _interopRequireWildcard(_dom);
+	
+	var _message = __webpack_require__(6);
+	
+	var message = _interopRequireWildcard(_message);
+	
+	var _util = __webpack_require__(5);
+	
+	var util = _interopRequireWildcard(_util);
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var BigPlay = function (_Component) {
+		_inherits(BigPlay, _Component);
+	
+		function BigPlay(player) {
+			_classCallCheck(this, BigPlay);
+	
+			return _possibleConstructorReturn(this, _Component.call(this, player, 'BigPlay'));
+		}
+	
+		BigPlay.prototype.render = function render(owner) {
+			this.createEl('div', { 'class': 'vcp-bigplay' });
+	
+			return _Component.prototype.render.call(this, owner);
+		};
+	
+		BigPlay.prototype.setup = function setup() {
+			this.on('click', this.onClick);
+			// this.sub('play', this.player.video, util.bind(this, this.handleMsg));
+			// this.sub('pause', this.player.video, util.bind(this, this.handleMsg));
+		};
+	
+		BigPlay.prototype.onClick = function onClick() {
+			var video = this.player.video;
+			if (video.paused()) video.play();else video.pause();
+		};
+	
+		BigPlay.prototype.handleMsg = function handleMsg(msg) {
+			console.log('@' + this.name, msg);
+		};
+	
+		return BigPlay;
+	}(_Component3["default"]);
+	
+	exports["default"] = BigPlay;
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	exports.__esModule = true;
+	
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	
+	var _Component2 = __webpack_require__(8);
+	
+	var _Component3 = _interopRequireDefault(_Component2);
+	
+	var _dom = __webpack_require__(4);
+	
+	var dom = _interopRequireWildcard(_dom);
+	
+	var _util = __webpack_require__(5);
+	
+	var util = _interopRequireWildcard(_util);
+	
+	var _message = __webpack_require__(6);
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Poster = function (_Component) {
+		_inherits(Poster, _Component);
+	
+		function Poster(player) {
+			_classCallCheck(this, Poster);
+	
+			var _this = _possibleConstructorReturn(this, _Component.call(this, player, 'Poster'));
+	
+			if (_typeof(_this.options.poster) == 'object') {
+				_this.poster = _this.options.poster;
+			} else if (typeof _this.options.poster == 'string') {
+				_this.poster = { src: _this.poster.src };
+			}
+			return _this;
+		}
+	
+		Poster.prototype.render = function render(owner) {
+			this.createEl('div', { 'class': 'vcp-poster' });
+			this.hide();
+	
+			var poster = this.poster;
+			if (poster) {
+				this.pic = dom.createEl('img', { 'class': 'vcp-poster-pic' });
+				var stretch = this.poster.style == 'stretch';
+				if (stretch) {
+					this.pic.style.cssText = 'width: 100%; height: 100%;';
+				} else {
+					this.pic.style.cssText = '';
+				}
+				this.el.appendChild(this.pic);
+	
+				this.setPoster(this.poster.start);
+			}
+	
+			return _Component.prototype.render.call(this, owner);
+		};
+	
+		Poster.prototype.setup = function setup() {
+			this.on('click', this.onClick);
+			this.sub(_message.MSG.Loaded, this.player.video, util.bind(this, this.handleMsg));
+			this.sub(_message.MSG.Play, this.player.video, util.bind(this, this.handleMsg));
+			this.sub(_message.MSG.Pause, this.player.video, util.bind(this, this.handleMsg));
+			this.sub(_message.MSG.Ended, this.player.video, util.bind(this, this.handleMsg));
+		};
+	
+		Poster.prototype.onClick = function onClick() {
+			this.pub({ type: 'click', src: this });
+		};
+	
+		Poster.prototype.handleMsg = function handleMsg(msg) {
+			console.log('@' + this.name, msg);
+			switch (msg.type) {
+				case _message.MSG.Loaded:
+					this.__loaded = true;
+					this.setPoster(this.poster.start);
+					break;
+				case _message.MSG.Play:
+					if (!this.__loaded) break;
+					this.hide();
+					break;
+				case _message.MSG.Pause:
+					if (!this.__loaded) break;
+					this.setPoster(this.poster.pause);
+					break;
+				case _message.MSG.Ended:
+					if (!this.__loaded) break;
+					this.setPoster(this.poster.end);
+					break;
+			}
+		};
+	
+		Poster.prototype.setPoster = function setPoster(src) {
+			var _this2 = this;
+	
+			try {
+				var img;
+	
+				var _ret = function () {
+					src = src || _this2.poster.src;
+					if (!src) return {
+							v: void 0
+						};
+	
+					if (_this2.__preload) _this2.__preload.onload = null; // 图片加载是异步的，所以要清除迟到的onload
+					_this2.__preload = new Image();
+	
+					img = _this2.__preload;
+	
+	
+					var self = _this2;
+					img.onload = function () {
+						self.pic.src = img.src;
+						self.show();
+	
+						var stretch = self.poster.style == 'stretch';
+						if (stretch) return;
+	
+						var left = '-' + img.width / 2 + 'px',
+						    top = '-' + img.height / 2 + 'px';
+	
+						self.pic.style.cssText = 'left: 50%; top: 50%; margin-left: ' + left + '; margin-top: ' + top + ';';
+					};
+	
+					img.src = src;
+				}();
+	
+				if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+			} catch (e) {
+				console.log(e);
+			}
+		};
+	
+		Poster.prototype.toggle = function toggle(display) {
+			clearTimeout(this.__tid); // 防止跳变
+			var self = this;
+			this.__tid = setTimeout(function () {
+				self.el.style.display = display;
+			}, 100);
+		};
+	
+		Poster.prototype.hide = function hide() {
+			this.toggle('none');
+		};
+	
+		Poster.prototype.show = function show() {
+			this.toggle('block');
+		};
+	
+		return Poster;
+	}(_Component3["default"]);
+	
+	exports["default"] = Poster;
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	exports.__esModule = true;
+	
+	var _Component2 = __webpack_require__(8);
+	
+	var _Component3 = _interopRequireDefault(_Component2);
+	
+	var _dom = __webpack_require__(4);
+	
+	var dom = _interopRequireWildcard(_dom);
+	
+	var _message = __webpack_require__(6);
+	
+	var message = _interopRequireWildcard(_message);
+	
+	var _util = __webpack_require__(5);
+	
+	var util = _interopRequireWildcard(_util);
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var LLL = {};
+	// http://spin.js.org/#v2.3.2
+	!function (a, b) {
+		a.Spinner = b();
+	}(LLL, function () {
+		"use strict";
+		function a(a, b) {
+			var c,
+			    d = document.createElement(a || "div");for (c in b) {
+				d[c] = b[c];
+			}return d;
+		}function b(a) {
+			for (var b = 1, c = arguments.length; c > b; b++) {
+				a.appendChild(arguments[b]);
+			}return a;
+		}function c(a, b, c, d) {
+			var e = ["opacity", b, ~ ~(100 * a), c, d].join("-"),
+			    f = .01 + c / d * 100,
+			    g = Math.max(1 - (1 - a) / b * (100 - f), a),
+			    h = j.substring(0, j.indexOf("Animation")).toLowerCase(),
+			    i = h && "-" + h + "-" || "";return m[e] || (k.insertRule("@" + i + "keyframes " + e + "{0%{opacity:" + g + "}" + f + "%{opacity:" + a + "}" + (f + .01) + "%{opacity:1}" + (f + b) % 100 + "%{opacity:" + a + "}100%{opacity:" + g + "}}", k.cssRules.length), m[e] = 1), e;
+		}function d(a, b) {
+			var c,
+			    d,
+			    e = a.style;if (b = b.charAt(0).toUpperCase() + b.slice(1), void 0 !== e[b]) return b;for (d = 0; d < l.length; d++) {
+				if (c = l[d] + b, void 0 !== e[c]) return c;
+			}
+		}function e(a, b) {
+			for (var c in b) {
+				a.style[d(a, c) || c] = b[c];
+			}return a;
+		}function f(a) {
+			for (var b = 1; b < arguments.length; b++) {
+				var c = arguments[b];for (var d in c) {
+					void 0 === a[d] && (a[d] = c[d]);
+				}
+			}return a;
+		}function g(a, b) {
+			return "string" == typeof a ? a : a[b % a.length];
+		}function h(a) {
+			this.opts = f(a || {}, h.defaults, n);
+		}function i() {
+			function c(b, c) {
+				return a("<" + b + ' xmlns="urn:schemas-microsoft.com:vml" class="spin-vml">', c);
+			}k.addRule(".spin-vml", "behavior:url(#default#VML)"), h.prototype.lines = function (a, d) {
+				function f() {
+					return e(c("group", { coordsize: k + " " + k, coordorigin: -j + " " + -j }), { width: k, height: k });
+				}function h(a, h, i) {
+					b(m, b(e(f(), { rotation: 360 / d.lines * a + "deg", left: ~ ~h }), b(e(c("roundrect", { arcsize: d.corners }), { width: j, height: d.scale * d.width, left: d.scale * d.radius, top: -d.scale * d.width >> 1, filter: i }), c("fill", { color: g(d.color, a), opacity: d.opacity }), c("stroke", { opacity: 0 }))));
+				}var i,
+				    j = d.scale * (d.length + d.width),
+				    k = 2 * d.scale * j,
+				    l = -(d.width + d.length) * d.scale * 2 + "px",
+				    m = e(f(), { position: "absolute", top: l, left: l });if (d.shadow) for (i = 1; i <= d.lines; i++) {
+					h(i, -2, "progid:DXImageTransform.Microsoft.Blur(pixelradius=2,makeshadow=1,shadowopacity=.3)");
+				}for (i = 1; i <= d.lines; i++) {
+					h(i);
+				}return b(a, m);
+			}, h.prototype.opacity = function (a, b, c, d) {
+				var e = a.firstChild;d = d.shadow && d.lines || 0, e && b + d < e.childNodes.length && (e = e.childNodes[b + d], e = e && e.firstChild, e = e && e.firstChild, e && (e.opacity = c));
+			};
+		}var j,
+		    k,
+		    l = ["webkit", "Moz", "ms", "O"],
+		    m = {},
+		    n = { lines: 12, length: 7, width: 5, radius: 10, scale: 1, corners: 1, color: "#000", opacity: .25, rotate: 0, direction: 1, speed: 1, trail: 100, fps: 20, zIndex: 2e9, className: "spinner", top: "50%", left: "50%", shadow: !1, hwaccel: !1, position: "absolute" };if (h.defaults = {}, f(h.prototype, { spin: function spin(b) {
+				this.stop();var c = this,
+				    d = c.opts,
+				    f = c.el = a(null, { className: d.className });if (e(f, { position: d.position, width: 0, zIndex: d.zIndex, left: d.left, top: d.top }), b && b.insertBefore(f, b.firstChild || null), f.setAttribute("role", "progressbar"), c.lines(f, c.opts), !j) {
+					var g,
+					    h = 0,
+					    i = (d.lines - 1) * (1 - d.direction) / 2,
+					    k = d.fps,
+					    l = k / d.speed,
+					    m = (1 - d.opacity) / (l * d.trail / 100),
+					    n = l / d.lines;!function o() {
+						h++;for (var a = 0; a < d.lines; a++) {
+							g = Math.max(1 - (h + (d.lines - a) * n) % l * m, d.opacity), c.opacity(f, a * d.direction + i, g, d);
+						}c.timeout = c.el && setTimeout(o, ~ ~(1e3 / k));
+					}();
+				}return c;
+			}, stop: function stop() {
+				var a = this.el;return a && (clearTimeout(this.timeout), a.parentNode && a.parentNode.removeChild(a), this.el = void 0), this;
+			}, lines: function lines(d, f) {
+				function h(b, c) {
+					return e(a(), { position: "absolute", width: f.scale * (f.length + f.width) + "px", height: f.scale * f.width + "px", background: b, boxShadow: c, transformOrigin: "left", transform: "rotate(" + ~ ~(360 / f.lines * k + f.rotate) + "deg) translate(" + f.scale * f.radius + "px,0)", borderRadius: (f.corners * f.scale * f.width >> 1) + "px" });
+				}for (var i, k = 0, l = (f.lines - 1) * (1 - f.direction) / 2; k < f.lines; k++) {
+					i = e(a(), { position: "absolute", top: 1 + ~(f.scale * f.width / 2) + "px", transform: f.hwaccel ? "translate3d(0,0,0)" : "", opacity: f.opacity, animation: j && c(f.opacity, f.trail, l + k * f.direction, f.lines) + " " + 1 / f.speed + "s linear infinite" }), f.shadow && b(i, e(h("#000", "0 0 4px #000"), { top: "2px" })), b(d, b(i, h(g(f.color, k), "0 0 1px rgba(0,0,0,.1)")));
+				}return d;
+			}, opacity: function opacity(a, b, c) {
+				b < a.childNodes.length && (a.childNodes[b].style.opacity = c);
+			} }), "undefined" != typeof document) {
+			k = function () {
+				var c = a("style", { type: "text/css" });return b(document.getElementsByTagName("head")[0], c), c.sheet || c.styleSheet;
+			}();var o = e(a("group"), { behavior: "url(#default#VML)" });!d(o, "transform") && o.adj ? i() : j = d(o, "animation");
+		}return h;
+	});
+	
+	var Loading = function (_Component) {
+		_inherits(Loading, _Component);
+	
+		function Loading(player) {
+			_classCallCheck(this, Loading);
+	
+			return _possibleConstructorReturn(this, _Component.call(this, player, 'Loading'));
+		}
+	
+		Loading.prototype.render = function render(owner) {
+			this.createEl('div', { 'class': 'vcp-loading' });
+			// this.el.appendChild(dom.createEl('img', {'src': './src/img/loading.svg'}));
+			// 大小计算：min: (length + width + radius) * 2
+			var opts = {
+				lines: 11 // The number of lines to draw
+				, length: 12 // The length of each line
+				, width: 4 // The line thickness
+				, radius: 16 // The radius of the inner circle
+				, scale: 1 // Scales overall size of the spinner
+				, corners: 1 // Corner roundness (0..1)
+				, color: '#fff' // #rgb or #rrggbb or array of colors
+				, opacity: 0.25 // Opacity of the lines
+				, rotate: 0 // The rotation offset
+				, direction: 1 // 1: clockwise, -1: counterclockwise
+				, speed: 1 // Rounds per second
+				, trail: 60 // Afterglow percentage
+				, fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+				, zIndex: 2e9 // The z-index (defaults to 2000000000)
+				, className: 'vcp-spinner' // The CSS class to assign to the spinner
+				, top: '50%' // Top position relative to parent
+				, left: '50%' // Left position relative to parent
+				, shadow: false // Whether to render a shadow
+				, hwaccel: true // Whether to use hardware acceleration
+				, position: 'absolute' // Element positioning
+			};
+			var spinner = new LLL.Spinner(opts).spin(this.el);
+			return _Component.prototype.render.call(this, owner);
+		};
+	
+		Loading.prototype.setup = function setup() {};
+	
+		Loading.prototype.handleMsg = function handleMsg(msg) {};
+	
+		Loading.prototype.show = function show() {
+			this.el.style.display = "block";
+		};
+	
+		Loading.prototype.hide = function hide() {
+			this.el.style.display = "none";
+		};
+	
+		return Loading;
+	}(_Component3["default"]);
+	
+	exports["default"] = Loading;
+
+/***/ },
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(17);
+	var content = __webpack_require__(21);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(19)(content, {});
+	var update = __webpack_require__(23)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -2153,21 +2636,21 @@
 	}
 
 /***/ },
-/* 17 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(18)();
+	exports = module.exports = __webpack_require__(22)();
 	// imports
 	
 	
 	// module
-	exports.push([module.id, ".vcp-player {\r\n    position: relative;\r\n    z-index: 0;\r\n    font-family: Helvetica;\r\n    background-color: black;\r\n}\r\n.vcp-fullscreen.vcp-player, .vcp-fullscreen video {\r\n    width: 100%!important;\r\n    height: 100%!important;\r\n}\r\n/* 伪全屏 */\r\nbody.vcp-full-window {\r\n    width: 100%!important;\r\n    height: 100%!important;\r\n    overflow-y: auto;\r\n}\r\n.vcp-full-window .vcp-player {\r\n    position: fixed;\r\n    z-index: 1000;\r\n    left: 0;\r\n    top: 0;\r\n}\r\n\r\n/* chrome flash 成功加载到DOM之前会闪白屏，所以加个黑屏遮一遮 */\r\n.vcp-pre-flash {\r\n    z-index: 1000; background: black; width: 100%; height: 100%; position: absolute; top: 0; left: 0;\r\n}\r\n.vcp-controls-panel {\r\n    position: absolute;\r\n    bottom: 0;\r\n    width: 100%;\r\n    font-size: 16px;\r\n    height: 3em;\r\n    z-index: 1000;\r\n}\r\n.vcp-panel-bg {\r\n    width: 100%;\r\n    height: 100%;\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n    background-color: rgb(36, 36, 36);\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n    z-index: 1000;\r\n}\r\n.vcp-playing .vcp-controls-panel {\r\n    display: none;\r\n}\r\n.vcp-player:hover .vcp-controls-panel {\r\n    display: block;\r\n}\r\n\r\n.vcp-playtoggle {\r\n    cursor: pointer;\r\n    position: relative;\r\n    z-index: 1001;\r\n    width: 3em;\r\n    height: 100%;\r\n    float: left;\r\n    background-image: url(/src/img/play_btn.png);\r\n    background-image: url(/src/img/play_btn.svg), none;\r\n}\r\n.vcp-playtoggle:hover {\r\n    background-color: slategray;\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n}\r\n.vcp-playing .vcp-playtoggle {\r\n    background-image: url(/src/img/stop_btn.png);\r\n    background-image: url(/src/img/stop_btn.svg), none;\r\n}\r\n.vcp-bigplay {\r\n    width: 100%;\r\n    height: 100%;\r\n    position: absolute;\r\n    background-color: white\\0;\r\n    filter: alpha(opacity=0); /*奇怪的IE8/9鼠标事件穿透*/\r\n    z-index: 1000;\r\n    top: 0;\r\n    left: 0;\r\n}\r\n\r\n.vcp-slider {\r\n    position: relative;\r\n    z-index: 1001;\r\n    float: left;\r\n    background: rgb(196, 196, 196);\r\n    height: 10px;\r\n    /*border: 1px solid #d8d8d8;*/\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n    cursor: pointer;\r\n}\r\n.vcp-slider .vcp-slider-track {\r\n    width: 0;\r\n    height: 100%;\r\n    margin-top: 0;\r\n    opacity: 1;\r\n    filter: alpha(opacity=100);\r\n    background-color: dodgerblue; /*beautiful blue*/\r\n}\r\n.vcp-slider .vcp-slider-thumb {\r\n    cursor: pointer;\r\n    background-color: white;\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    border-radius: 1em;\r\n    height: 10px;\r\n    margin-left: -5px;\r\n    width: 10px;\r\n}\r\n\r\n.vcp-slider-vertical {\r\n    position: relative;\r\n    width: 0.5em;\r\n    height: 10em;\r\n    top: -7em;\r\n    z-index: 1001;\r\n    background-color: rgb(28, 28, 28);\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n    cursor: pointer;\r\n}\r\n.vcp-slider-vertical .vcp-slider-track {\r\n    background-color: rgb(18, 117, 207);\r\n    width: 0.5em;\r\n    height: 100%;\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n}\r\n.vcp-slider-vertical .vcp-slider-thumb {\r\n    cursor: pointer;\r\n    position: absolute;\r\n    background-color: aliceblue;\r\n    width: 0.8em;\r\n    height: 0.8em;\r\n    border-radius: 0.8em;\r\n    margin-top: -0.4em;\r\n    top: 0;\r\n    left: -0.15em;\r\n}\r\n/* 时间线/进度条 */\r\n.vcp-timeline {\r\n    top: -10px;\r\n    left: 0;\r\n    height: 10px;\r\n    position: absolute;\r\n    z-index: 1001;\r\n    width: 100%;\r\n}\r\n.vcp-timeline .vcp-slider-thumb {\r\n    top: -3px;\r\n}\r\n.vcp-timeline .vcp-slider {\r\n    margin-top: 8px;\r\n    height: 2px;\r\n    width: 100%;\r\n}\r\n.vcp-timeline:hover .vcp-slider {\r\n    margin-top: 0;\r\n    height: 10px;\r\n}\r\n.vcp-timeline:hover .vcp-slider-thumb {\r\n    display: block;\r\n    width: 16px;\r\n    height: 16px;\r\n    top: -3px;\r\n    margin-left: -8px;\r\n}\r\n/* 时间展示 */\r\n.vcp-timelabel {\r\n    display: inline-block;\r\n    font-size: 12px;\r\n    line-height: 48px;\r\n    height: 48px;\r\n    width: 48px;\r\n    float: left;\r\n    color: white;\r\n    padding: 0 9px;\r\n    z-index: 1001;\r\n    position: relative;\r\n}\r\n/* 音量控制 */\r\n.vcp-volume {\r\n    height: 48px;\r\n    width: 48px;\r\n    cursor: pointer;\r\n    position: relative;\r\n    z-index: 1001;\r\n    float: right;\r\n    background-color: transparent;\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n}\r\n.vcp-volume-icon {\r\n    background-image: url(/src/img/volume.png);\r\n    background-image: url(/src/img/volume.svg), none;\r\n    display: inline-block;\r\n    width: 48px;\r\n    height: 48px;\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n}\r\n.vcp-volume-muted .vcp-volume-icon {\r\n    background-image: url(/src/img/muted.png);\r\n    background-image: url(/src/img/muted.svg), none;\r\n}\r\n.vcp-volume .vcp-slider-vertical {\r\n    top: -10.4em;\r\n    left: 1em;\r\n    display: none;\r\n}\r\n.vcp-volume .vcp-slider-track {\r\n    position: absolute;\r\n    bottom: 0;\r\n}\r\n.vcp-volume:hover .vcp-slider-vertical {\r\n    display: block;\r\n}\r\n.vcp-volume .vcp-volume-bg {\r\n    height: 10.8em;\r\n    width: 2em;\r\n    position: absolute;\r\n    left: 0.25em;\r\n    top: -10.8em;\r\n    background: rgb(36,36,36);\r\n    display: none;\r\n}\r\n.vcp-volume:hover .vcp-volume-bg, .vcp-volume:hover .vcp-slider-vertical {\r\n    display: block;\r\n}\r\n/* 全屏控件 */\r\n.vcp-fullscreen-toggle {\r\n    position: relative;\r\n    width: 48px;\r\n    height: 48px;\r\n    float: right;\r\n    cursor: pointer;\r\n    z-index: 1001;\r\n    background-image: url(/src/img/fullscreen.png);\r\n    background-image: url(/src/img/fullscreen.svg), none;\r\n}\r\n.vcp-fullscreen .vcp-fullscreen-toggle {\r\n    background-image: url(/src/img/fullscreen_exit.png);\r\n    background-image: url(/src/img/fullscreen_exit.svg), none;\r\n}\r\n\r\n.vcp-loading {\r\n    position: absolute;\r\n    left: 50%;\r\n    top: 50%;\r\n    margin-top: -48px;\r\n}\r\n\r\n.vcp-poster {\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n    overflow: hidden;\r\n    z-index: 1000;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n.vcp-poster-pic {\r\n    position: relative;\r\n}", ""]);
+	exports.push([module.id, ".vcp-player {\r\n    position: relative;\r\n    z-index: 0;\r\n    font-family: Helvetica;\r\n    background-color: black;\r\n}\r\n.vcp-fullscreen.vcp-player, .vcp-fullscreen video {\r\n    width: 100%!important;\r\n    height: 100%!important;\r\n}\r\n/* 伪全屏 */\r\nbody.vcp-full-window {\r\n    width: 100%!important;\r\n    height: 100%!important;\r\n    overflow-y: auto;\r\n}\r\n.vcp-full-window .vcp-player {\r\n    position: fixed;\r\n    z-index: 1000;\r\n    left: 0;\r\n    top: 0;\r\n}\r\n\r\n/* chrome flash 成功加载到DOM之前会闪白屏，所以加个黑屏遮一遮 */\r\n.vcp-pre-flash {\r\n    z-index: 1000; background: black; width: 100%; height: 100%; position: absolute; top: 0; left: 0;\r\n}\r\n.vcp-controls-panel {\r\n    position: absolute;\r\n    bottom: 0;\r\n    width: 100%;\r\n    font-size: 16px;\r\n    height: 3em;\r\n    z-index: 1000;\r\n}\r\n.vcp-panel-bg {\r\n    width: 100%;\r\n    height: 100%;\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n    background-color: rgb(36, 36, 36);\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n    z-index: 1000;\r\n}\r\n.vcp-playing .vcp-controls-panel {\r\n    display: none;\r\n}\r\n.vcp-player:hover .vcp-controls-panel {\r\n    display: block;\r\n}\r\n\r\n.vcp-playtoggle {\r\n    cursor: pointer;\r\n    position: relative;\r\n    z-index: 1001;\r\n    width: 3em;\r\n    height: 100%;\r\n    float: left;\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/play_btn.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/play_btn.svg), none;\r\n}\r\n.vcp-playtoggle:hover {\r\n    background-color: slategray;\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n}\r\n.vcp-playing .vcp-playtoggle {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/stop_btn.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/stop_btn.svg), none;\r\n}\r\n.vcp-bigplay {\r\n    width: 100%;\r\n    height: 100%;\r\n    position: absolute;\r\n    background-color: white\\0;\r\n    filter: alpha(opacity=0); /*奇怪的IE8/9鼠标事件穿透*/\r\n    z-index: 1000;\r\n    top: 0;\r\n    left: 0;\r\n}\r\n\r\n.vcp-slider {\r\n    position: relative;\r\n    z-index: 1001;\r\n    float: left;\r\n    background: rgb(196, 196, 196);\r\n    height: 10px;\r\n    /*border: 1px solid #d8d8d8;*/\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n    cursor: pointer;\r\n}\r\n.vcp-slider .vcp-slider-track {\r\n    width: 0;\r\n    height: 100%;\r\n    margin-top: 0;\r\n    opacity: 1;\r\n    filter: alpha(opacity=100);\r\n    background-color: dodgerblue; /*beautiful blue*/\r\n}\r\n.vcp-slider .vcp-slider-thumb {\r\n    cursor: pointer;\r\n    background-color: white;\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    border-radius: 1em;\r\n    height: 10px;\r\n    margin-left: -5px;\r\n    width: 10px;\r\n}\r\n\r\n.vcp-slider-vertical {\r\n    position: relative;\r\n    width: 0.5em;\r\n    height: 10em;\r\n    top: -7em;\r\n    z-index: 1001;\r\n    background-color: rgb(28, 28, 28);\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n    cursor: pointer;\r\n}\r\n.vcp-slider-vertical .vcp-slider-track {\r\n    background-color: rgb(18, 117, 207);\r\n    width: 0.5em;\r\n    height: 100%;\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n}\r\n.vcp-slider-vertical .vcp-slider-thumb {\r\n    cursor: pointer;\r\n    position: absolute;\r\n    background-color: aliceblue;\r\n    width: 0.8em;\r\n    height: 0.8em;\r\n    border-radius: 0.8em;\r\n    margin-top: -0.4em;\r\n    top: 0;\r\n    left: -0.15em;\r\n}\r\n/* 时间线/进度条 */\r\n.vcp-timeline {\r\n    top: -10px;\r\n    left: 0;\r\n    height: 10px;\r\n    position: absolute;\r\n    z-index: 1001;\r\n    width: 100%;\r\n}\r\n.vcp-timeline .vcp-slider-thumb {\r\n    top: -3px;\r\n}\r\n.vcp-timeline .vcp-slider {\r\n    margin-top: 8px;\r\n    height: 2px;\r\n    width: 100%;\r\n}\r\n.vcp-timeline:hover .vcp-slider {\r\n    margin-top: 0;\r\n    height: 10px;\r\n}\r\n.vcp-timeline:hover .vcp-slider-thumb {\r\n    display: block;\r\n    width: 16px;\r\n    height: 16px;\r\n    top: -3px;\r\n    margin-left: -8px;\r\n}\r\n/* 时间展示 */\r\n.vcp-timelabel {\r\n    display: inline-block;\r\n    font-size: 12px;\r\n    line-height: 48px;\r\n    height: 48px;\r\n    width: 48px;\r\n    float: left;\r\n    color: white;\r\n    padding: 0 9px;\r\n    z-index: 1001;\r\n    position: relative;\r\n}\r\n/* 音量控制 */\r\n.vcp-volume {\r\n    height: 48px;\r\n    width: 48px;\r\n    cursor: pointer;\r\n    position: relative;\r\n    z-index: 1001;\r\n    float: right;\r\n    background-color: transparent;\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n}\r\n.vcp-volume-icon {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/volume.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/volume.svg), none;\r\n    display: inline-block;\r\n    width: 48px;\r\n    height: 48px;\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n}\r\n.vcp-volume-muted .vcp-volume-icon {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/muted.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/muted.svg), none;\r\n}\r\n.vcp-volume .vcp-slider-vertical {\r\n    top: -10.4em;\r\n    left: 1em;\r\n    display: none;\r\n}\r\n.vcp-volume .vcp-slider-track {\r\n    position: absolute;\r\n    bottom: 0;\r\n}\r\n.vcp-volume:hover .vcp-slider-vertical {\r\n    display: block;\r\n}\r\n.vcp-volume .vcp-volume-bg {\r\n    height: 10.8em;\r\n    width: 2em;\r\n    position: absolute;\r\n    left: 0.25em;\r\n    top: -10.8em;\r\n    background: rgb(36,36,36);\r\n    display: none;\r\n}\r\n.vcp-volume:hover .vcp-volume-bg, .vcp-volume:hover .vcp-slider-vertical {\r\n    display: block;\r\n}\r\n/* 全屏控件 */\r\n.vcp-fullscreen-toggle {\r\n    position: relative;\r\n    width: 48px;\r\n    height: 48px;\r\n    float: right;\r\n    cursor: pointer;\r\n    z-index: 1001;\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen.svg), none;\r\n}\r\n.vcp-fullscreen .vcp-fullscreen-toggle {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen_exit.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen_exit.svg), none;\r\n}\r\n\r\n.vcp-loading {\r\n    position: absolute;\r\n    left: 50%;\r\n    top: 50%;\r\n    margin-top: -48px;\r\n}\r\n\r\n.vcp-poster {\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n    overflow: hidden;\r\n    z-index: 1000;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n.vcp-poster-pic {\r\n    position: relative;\r\n}", ""]);
 	
 	// exports
 
 
 /***/ },
-/* 18 */
+/* 22 */
 /***/ function(module, exports) {
 
 	/*
@@ -2223,7 +2706,7 @@
 
 
 /***/ },
-/* 19 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -2473,485 +2956,6 @@
 			URL.revokeObjectURL(oldSrc);
 	}
 
-
-/***/ },
-/* 20 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	exports.__esModule = true;
-	
-	var _Component2 = __webpack_require__(8);
-	
-	var _Component3 = _interopRequireDefault(_Component2);
-	
-	var _dom = __webpack_require__(4);
-	
-	var dom = _interopRequireWildcard(_dom);
-	
-	var _message = __webpack_require__(6);
-	
-	var message = _interopRequireWildcard(_message);
-	
-	var _util = __webpack_require__(5);
-	
-	var util = _interopRequireWildcard(_util);
-	
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var BigPlay = function (_Component) {
-		_inherits(BigPlay, _Component);
-	
-		function BigPlay(player) {
-			_classCallCheck(this, BigPlay);
-	
-			return _possibleConstructorReturn(this, _Component.call(this, player, 'BigPlay'));
-		}
-	
-		BigPlay.prototype.render = function render(owner) {
-			this.createEl('div', { 'class': 'vcp-bigplay' });
-	
-			return _Component.prototype.render.call(this, owner);
-		};
-	
-		BigPlay.prototype.setup = function setup() {
-			this.on('click', this.onClick);
-			// this.sub('play', this.player.video, util.bind(this, this.handleMsg));
-			// this.sub('pause', this.player.video, util.bind(this, this.handleMsg));
-		};
-	
-		BigPlay.prototype.onClick = function onClick() {
-			var video = this.player.video;
-			if (video.paused()) video.play();else video.pause();
-		};
-	
-		BigPlay.prototype.handleMsg = function handleMsg(msg) {
-			console.log('@' + this.name, msg);
-		};
-	
-		return BigPlay;
-	}(_Component3["default"]);
-	
-	exports["default"] = BigPlay;
-
-/***/ },
-/* 21 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	exports.__esModule = true;
-	
-	var _Component2 = __webpack_require__(8);
-	
-	var _Component3 = _interopRequireDefault(_Component2);
-	
-	var _dom = __webpack_require__(4);
-	
-	var dom = _interopRequireWildcard(_dom);
-	
-	var _message = __webpack_require__(6);
-	
-	var message = _interopRequireWildcard(_message);
-	
-	var _util = __webpack_require__(5);
-	
-	var util = _interopRequireWildcard(_util);
-	
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var LLL = {};
-	// http://spin.js.org/#v2.3.2
-	!function (a, b) {
-		a.Spinner = b();
-	}(LLL, function () {
-		"use strict";
-		function a(a, b) {
-			var c,
-			    d = document.createElement(a || "div");for (c in b) {
-				d[c] = b[c];
-			}return d;
-		}function b(a) {
-			for (var b = 1, c = arguments.length; c > b; b++) {
-				a.appendChild(arguments[b]);
-			}return a;
-		}function c(a, b, c, d) {
-			var e = ["opacity", b, ~ ~(100 * a), c, d].join("-"),
-			    f = .01 + c / d * 100,
-			    g = Math.max(1 - (1 - a) / b * (100 - f), a),
-			    h = j.substring(0, j.indexOf("Animation")).toLowerCase(),
-			    i = h && "-" + h + "-" || "";return m[e] || (k.insertRule("@" + i + "keyframes " + e + "{0%{opacity:" + g + "}" + f + "%{opacity:" + a + "}" + (f + .01) + "%{opacity:1}" + (f + b) % 100 + "%{opacity:" + a + "}100%{opacity:" + g + "}}", k.cssRules.length), m[e] = 1), e;
-		}function d(a, b) {
-			var c,
-			    d,
-			    e = a.style;if (b = b.charAt(0).toUpperCase() + b.slice(1), void 0 !== e[b]) return b;for (d = 0; d < l.length; d++) {
-				if (c = l[d] + b, void 0 !== e[c]) return c;
-			}
-		}function e(a, b) {
-			for (var c in b) {
-				a.style[d(a, c) || c] = b[c];
-			}return a;
-		}function f(a) {
-			for (var b = 1; b < arguments.length; b++) {
-				var c = arguments[b];for (var d in c) {
-					void 0 === a[d] && (a[d] = c[d]);
-				}
-			}return a;
-		}function g(a, b) {
-			return "string" == typeof a ? a : a[b % a.length];
-		}function h(a) {
-			this.opts = f(a || {}, h.defaults, n);
-		}function i() {
-			function c(b, c) {
-				return a("<" + b + ' xmlns="urn:schemas-microsoft.com:vml" class="spin-vml">', c);
-			}k.addRule(".spin-vml", "behavior:url(#default#VML)"), h.prototype.lines = function (a, d) {
-				function f() {
-					return e(c("group", { coordsize: k + " " + k, coordorigin: -j + " " + -j }), { width: k, height: k });
-				}function h(a, h, i) {
-					b(m, b(e(f(), { rotation: 360 / d.lines * a + "deg", left: ~ ~h }), b(e(c("roundrect", { arcsize: d.corners }), { width: j, height: d.scale * d.width, left: d.scale * d.radius, top: -d.scale * d.width >> 1, filter: i }), c("fill", { color: g(d.color, a), opacity: d.opacity }), c("stroke", { opacity: 0 }))));
-				}var i,
-				    j = d.scale * (d.length + d.width),
-				    k = 2 * d.scale * j,
-				    l = -(d.width + d.length) * d.scale * 2 + "px",
-				    m = e(f(), { position: "absolute", top: l, left: l });if (d.shadow) for (i = 1; i <= d.lines; i++) {
-					h(i, -2, "progid:DXImageTransform.Microsoft.Blur(pixelradius=2,makeshadow=1,shadowopacity=.3)");
-				}for (i = 1; i <= d.lines; i++) {
-					h(i);
-				}return b(a, m);
-			}, h.prototype.opacity = function (a, b, c, d) {
-				var e = a.firstChild;d = d.shadow && d.lines || 0, e && b + d < e.childNodes.length && (e = e.childNodes[b + d], e = e && e.firstChild, e = e && e.firstChild, e && (e.opacity = c));
-			};
-		}var j,
-		    k,
-		    l = ["webkit", "Moz", "ms", "O"],
-		    m = {},
-		    n = { lines: 12, length: 7, width: 5, radius: 10, scale: 1, corners: 1, color: "#000", opacity: .25, rotate: 0, direction: 1, speed: 1, trail: 100, fps: 20, zIndex: 2e9, className: "spinner", top: "50%", left: "50%", shadow: !1, hwaccel: !1, position: "absolute" };if (h.defaults = {}, f(h.prototype, { spin: function spin(b) {
-				this.stop();var c = this,
-				    d = c.opts,
-				    f = c.el = a(null, { className: d.className });if (e(f, { position: d.position, width: 0, zIndex: d.zIndex, left: d.left, top: d.top }), b && b.insertBefore(f, b.firstChild || null), f.setAttribute("role", "progressbar"), c.lines(f, c.opts), !j) {
-					var g,
-					    h = 0,
-					    i = (d.lines - 1) * (1 - d.direction) / 2,
-					    k = d.fps,
-					    l = k / d.speed,
-					    m = (1 - d.opacity) / (l * d.trail / 100),
-					    n = l / d.lines;!function o() {
-						h++;for (var a = 0; a < d.lines; a++) {
-							g = Math.max(1 - (h + (d.lines - a) * n) % l * m, d.opacity), c.opacity(f, a * d.direction + i, g, d);
-						}c.timeout = c.el && setTimeout(o, ~ ~(1e3 / k));
-					}();
-				}return c;
-			}, stop: function stop() {
-				var a = this.el;return a && (clearTimeout(this.timeout), a.parentNode && a.parentNode.removeChild(a), this.el = void 0), this;
-			}, lines: function lines(d, f) {
-				function h(b, c) {
-					return e(a(), { position: "absolute", width: f.scale * (f.length + f.width) + "px", height: f.scale * f.width + "px", background: b, boxShadow: c, transformOrigin: "left", transform: "rotate(" + ~ ~(360 / f.lines * k + f.rotate) + "deg) translate(" + f.scale * f.radius + "px,0)", borderRadius: (f.corners * f.scale * f.width >> 1) + "px" });
-				}for (var i, k = 0, l = (f.lines - 1) * (1 - f.direction) / 2; k < f.lines; k++) {
-					i = e(a(), { position: "absolute", top: 1 + ~(f.scale * f.width / 2) + "px", transform: f.hwaccel ? "translate3d(0,0,0)" : "", opacity: f.opacity, animation: j && c(f.opacity, f.trail, l + k * f.direction, f.lines) + " " + 1 / f.speed + "s linear infinite" }), f.shadow && b(i, e(h("#000", "0 0 4px #000"), { top: "2px" })), b(d, b(i, h(g(f.color, k), "0 0 1px rgba(0,0,0,.1)")));
-				}return d;
-			}, opacity: function opacity(a, b, c) {
-				b < a.childNodes.length && (a.childNodes[b].style.opacity = c);
-			} }), "undefined" != typeof document) {
-			k = function () {
-				var c = a("style", { type: "text/css" });return b(document.getElementsByTagName("head")[0], c), c.sheet || c.styleSheet;
-			}();var o = e(a("group"), { behavior: "url(#default#VML)" });!d(o, "transform") && o.adj ? i() : j = d(o, "animation");
-		}return h;
-	});
-	
-	var Loading = function (_Component) {
-		_inherits(Loading, _Component);
-	
-		function Loading(player) {
-			_classCallCheck(this, Loading);
-	
-			return _possibleConstructorReturn(this, _Component.call(this, player, 'Loading'));
-		}
-	
-		Loading.prototype.render = function render(owner) {
-			this.createEl('div', { 'class': 'vcp-loading' });
-			// this.el.appendChild(dom.createEl('img', {'src': './src/img/loading.svg'}));
-			// 大小计算：min: (length + width + radius) * 2
-			var opts = {
-				lines: 11 // The number of lines to draw
-				, length: 12 // The length of each line
-				, width: 4 // The line thickness
-				, radius: 16 // The radius of the inner circle
-				, scale: 1 // Scales overall size of the spinner
-				, corners: 1 // Corner roundness (0..1)
-				, color: '#fff' // #rgb or #rrggbb or array of colors
-				, opacity: 0.25 // Opacity of the lines
-				, rotate: 0 // The rotation offset
-				, direction: 1 // 1: clockwise, -1: counterclockwise
-				, speed: 1 // Rounds per second
-				, trail: 60 // Afterglow percentage
-				, fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
-				, zIndex: 2e9 // The z-index (defaults to 2000000000)
-				, className: 'vcp-spinner' // The CSS class to assign to the spinner
-				, top: '50%' // Top position relative to parent
-				, left: '50%' // Left position relative to parent
-				, shadow: false // Whether to render a shadow
-				, hwaccel: true // Whether to use hardware acceleration
-				, position: 'absolute' // Element positioning
-			};
-			var spinner = new LLL.Spinner(opts).spin(this.el);
-			return _Component.prototype.render.call(this, owner);
-		};
-	
-		Loading.prototype.setup = function setup() {};
-	
-		Loading.prototype.handleMsg = function handleMsg(msg) {};
-	
-		Loading.prototype.show = function show() {
-			this.el.style.display = "block";
-		};
-	
-		Loading.prototype.hide = function hide() {
-			this.el.style.display = "none";
-		};
-	
-		return Loading;
-	}(_Component3["default"]);
-	
-	exports["default"] = Loading;
-
-/***/ },
-/* 22 */,
-/* 23 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	exports.__esModule = true;
-	
-	var _Slider = __webpack_require__(13);
-	
-	var _Slider2 = _interopRequireDefault(_Slider);
-	
-	var _Component2 = __webpack_require__(8);
-	
-	var _Component3 = _interopRequireDefault(_Component2);
-	
-	var _dom = __webpack_require__(4);
-	
-	var dom = _interopRequireWildcard(_dom);
-	
-	var _util = __webpack_require__(5);
-	
-	var util = _interopRequireWildcard(_util);
-	
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	/**
-	 * @method percent
-	 * @property {Slider} progress
-	 * @property {Boolean} scrubbing
-	 * @class Timeline
-	 */
-	
-	var Timelabel = function (_Component) {
-		_inherits(Timelabel, _Component);
-	
-		function Timelabel(player) {
-			_classCallCheck(this, Timelabel);
-	
-			return _possibleConstructorReturn(this, _Component.call(this, player, 'Timelabel'));
-		}
-	
-		Timelabel.prototype.render = function render(owner) {
-			this.createEl('span', { 'class': 'vcp-timelabel' });
-	
-			return _Component.prototype.render.call(this, owner);
-		};
-	
-		Timelabel.prototype.setup = function setup() {
-			this.sub('timelabel', 'timeline', util.bind(this, this.handleMsg));
-		};
-	
-		Timelabel.prototype.handleMsg = function handleMsg(msg) {
-			this.el.innerHTML = msg.label;
-		};
-	
-		return Timelabel;
-	}(_Component3["default"]);
-	
-	exports["default"] = Timelabel;
-
-/***/ },
-/* 24 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	exports.__esModule = true;
-	
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-	
-	var _Component2 = __webpack_require__(8);
-	
-	var _Component3 = _interopRequireDefault(_Component2);
-	
-	var _dom = __webpack_require__(4);
-	
-	var dom = _interopRequireWildcard(_dom);
-	
-	var _util = __webpack_require__(5);
-	
-	var util = _interopRequireWildcard(_util);
-	
-	var _Player = __webpack_require__(2);
-	
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var Poster = function (_Component) {
-		_inherits(Poster, _Component);
-	
-		function Poster(player) {
-			_classCallCheck(this, Poster);
-	
-			var _this = _possibleConstructorReturn(this, _Component.call(this, player, 'Poster'));
-	
-			if (_typeof(_this.options.poster) == 'object') {
-				_this.poster = _this.options.poster;
-			} else if (typeof _this.options.poster == 'string') {
-				_this.poster = { src: _this.poster.src };
-			}
-			return _this;
-		}
-	
-		Poster.prototype.render = function render(owner) {
-			this.createEl('div', { 'class': 'vcp-poster' });
-			this.hide();
-	
-			var poster = this.poster;
-			if (poster) {
-				this.pic = dom.createEl('img', { 'class': 'vcp-poster-pic' });
-				var stretch = this.poster.style == 'stretch';
-				if (stretch) {
-					this.pic.style.cssText = 'width: 100%; height: 100%;';
-				} else {
-					this.pic.style.cssText = '';
-				}
-				this.el.appendChild(this.pic);
-	
-				this.setPoster(this.poster.start);
-			}
-	
-			return _Component.prototype.render.call(this, owner);
-		};
-	
-		Poster.prototype.setup = function setup() {
-			this.on('click', this.onClick);
-			this.sub(_Player.MSG.Loaded, this.player.video, util.bind(this, this.handleMsg));
-			this.sub(_Player.MSG.Play, this.player.video, util.bind(this, this.handleMsg));
-			this.sub(_Player.MSG.Pause, this.player.video, util.bind(this, this.handleMsg));
-			this.sub(_Player.MSG.Ended, this.player.video, util.bind(this, this.handleMsg));
-		};
-	
-		Poster.prototype.onClick = function onClick() {
-			this.pub({ type: 'click', src: this });
-		};
-	
-		Poster.prototype.handleMsg = function handleMsg(msg) {
-			console.log('@' + this.name, msg);
-			switch (msg.type) {
-				case _Player.MSG.Loaded:
-					this.__loaded = true;
-					this.setPoster(this.poster.start);
-					break;
-				case _Player.MSG.Play:
-					if (!this.__loaded) break;
-					this.hide();
-					break;
-				case _Player.MSG.Pause:
-					if (!this.__loaded) break;
-					this.setPoster(this.poster.pause);
-					break;
-				case _Player.MSG.Ended:
-					if (!this.__loaded) break;
-					this.setPoster(this.poster.end);
-					break;
-			}
-		};
-	
-		Poster.prototype.setPoster = function setPoster(src) {
-			src = src || this.poster.src;
-			if (!src) return;
-	
-			if (this.__preload) this.__preload.onload = null; // 图片加载是异步的，所以要清除迟到的onload
-			this.__preload = new Image();
-	
-			var img = this.__preload;
-	
-			var self = this;
-			img.onload = function () {
-				self.pic.src = img.src;
-				self.show();
-	
-				var stretch = self.poster.style == 'stretch';
-				if (stretch) return;
-	
-				var left = '-' + img.width / 2 + 'px',
-				    top = '-' + img.height / 2 + 'px';
-	
-				self.pic.style.cssText = 'left: 50%; top: 50%; margin-left: ' + left + '; margin-top: ' + top + ';';
-			};
-	
-			img.src = src;
-		};
-	
-		Poster.prototype.toggle = function toggle(display) {
-			clearTimeout(this.__tid); // 防止跳变
-			var self = this;
-			this.__tid = setTimeout(function () {
-				self.el.style.display = display;
-			}, 100);
-		};
-	
-		Poster.prototype.hide = function hide() {
-			this.toggle('none');
-		};
-	
-		Poster.prototype.show = function show() {
-			this.toggle('block');
-		};
-	
-		return Poster;
-	}(_Component3["default"]);
-	
-	exports["default"] = Poster;
 
 /***/ }
 /******/ ]);

@@ -1237,9 +1237,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 		FlashVideo.prototype.notify = function notify(eventName, info) {
+			var e = { type: eventName, ts: Math.round(+new Date() - this.__timebase) };
 			try {
-				var e = { type: eventName, ts: Math.round(+new Date() - this.__timebase) };
-
 				// if (eventName != 'mediaTime' && eventName != 'printLog' && eventName != 'netStatus')
 				// 	console.log(eventName, info);
 				// 修正flash m3u8的metaData时机
@@ -1339,8 +1338,8 @@ return /******/ (function(modules) { // webpackBootstrap
 				}
 
 				!keepPrivate && this.pub({ type: e.type, src: this, ts: e.ts, detail: info });
-			} catch (e) {
-				console.log(eventName, e);
+			} catch (err) {
+				console.log(eventName + ' ' + e.type, err);
 			}
 		};
 
@@ -1386,7 +1385,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		FlashVideo.prototype.buffered = function buffered() {
 			var p;
 			if (this.__m3u8) {
-				return this.__buffered;
+				return this.__buffered || 0;
 			} else {
 				p = (this.__bytesloaded || 0) / (this.__bytesTotal || 1);
 				return this.duration() * p;
@@ -1403,13 +1402,14 @@ return /******/ (function(modules) { // webpackBootstrap
 		};
 
 		FlashVideo.prototype.mute = function mute(muted) {
-			if (typeof muted === 'undefined') return false;
-			this.volume(muted ? 0 : 0.5);
+			if (typeof muted === 'undefined') return this.volume() == 0;
+			this.volume(muted ? 0 : this.__lastVol);
 		};
 
 		FlashVideo.prototype.volume = function volume(p) {
-			if (typeof p === 'undefined') return 0.5;
+			if (typeof p === 'undefined') return this.el && this.el.getState().volume;
 			this.el && this.el.playerVolume(p);
+			p != 0 && (this.__lastVol = p);
 		};
 
 		FlashVideo.prototype.fullscreen = function fullscreen(enter) {
@@ -1768,21 +1768,22 @@ return /******/ (function(modules) { // webpackBootstrap
 			return _this;
 		}
 
-		Slider.prototype.render = function render(owner) {
+		Slider.prototype.render = function render(owner, enabled) {
 			var sliderClass = this.vertical ? 'vcp-slider-vertical' : 'vcp-slider';
 			this.createEl('div', { 'class': sliderClass });
 			this.track = dom.createEl('div', { 'class': 'vcp-slider-track' });
 			this.thumb = dom.createEl('div', { 'class': 'vcp-slider-thumb' });
 			this.el.appendChild(this.track);
 			this.el.appendChild(this.thumb);
+			this.enabled = typeof enabled == 'undefined' ? true : enabled;
 			return _Component.prototype.render.call(this, owner);
 		};
 
 		Slider.prototype.setup = function setup() {
+			if (!this.enabled) return;
+
 			this.ownerDoc = document.body.ownerDocument;
 			this.on('mousedown', this.mousedown);
-
-			// this.on('mouseout', this.mouseup);
 		};
 
 		Slider.prototype.handleMsg = function handleMsg(msg) {};
@@ -1883,15 +1884,19 @@ return /******/ (function(modules) { // webpackBootstrap
 		}
 
 		Timeline.prototype.render = function render(owner) {
+			this.enabled = !this.options.isLive;
+
 			this.createEl('div', { 'class': 'vcp-timeline' });
 			this.progress = new _Slider2["default"](this.player, false);
-			this.progress.render(this.el);
+			this.progress.render(this.el, this.enabled);
 			this.track = this.progress.track;
 
 			return _Component.prototype.render.call(this, owner);
 		};
 
 		Timeline.prototype.setup = function setup() {
+			if (!this.enabled) return;
+
 			this.sub(_Slider.MSG.Changing, this.progress, util.bind(this, this.handleMsg));
 			this.sub(_Slider.MSG.Changed, this.progress, util.bind(this, this.handleMsg));
 		};
@@ -1915,12 +1920,16 @@ return /******/ (function(modules) { // webpackBootstrap
 		};
 
 		Timeline.prototype.buffered = function buffered(b) {
+			if (!this.enabled) return;
+
 			b = Math.min(b, 1);
 			this.__buffered = b;
 			this.track.style.width = b * 100 + '%';
 		};
 
 		Timeline.prototype.percent = function percent(p) {
+			if (!this.enabled) return;
+
 			if (typeof p === 'undefined') return this.progress.percent() || 0;
 			p = Math.min(p, 1); // flash m3u8 返回的duration不大对，但是进度条要保证不溢出
 			this.syncLabel(p);
@@ -2083,6 +2092,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		Volume.prototype.muteClick = function muteClick(e) {
 			var muted = typeof e === 'boolean' ? e : !this.player.mute();
 			this.player.mute(muted);
+			this.__muted = muted;
 
 			if (muted) dom.addClass(this.el, 'vcp-volume-muted');else dom.removeClass(this.el, 'vcp-volume-muted');
 		};
@@ -2090,7 +2100,11 @@ return /******/ (function(modules) { // webpackBootstrap
 		Volume.prototype.syncTrack = function syncTrack(p) {
 			this.track.style.height = p * 100 + '%';
 			this.player.volume(p);
-			this.muteClick(p == 0);
+			if (p == 0) {
+				this.muteClick(true);
+			} else if (p > 0 && this.__muted) {
+				this.muteClick(false);
+			}
 		};
 
 		Volume.prototype.percent = function percent(p) {
@@ -2280,29 +2294,44 @@ return /******/ (function(modules) { // webpackBootstrap
 		};
 
 		Poster.prototype.setPoster = function setPoster(src) {
-			src = src || this.poster.src;
-			if (!src) return;
+			var _this2 = this;
 
-			if (this.__preload) this.__preload.onload = null; // 图片加载是异步的，所以要清除迟到的onload
-			this.__preload = new Image();
+			try {
+				var img;
 
-			var img = this.__preload;
+				var _ret = function () {
+					src = src || _this2.poster.src;
+					if (!src) return {
+							v: void 0
+						};
 
-			var self = this;
-			img.onload = function () {
-				self.pic.src = img.src;
-				self.show();
+					if (_this2.__preload) _this2.__preload.onload = null; // 图片加载是异步的，所以要清除迟到的onload
+					_this2.__preload = new Image();
 
-				var stretch = self.poster.style == 'stretch';
-				if (stretch) return;
+					img = _this2.__preload;
 
-				var left = '-' + img.width / 2 + 'px',
-				    top = '-' + img.height / 2 + 'px';
 
-				self.pic.style.cssText = 'left: 50%; top: 50%; margin-left: ' + left + '; margin-top: ' + top + ';';
-			};
+					var self = _this2;
+					img.onload = function () {
+						self.pic.src = img.src;
+						self.show();
 
-			img.src = src;
+						var stretch = self.poster.style == 'stretch';
+						if (stretch) return;
+
+						var left = '-' + img.width / 2 + 'px',
+						    top = '-' + img.height / 2 + 'px';
+
+						self.pic.style.cssText = 'left: 50%; top: 50%; margin-left: ' + left + '; margin-top: ' + top + ';';
+					};
+
+					img.src = src;
+				}();
+
+				if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+			} catch (e) {
+				console.log(e);
+			}
 		};
 
 		Poster.prototype.toggle = function toggle(display) {
