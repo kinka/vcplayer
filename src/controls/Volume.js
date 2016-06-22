@@ -42,6 +42,7 @@ export default class Volume extends Component {
 	muteClick(e) {
 		var muted = typeof e === 'boolean' ? e : !(this.player.mute());
 		this.player.mute(muted);
+		this.__muted = muted;
 
 		if (muted)
 			dom.addClass(this.el, 'vcp-volume-muted');
@@ -51,7 +52,11 @@ export default class Volume extends Component {
 	syncTrack(p) {
 		this.track.style.height = p*100 + '%';
 		this.player.volume(p);
-		this.muteClick(p == 0);
+		if (p == 0) {
+			this.muteClick(true);
+		} else if (p > 0 && this.__muted) {
+			this.muteClick(false);
+		}
 	}
 	percent(p) {
 		if (typeof p === 'undefined') return 1 - this.volume.percent() || 0;

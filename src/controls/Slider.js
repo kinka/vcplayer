@@ -14,20 +14,21 @@ export default class Slider extends Component {
 		this.vertical = vertical || false;
 	}
 
-	render(owner) {
+	render(owner, enabled) {
 		var sliderClass = this.vertical ? 'vcp-slider-vertical' : 'vcp-slider';
 		this.createEl('div', {'class': sliderClass});
 		this.track = dom.createEl('div', {'class': 'vcp-slider-track'});
 		this.thumb = dom.createEl('div', {'class': 'vcp-slider-thumb'});
 		this.el.appendChild(this.track);
 		this.el.appendChild(this.thumb);
+		this.enabled = typeof enabled == 'undefined' ? true : enabled;
 		return super.render(owner);
 	}
 	setup() {
+		if (!this.enabled) return;
+		
 		this.ownerDoc = document.body.ownerDocument;
 		this.on('mousedown', this.mousedown);
-
-		// this.on('mouseout', this.mouseup);
 	}
 	handleMsg(msg) {
 		

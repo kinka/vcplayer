@@ -15,14 +15,18 @@ export default class Timeline extends Component {
 	}
 
 	render(owner) {
+		this.enabled = !this.options.isLive;
+		
 		this.createEl('div', {'class': 'vcp-timeline'});
 		this.progress = new Slider(this.player, false);
-		this.progress.render(this.el);
+		this.progress.render(this.el, this.enabled);
 		this.track = this.progress.track;
 
 		return super.render(owner);
 	}
 	setup() {
+		if (!this.enabled) return;
+
 		this.sub(SliderMSG.Changing, this.progress, util.bind(this, this.handleMsg));
 		this.sub(SliderMSG.Changed, this.progress, util.bind(this, this.handleMsg));
 	}
@@ -44,11 +48,15 @@ export default class Timeline extends Component {
 	}
 
 	buffered(b) {
+		if (!this.enabled) return;
+
 		b = Math.min(b, 1);
 		this.__buffered = b;
 		this.track.style.width = b * 100 + '%';
 	}
 	percent(p) {
+		if (!this.enabled) return;
+
 		if (typeof p === 'undefined') return this.progress.percent() || 0;
 		p = Math.min(p, 1); // flash m3u8 返回的duration不大对，但是进度条要保证不溢出
 		this.syncLabel(p);

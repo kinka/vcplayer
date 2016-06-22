@@ -256,12 +256,13 @@ export default class FlashVideo extends Component {
 		return this.__duration;
 	}
 	mute(muted) {
-		if (typeof muted === 'undefined') return false;
-		this.volume(muted ? 0 : 0.5);
+		if (typeof muted === 'undefined') return this.volume() == 0;
+		this.volume(muted ? 0 : this.__lastVol);
 	}
 	volume(p) {
-		if (typeof p === 'undefined') return 0.5;
+		if (typeof p === 'undefined') return this.el && this.el.getState().volume;
 		this.el && this.el.playerVolume(p);
+		p != 0 && (this.__lastVol = p);
 	}
 
 	fullscreen(enter) {

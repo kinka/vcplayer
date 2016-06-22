@@ -39,6 +39,9 @@ window.player = new Player({
 	src: 'http://2527.vod.myqcloud.com/2527_1bf8b2da449211e595f01db4637252be.f20.mp4',
 	src: 'http://184.72.239.149/vod/smil:BigBuckBunny.smil/playlist.m3u8',
 	src: 'http://2527.vod.myqcloud.com/2527_542d5a28222411e6aadec1104f4fc9b9.f220.av.m3u8',
+	// src: 'http://2000.liveplay.myqcloud.com/live/2000_f3d7cff5e69511e5b91fa4dcbef5e35a.flv', // live
+	// src: 'http://2000.liveplay.myqcloud.com/2000_2b2ea68b16af11e6b91fa4dcbef5e35a_500.m3u8', // live
+	// isLive: true,
 	poster: 'https://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png',
 	poster: {
 		src: 'http://www.imagesbuddy.com/images/130/2014/01/whatever-garfield-face-graphic.jpg',
