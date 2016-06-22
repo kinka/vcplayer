@@ -1,0 +1,6 @@
+<svg width="100%" height="100%" viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <path d="M7,16 L10,16 L10,13 L13,13 L13,10 L7,10 L7,16 Z" opactiy="1" fill="#fff"></path>
+    <path d="M23,10 L23,13 L26,13 L26,16 L29,16 L29,10 L23,10 Z" opactiy="1" fill="#fff"></path>
+    <path d="M23,23 L23,26 L29,26 L29,20 L26,20 L26,23 L23,23 Z" opactiy="1" fill="#fff"></path>
+    <path d="M10,20 L7,20 L7,26 L13,26 L13,23 L10,23 L10,20 Z" opactiy="1" fill="#fff"></path>
+</svg>

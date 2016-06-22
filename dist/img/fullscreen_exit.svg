@@ -1,0 +1,16 @@
+<svg width="100%" height="100%" viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <path d="M13,10 L10,10 L10,13 L7,13 L7,16 L13,16 L13,10 Z" id="svg-quit-1"></path>
+        <path d="M29,16 L29,13 L26,13 L26,10 L23,10 L23,16 L29,16 Z" id="svg-quit-2"></path>
+        <path d="M29,23 L29,20 L23,20 L23,26 L26,26 L26,23 L29,23 Z" id="svg-quit-3"></path>
+        <path d="M10,26 L13,26 L13,20 L7,20 L7,23 L10,23 L10,26 Z" id="svg-quit-4"></path>
+    </defs>
+    <use stroke="#000" stroke-opacity=".15" stroke-width="2px" xlink:href="#svg-quit-1"></use>
+    <use stroke="#000" stroke-opacity=".15" stroke-width="2px" xlink:href="#svg-quit-2"></use>
+    <use stroke="#000" stroke-opacity=".15" stroke-width="2px" xlink:href="#svg-quit-3"></use>
+    <use stroke="#000" stroke-opacity=".15" stroke-width="2px" xlink:href="#svg-quit-4"></use>
+    <use fill="#fff" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#svg-quit-1"></use>
+    <use fill="#fff" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#svg-quit-2"></use>
+    <use fill="#fff" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#svg-quit-3"></use>
+    <use fill="#fff" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#svg-quit-4"></use>
+</svg>
