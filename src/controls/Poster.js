@@ -9,7 +9,7 @@ export default class Poster extends Component {
 		if (typeof this.options.poster == 'object') {
 			this.poster = this.options.poster;
 		} else if (typeof this.options.poster == 'string') {
-			this.poster = {src: this.poster}
+			this.poster = {src: this.options.poster}
 		}
 	}
 
@@ -44,7 +44,7 @@ export default class Poster extends Component {
 		this.pub({type: 'click', src: this});
 	}
 	handleMsg(msg) {
-		console.log('@' + this.name, msg);
+		// console.log('@' + this.name, msg);
 		switch (msg.type) {
 			case PlayerMsg.Loaded:
 				this.__loaded = true;
@@ -65,7 +65,6 @@ export default class Poster extends Component {
 		}
 	}
 	setPoster(src) {
-		try{
 		src = src || this.poster.src;
 		if (!src) return;
 
@@ -88,7 +87,7 @@ export default class Poster extends Component {
 			self.pic.style.cssText = `left: 50%; top: 50%; margin-left: ${left}; margin-top: ${top};`;
 		};
 
-		img.src = src;}catch (e) {console.log(e)}
+		img.src = src;
 	}
 	toggle(display) {
 		clearTimeout(this.__tid); // 防止跳变

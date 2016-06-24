@@ -42,7 +42,7 @@ export class Player {
 	render(owner) {
 		this.el = dom.createEl('div', {'class': 'vcp-player'});
 
-		if (true && browser.HASVIDEO) {
+		if (browser.HASVIDEO) {
 			var h5 = new H5Video(this);
 			h5.render(this.el);
 			this.video = h5;

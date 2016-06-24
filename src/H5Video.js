@@ -11,7 +11,8 @@ export default class H5Video extends Component {
 	
 	render(owner) {
 		var options = this.player.options;
-		this.createEl('video', {controls: options.controls, preload: 'auto', autoplay: options.autoplay ? true : null});
+		var controls = typeof options.controls === 'undefined' ? null : options.controls;
+		this.createEl('video', {controls: controls, preload: 'auto', autoplay: options.autoplay ? true : null});
 		var isM3u8 = options.src.indexOf('.m3u8') > -1 || options.isM3u8;
 		if (isM3u8) {
 			if (typeof window.Hls == 'undefined')
