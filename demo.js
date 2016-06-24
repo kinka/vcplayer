@@ -56,17 +56,18 @@ window.player = new Player({
 	}
 });
 
-/*window.player2 = new Player({
+window.player2 = new Player({
 	owner: 'demo_video2',
 	autoplay: false,
 	width: 300,
 	height: 400,
 	src: 'http://2527.vod.myqcloud.com/2527_bffd50081d9911e6b0f4d93c5d81f265.f20.mp4',
+	src: 'http://184.72.239.149/vod/smil:BigBuckBunny.smil/playlist.m3u8',
 	poster: 'https://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png',
 	listener: function(msg) {
-		if (msg.type == 'progress') return;
+		if (msg.type == 'timeupdate' || msg.type == 'progress' || msg.type === 'printLog') return;
 		console.log('global2', msg)
 	}
-});*/
+});
 
 // setTimeout(function() {player.destroy()}, 1000)

@@ -9,7 +9,7 @@ export default class Poster extends Component {
 		if (typeof this.options.poster == 'object') {
 			this.poster = this.options.poster;
 		} else if (typeof this.options.poster == 'string') {
-			this.poster = {src: this.poster.src}
+			this.poster = {src: this.poster}
 		}
 	}
 

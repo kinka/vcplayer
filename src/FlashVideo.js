@@ -11,10 +11,20 @@ export default class FlashVideo extends Component {
 	constructor(player) {
 		super(player, 'FlashVideo');
 
-		var self = this;
-		window.flashCallback = function(eventName, args) {
-			self.notify(eventName, args && args[0]);
-		};
+		if (!window.flashCallback) {
+			/**
+			 *
+			 * @param eventName
+			 * @param args
+			 * @param args.objectID 每个flash播放器的id
+			 */
+			window.flashCallback = function(eventName, args) {
+				args = args && args[0];
+				var fn = window.flashCallback.fnObj && window.flashCallback.fnObj[args.objectID];
+				fn && fn(eventName, args);
+			};
+			window.flashCallback.fnObj = {};
+		}
 	}
 	
 	render(owner) {
@@ -53,6 +63,8 @@ export default class FlashVideo extends Component {
 		this.owner = owner;
 		this.cover = dom.createEl('div', {'class': 'vcp-pre-flash'});
 		this.owner.appendChild(this.cover);
+
+		window.flashCallback.fnObj[this.__id] = util.bind(this, this.notify);
 	}
 	setup() {
 		this.on('error', this.notify);
@@ -85,6 +97,7 @@ export default class FlashVideo extends Component {
 		}
 	}
 	destroy() {
+		delete window.flashCallback.fnObj[this.__id];
 		this.endPolling();
 		super.destroy();
 	}
@@ -116,7 +129,7 @@ export default class FlashVideo extends Component {
 					this.setup();
 					this.el.setAutoPlay(this.options.autoplay);
 					this.el.playerLoad(this.options.src);
-					this.__timebase = new Date() - info * 1000;
+					this.__timebase = new Date() - info.time * 1000;
 					return;
 					break;
 				case 'metaData':

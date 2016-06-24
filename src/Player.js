@@ -18,6 +18,8 @@ export var browser = bb;
  * @param options.volume {Number} 音量初始化，传0则静音
  * @param options.listener {Function}
  * @param options.poster {Object|String}
+ * @param options.isM3u8 {Boolean}
+ * @param options.isLive {Boolean} 是否直播
  * @method currentTime
  * @method duration
  * @method buffered
@@ -40,7 +42,7 @@ export class Player {
 	render(owner) {
 		this.el = dom.createEl('div', {'class': 'vcp-player'});
 
-		if (false && browser.HASVIDEO) {
+		if (true && browser.HASVIDEO) {
 			var h5 = new H5Video(this);
 			h5.render(this.el);
 			this.video = h5;
