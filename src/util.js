@@ -121,19 +121,19 @@ if (browserApi) {
 	}
 }
 function documentFullscreenChange(e) {
-	doFullscreen.__isFullcreen = !!(document[FullscreenApi.fullscreenElement]); // 取消全屏的时候返回的是null, 由此可判断全屏状态
+	doFullscreen.__isFullscreen = !!(document[FullscreenApi.fullscreenElement]); // 取消全屏的时候返回的是null, 由此可判断全屏状态
 
-	if (!doFullscreen.__isFullcreen) {
+	if (!doFullscreen.__isFullscreen) {
 		dom.off(document, FullscreenApi.fullscreenchange, documentFullscreenChange);
 	}
-	message.pub({type: PlayerMSG.FullScreen, src: 'util', ts: e.timestamp, fullscreen: doFullscreen.__isFullcreen}, doFullscreen.player);
+	message.pub({type: PlayerMSG.FullScreen, src: 'util', ts: e.timestamp, detail: {isFullscreen: doFullscreen.__isFullscreen}}, doFullscreen.player);
 }
 function onKeydown(event) {
 	if (event.keyCode === 27)
 		doFullscreen(doFullscreen.player, false);
 }
 export function doFullscreen(player, enter, owner) {
-	if (typeof enter === 'undefined') return doFullscreen.__isFullcreen || false;
+	if (typeof enter === 'undefined') return doFullscreen.__isFullscreen || false;
 
 	doFullscreen.player = player;
 	if (FullscreenApi.requestFullscreen) {
@@ -144,9 +144,9 @@ export function doFullscreen(player, enter, owner) {
 			document[FullscreenApi.exitFullscreen]();
 		}
 	} else { // 伪全屏,可以引导再按个F11
-		doFullscreen.__isFullcreen = enter;
+		doFullscreen.__isFullscreen = enter;
 
-		if (doFullscreen.__isFullcreen) {
+		if (doFullscreen.__isFullscreen) {
 			doFullscreen.__origOverflow = document.documentElement.style.overflow;
 			document.documentElement.style.overflow = 'hidden'; // hide any scroll bars
 			dom.on(document, 'keydown', onKeydown);
@@ -156,6 +156,6 @@ export function doFullscreen(player, enter, owner) {
 		}
 
 		dom.toggleClass(document.body, 'vcp-full-window', enter);
-		message.pub({type: PlayerMSG.FullScreen, src: 'util', fullscreen: doFullscreen.__isFullcreen}, doFullscreen.player);
+		message.pub({type: PlayerMSG.FullScreen, src: 'util', detail: {isFullscreen: doFullscreen.__isFullscreen}}, doFullscreen.player);
 	}
 }

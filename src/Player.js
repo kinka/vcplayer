@@ -42,7 +42,7 @@ export class Player {
 	render(owner) {
 		this.el = dom.createEl('div', {'class': 'vcp-player'});
 
-		if (browser.HASVIDEO) {
+		if (false && browser.HASVIDEO) {
 			var h5 = new H5Video(this);
 			h5.render(this.el);
 			this.video = h5;
@@ -137,7 +137,7 @@ export class Player {
 			case MSG.FullScreen:
 				var self = this;
 				setTimeout(function() { // fix IE9 按esc toggle 时背景图片出不来
-					dom.toggleClass(self.el, 'vcp-fullscreen', msg.fullscreen);
+					dom.toggleClass(self.el, 'vcp-fullscreen', msg.detail.isFullscreen);
 				}, 0);
 				break;
 		}
