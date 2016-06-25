@@ -1,3 +1,5 @@
+import './css/vcplayer.css';
+
 import * as __browser from './browser'
 import * as dom from './dom'
 import * as __util from './util'

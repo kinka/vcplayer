@@ -172,3 +172,5 @@ export function store(key, value) {
 	if (typeof value === 'undefined') return JSON.parse(localStorage[key] || 'null');
 	localStorage[key] = JSON.stringify(value);
 }
+
+export const CDNPath = "//imgcache.qq.com/open/qcloud/video/vcplayer/";

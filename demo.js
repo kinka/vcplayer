@@ -1,6 +1,6 @@
 import {Player, browser, util} from './src/player'
 // var Player = vcp.Player, browser = vcp.browser;
-import './src/css/vcplayer.css';
+// import './src/css/vcplayer.css';
 
 var $ = function(selector) {return document.querySelector(selector)};
 var $$ = function(selector) {return document.querySelectorAll(selector)};
@@ -17,6 +17,7 @@ var domLive = $('#is_live'),
 var btnLoad = $('#btn_load');
 
 domSrc.value = 'http://2527.vod.myqcloud.com/2527_bffd50081d9911e6b0f4d93c5d81f265.f20.mp4';
+domSrc.value = 'http://2527.vod.myqcloud.com/2527_542d5a28222411e6aadec1104f4fc9b9.f220.av.m3u8';
 domPoster.value = 'http://www.imagesbuddy.com/images/130/2014/01/whatever-garfield-face-graphic.jpg';
 
 restore();
@@ -30,7 +31,7 @@ console.log = function(a,b,c,d,e,f) {
 		xxlog.apply(this, arguments);
 };
 newPlayer('demo_video');
-newPlayer('demo_video2')
+// newPlayer('demo_video2')
 function newPlayer(ownerId) {
 	save();
 

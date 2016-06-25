@@ -7,23 +7,54 @@
             body {
                 padding: 0;
                 margin: 0;
-                background-color: gray;
+                /*background-color: gray;*/
+            }
+            .action-wrap {
+                float: left;
+                padding: 9px;
+            }
+            #app {overflow: hidden;}
+            #logging {
+                position: fixed;
+                right: 0;
+                top: 0;
+                background: gray;
+                width: 30%;
+                height: 500px;
+                opacity: 0.8;
+                filter: alpha(opacity=80);
+                font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
+                overflow: auto;
+                color: wheat;
+                word-break: break-all;
+            }
+            .em {
+                color: black;
+                font-weight: bold;
             }
             #demo_video, #demo_video2 {
+                position: relative;
                 width: 800px;
-                height: 400px;
+                height: 500px;
             }
         </style>
-        <!--<link rel="stylesheet" href="/src/css/vcplayer.css"/>-->
     </head>
     <body>
+        <div id="app">
+            <div class="action-wrap" style="width: 100%;"><label>播放地址</label><input type="text" id="play_src" style="width: 80%;"></div>
+            <div class="action-wrap" style="width: 100%;"><label>贴片</label><input type="text" id="poster_src" style="width: 80%;"></div>
+            <div class="action-wrap"><label>直播</label><input type="checkbox" id="is_live"/></div>
+            <div class="action-wrap"><label>调试</label><input type="checkbox" id="is_debug"/></div>
+            <div class="action-wrap"><label>原生控件</label><input type="checkbox" id="use_controls"/></div>
+            <div class="action-wrap"><label>使用flash</label><input type="checkbox" id="use_flash"/></div>
+            <div class="action-wrap"><label>自动播放</label><input type="checkbox" id="is_autoplay"/></div>
+            <div class="action-wrap"><button id="btn_load">加载视频</button></div>
+            <div id="logging"></div>
+        </div>
         <div id="demo_video"></div>
         <div id="demo_video2"></div>
-        <!--<video id="vvv" controls preload="meta" poster="https://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png"></video>-->
-        <script src="http://imgcache.qq.com/open/qcloud/video/vcplayer/libs/es5-shim.js"></script>
-        <script src="http://imgcache.qq.com/open/qcloud/video/vcplayer/libs/es5-sham.js"></script>
-        <!--<script type="text/javascript" src="/dist/player.js"></script>-->
-        <!--<script src="/dist/libs/hls.js"></script>-->
-        <script type="text/javascript" src="http://imgcache.qq.com/open/qcloud/video/vcplayer/demo.js"></script>
+        <script src="//imgcache.qq.com/open/qcloud/video/vcplayer/libs/es5-shim.js"></script>
+        <script src="//imgcache.qq.com/open/qcloud/video/vcplayer/libs/es5-sham.js"></script>
+        <script type="text/javascript" src="//imgcache.qq.com/open/qcloud/video/vcplayer/demo.js"></script>
     </body>
 </html>

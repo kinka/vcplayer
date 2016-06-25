@@ -6,7 +6,7 @@ module.exports = {
     output: {
         path: path.join(__dirname, '/dist'),
         filename: 'player.js',
-        publicPath: '/dist/',
+        publicPath: '//imgcache.qq.com/open/qcloud/video/vcplayer/',
 	    library: "vcp",
 	    libraryTarget: "umd"
     },

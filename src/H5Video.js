@@ -123,7 +123,7 @@ export default class H5Video extends Component {
 		if (isM3u8) {
 			var self = this;
 			if (typeof window.Hls == 'undefined')
-				dom.loadScript('/dist/libs/hls.js', function() {self.__hlsLoaded.call(self, src)});
+				dom.loadScript(util.CDNPath + 'libs/hls.js', function() {self.__hlsLoaded.call(self, src)});
 			else
 				this.__hlsLoaded(src);
 		} else {

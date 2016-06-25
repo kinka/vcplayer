@@ -44,7 +44,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.c = installedModules;
 
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/dist/";
+/******/ 	__webpack_require__.p = "//imgcache.qq.com/open/qcloud/video/vcplayer/";
 
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
@@ -57,45 +57,47 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	exports.__esModule = true;
-	exports.Player = exports.browser = exports.MSG = undefined;
+	exports.Player = exports.util = exports.browser = exports.MSG = undefined;
 
-	var _browser = __webpack_require__(1);
+	__webpack_require__(1);
 
-	var bb = _interopRequireWildcard(_browser);
+	var _browser = __webpack_require__(5);
 
-	var _dom = __webpack_require__(2);
+	var __browser = _interopRequireWildcard(_browser);
+
+	var _dom = __webpack_require__(6);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _util = __webpack_require__(3);
+	var _util = __webpack_require__(7);
 
-	var util = _interopRequireWildcard(_util);
+	var __util = _interopRequireWildcard(_util);
 
-	var _message = __webpack_require__(4);
+	var _message = __webpack_require__(8);
 
 	var message = _interopRequireWildcard(_message);
 
-	var _H5Video = __webpack_require__(5);
+	var _H5Video = __webpack_require__(9);
 
 	var _H5Video2 = _interopRequireDefault(_H5Video);
 
-	var _FlashVideo = __webpack_require__(7);
+	var _FlashVideo = __webpack_require__(11);
 
 	var _FlashVideo2 = _interopRequireDefault(_FlashVideo);
 
-	var _Panel = __webpack_require__(8);
+	var _Panel = __webpack_require__(12);
 
 	var _Panel2 = _interopRequireDefault(_Panel);
 
-	var _BigPlay = __webpack_require__(15);
+	var _BigPlay = __webpack_require__(19);
 
 	var _BigPlay2 = _interopRequireDefault(_BigPlay);
 
-	var _Poster = __webpack_require__(16);
+	var _Poster = __webpack_require__(20);
 
 	var _Poster2 = _interopRequireDefault(_Poster);
 
-	var _Loading = __webpack_require__(17);
+	var _Loading = __webpack_require__(21);
 
 	var _Loading2 = _interopRequireDefault(_Loading);
 
@@ -106,7 +108,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var MSG = exports.MSG = message.MSG;
-	var browser = exports.browser = bb;
+	var browser = exports.browser = __browser;
+	var util = exports.util = __util;
 	/**
 	 * @param {options}
 	 * @param options.owner {String} container id
@@ -114,6 +117,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param options.volume {Number} 音量初始化，传0则静音
 	 * @param options.listener {Function}
 	 * @param options.poster {Object|String}
+	 * @param options.m3u8 {Boolean}
+	 * @param options.live {Boolean} 是否直播
+	 * @param options.debug {Boolean} 是否调试状态
+	 * @param options.flash {Boolean} 优先使用flash
 	 * @method currentTime
 	 * @method duration
 	 * @method buffered
@@ -130,17 +137,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 			this.guid = util.guid();
 
-			owner = dom.get(owner);
-			this.render(owner);
-
 			this.listener = this.options.listener;
 			message.sub('*', '*', util.bind(this, this.handleMsg), this);
+
+			owner = dom.get(owner);
+			this.render(owner);
 		}
 
 		Player.prototype.render = function render(owner) {
 			this.el = dom.createEl('div', { 'class': 'vcp-player' });
 
-			if (false) {
+			if (!this.options.flash && browser.HASVIDEO) {
 				var h5 = new _H5Video2["default"](this);
 				h5.render(this.el);
 				this.video = h5;
@@ -241,7 +248,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					var self = this;
 					setTimeout(function () {
 						// fix IE9 按esc toggle 时背景图片出不来
-						dom.toggleClass(self.el, 'vcp-fullscreen', msg.fullscreen);
+						dom.toggleClass(self.el, 'vcp-fullscreen', msg.detail.isFullscreen);
 					}, 0);
 					break;
 			}
@@ -288,11 +295,368 @@ return /******/ (function(modules) { // webpackBootstrap
 			return this.video.fullscreen(enter);
 		};
 
+		Player.prototype.load = function load(src, type) {
+			this.loading.show();
+			this.video.load(src, type);
+		};
+
+		Player.prototype.playing = function playing() {
+			return this.video.playing();
+		};
+
 		return Player;
 	}();
 
 /***/ },
 /* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(2);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(4)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../../node_modules/css-loader/index.js!./vcplayer.css", function() {
+				var newContent = require("!!./../../node_modules/css-loader/index.js!./vcplayer.css");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(3)();
+	// imports
+
+
+	// module
+	exports.push([module.id, ".vcp-player {\r\n    position: relative;\r\n    z-index: 0;\r\n    font-family: Helvetica;\r\n    background-color: black;\r\n    zoom: 1;\r\n}\r\n.vcp-fullscreen.vcp-player, .vcp-fullscreen video {\r\n    width: 100%!important;\r\n    height: 100%!important;\r\n}\r\n/* 伪全屏 */\r\nbody.vcp-full-window {\r\n    width: 100%!important;\r\n    height: 100%!important;\r\n    overflow-y: auto;\r\n}\r\n.vcp-full-window .vcp-player {\r\n    position: fixed;\r\n    left: 0;\r\n    top: 0;\r\n}\r\n\r\n/* chrome flash 成功加载到DOM之前会闪白屏，所以加个黑屏遮一遮 */\r\n.vcp-pre-flash {\r\n    z-index: 1000; background: black; width: 100%; height: 100%; position: absolute; top: 0; left: 0;\r\n}\r\n.vcp-controls-panel {\r\n    position: absolute;\r\n    bottom: 0;\r\n    width: 100%;\r\n    font-size: 16px;\r\n    height: 3em;\r\n    z-index: 1000;\r\n}\r\n.vcp-panel-bg {\r\n    width: 100%;\r\n    height: 100%;\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n    background-color: rgb(36, 36, 36);\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n    z-index: 1000;\r\n}\r\n.vcp-playing .vcp-controls-panel {\r\n    display: none;\r\n}\r\n.vcp-player:hover .vcp-controls-panel {\r\n    display: block;\r\n}\r\n\r\n.vcp-playtoggle {\r\n    cursor: pointer;\r\n    position: relative;\r\n    z-index: 1001;\r\n    width: 3em;\r\n    height: 100%;\r\n    float: left;\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/play_btn.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/play_btn.svg), none;\r\n}\r\n.vcp-playtoggle:hover {\r\n    background-color: slategray;\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n}\r\n.vcp-playing .vcp-playtoggle {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/stop_btn.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/stop_btn.svg), none;\r\n}\r\n.vcp-bigplay {\r\n    width: 100%;\r\n    height: 100%;\r\n    position: absolute;\r\n    background-color: white\\0;\r\n    filter: alpha(opacity=0); /*奇怪的IE8/9鼠标事件穿透*/\r\n    z-index: 1000;\r\n    top: 0;\r\n    left: 0;\r\n}\r\n\r\n.vcp-slider {\r\n    position: relative;\r\n    z-index: 1001;\r\n    float: left;\r\n    background: rgb(196, 196, 196);\r\n    height: 10px;\r\n    /*border: 1px solid #d8d8d8;*/\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n    cursor: pointer;\r\n}\r\n.vcp-slider .vcp-slider-track {\r\n    width: 0;\r\n    height: 100%;\r\n    margin-top: 0;\r\n    opacity: 1;\r\n    filter: alpha(opacity=100);\r\n    background-color: dodgerblue; /*beautiful blue*/\r\n}\r\n.vcp-slider .vcp-slider-thumb {\r\n    cursor: pointer;\r\n    background-color: white;\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    border-radius: 1em;\r\n    height: 10px;\r\n    margin-left: -5px;\r\n    width: 10px;\r\n}\r\n\r\n.vcp-slider-vertical {\r\n    position: relative;\r\n    width: 0.5em;\r\n    height: 10em;\r\n    top: -7em;\r\n    z-index: 1001;\r\n    background-color: rgb(28, 28, 28);\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n    cursor: pointer;\r\n}\r\n.vcp-slider-vertical .vcp-slider-track {\r\n    background-color: rgb(18, 117, 207);\r\n    width: 0.5em;\r\n    height: 100%;\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n}\r\n.vcp-slider-vertical .vcp-slider-thumb {\r\n    cursor: pointer;\r\n    position: absolute;\r\n    background-color: aliceblue;\r\n    width: 0.8em;\r\n    height: 0.8em;\r\n    border-radius: 0.8em;\r\n    margin-top: -0.4em;\r\n    top: 0;\r\n    left: -0.15em;\r\n}\r\n/* 时间线/进度条 */\r\n.vcp-timeline {\r\n    top: -10px;\r\n    left: 0;\r\n    height: 10px;\r\n    position: absolute;\r\n    z-index: 1001;\r\n    width: 100%;\r\n}\r\n.vcp-timeline .vcp-slider-thumb {\r\n    top: -3px;\r\n}\r\n.vcp-timeline .vcp-slider {\r\n    margin-top: 8px;\r\n    height: 2px;\r\n    width: 100%;\r\n}\r\n.vcp-timeline:hover .vcp-slider {\r\n    margin-top: 0;\r\n    height: 10px;\r\n}\r\n.vcp-timeline:hover .vcp-slider-thumb {\r\n    display: block;\r\n    width: 16px;\r\n    height: 16px;\r\n    top: -3px;\r\n    margin-left: -8px;\r\n}\r\n/* 时间展示 */\r\n.vcp-timelabel {\r\n    display: inline-block;\r\n    font-size: 12px;\r\n    line-height: 48px;\r\n    height: 48px;\r\n    width: 48px;\r\n    float: left;\r\n    color: white;\r\n    padding: 0 9px;\r\n    z-index: 1001;\r\n    position: relative;\r\n}\r\n/* 音量控制 */\r\n.vcp-volume {\r\n    height: 48px;\r\n    width: 48px;\r\n    cursor: pointer;\r\n    position: relative;\r\n    z-index: 1001;\r\n    float: right;\r\n    background-color: transparent;\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n}\r\n.vcp-volume-icon {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/volume.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/volume.svg), none;\r\n    display: inline-block;\r\n    width: 48px;\r\n    height: 48px;\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n}\r\n.vcp-volume-muted .vcp-volume-icon {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/muted.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/muted.svg), none;\r\n}\r\n.vcp-volume .vcp-slider-vertical {\r\n    top: -10.4em;\r\n    left: 1em;\r\n    display: none;\r\n}\r\n.vcp-volume .vcp-slider-track {\r\n    position: absolute;\r\n    bottom: 0;\r\n}\r\n.vcp-volume:hover .vcp-slider-vertical {\r\n    display: block;\r\n}\r\n.vcp-volume .vcp-volume-bg {\r\n    height: 10.8em;\r\n    width: 2em;\r\n    position: absolute;\r\n    left: 0.25em;\r\n    top: -10.8em;\r\n    background: rgb(36,36,36);\r\n    display: none;\r\n}\r\n.vcp-volume:hover .vcp-volume-bg, .vcp-volume:hover .vcp-slider-vertical {\r\n    display: block;\r\n}\r\n/* 全屏控件 */\r\n.vcp-fullscreen-toggle {\r\n    position: relative;\r\n    width: 48px;\r\n    height: 48px;\r\n    float: right;\r\n    cursor: pointer;\r\n    z-index: 1001;\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen.svg), none;\r\n}\r\n.vcp-fullscreen .vcp-fullscreen-toggle {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen_exit.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen_exit.svg), none;\r\n}\r\n\r\n.vcp-loading {\r\n    position: absolute;\r\n    left: 50%;\r\n    top: 50%;\r\n    margin-top: -48px;\r\n}\r\n\r\n.vcp-poster {\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n    overflow: hidden;\r\n    z-index: 1000;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n.vcp-poster-pic {\r\n    position: relative;\r\n}", ""]);
+
+	// exports
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	// css base code, injected by the css-loader
+	module.exports = function() {
+		var list = [];
+
+		// return the list of modules as css string
+		list.toString = function toString() {
+			var result = [];
+			for(var i = 0; i < this.length; i++) {
+				var item = this[i];
+				if(item[2]) {
+					result.push("@media " + item[2] + "{" + item[1] + "}");
+				} else {
+					result.push(item[1]);
+				}
+			}
+			return result.join("");
+		};
+
+		// import a list of modules into the list
+		list.i = function(modules, mediaQuery) {
+			if(typeof modules === "string")
+				modules = [[null, modules, ""]];
+			var alreadyImportedModules = {};
+			for(var i = 0; i < this.length; i++) {
+				var id = this[i][0];
+				if(typeof id === "number")
+					alreadyImportedModules[id] = true;
+			}
+			for(i = 0; i < modules.length; i++) {
+				var item = modules[i];
+				// skip already imported module
+				// this implementation is not 100% perfect for weird media query combinations
+				//  when a module is imported multiple times with different media queries.
+				//  I hope this will never occur (Hey this way we have smaller bundles)
+				if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+					if(mediaQuery && !item[2]) {
+						item[2] = mediaQuery;
+					} else if(mediaQuery) {
+						item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+					}
+					list.push(item);
+				}
+			}
+		};
+		return list;
+	};
+
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	var stylesInDom = {},
+		memoize = function(fn) {
+			var memo;
+			return function () {
+				if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+				return memo;
+			};
+		},
+		isOldIE = memoize(function() {
+			return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
+		}),
+		getHeadElement = memoize(function () {
+			return document.head || document.getElementsByTagName("head")[0];
+		}),
+		singletonElement = null,
+		singletonCounter = 0,
+		styleElementsInsertedAtTop = [];
+
+	module.exports = function(list, options) {
+		if(false) {
+			if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+		}
+
+		options = options || {};
+		// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+		// tags it will allow on a page
+		if (typeof options.singleton === "undefined") options.singleton = isOldIE();
+
+		// By default, add <style> tags to the bottom of <head>.
+		if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
+
+		var styles = listToStyles(list);
+		addStylesToDom(styles, options);
+
+		return function update(newList) {
+			var mayRemove = [];
+			for(var i = 0; i < styles.length; i++) {
+				var item = styles[i];
+				var domStyle = stylesInDom[item.id];
+				domStyle.refs--;
+				mayRemove.push(domStyle);
+			}
+			if(newList) {
+				var newStyles = listToStyles(newList);
+				addStylesToDom(newStyles, options);
+			}
+			for(var i = 0; i < mayRemove.length; i++) {
+				var domStyle = mayRemove[i];
+				if(domStyle.refs === 0) {
+					for(var j = 0; j < domStyle.parts.length; j++)
+						domStyle.parts[j]();
+					delete stylesInDom[domStyle.id];
+				}
+			}
+		};
+	}
+
+	function addStylesToDom(styles, options) {
+		for(var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+			if(domStyle) {
+				domStyle.refs++;
+				for(var j = 0; j < domStyle.parts.length; j++) {
+					domStyle.parts[j](item.parts[j]);
+				}
+				for(; j < item.parts.length; j++) {
+					domStyle.parts.push(addStyle(item.parts[j], options));
+				}
+			} else {
+				var parts = [];
+				for(var j = 0; j < item.parts.length; j++) {
+					parts.push(addStyle(item.parts[j], options));
+				}
+				stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+			}
+		}
+	}
+
+	function listToStyles(list) {
+		var styles = [];
+		var newStyles = {};
+		for(var i = 0; i < list.length; i++) {
+			var item = list[i];
+			var id = item[0];
+			var css = item[1];
+			var media = item[2];
+			var sourceMap = item[3];
+			var part = {css: css, media: media, sourceMap: sourceMap};
+			if(!newStyles[id])
+				styles.push(newStyles[id] = {id: id, parts: [part]});
+			else
+				newStyles[id].parts.push(part);
+		}
+		return styles;
+	}
+
+	function insertStyleElement(options, styleElement) {
+		var head = getHeadElement();
+		var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
+		if (options.insertAt === "top") {
+			if(!lastStyleElementInsertedAtTop) {
+				head.insertBefore(styleElement, head.firstChild);
+			} else if(lastStyleElementInsertedAtTop.nextSibling) {
+				head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
+			} else {
+				head.appendChild(styleElement);
+			}
+			styleElementsInsertedAtTop.push(styleElement);
+		} else if (options.insertAt === "bottom") {
+			head.appendChild(styleElement);
+		} else {
+			throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
+		}
+	}
+
+	function removeStyleElement(styleElement) {
+		styleElement.parentNode.removeChild(styleElement);
+		var idx = styleElementsInsertedAtTop.indexOf(styleElement);
+		if(idx >= 0) {
+			styleElementsInsertedAtTop.splice(idx, 1);
+		}
+	}
+
+	function createStyleElement(options) {
+		var styleElement = document.createElement("style");
+		styleElement.type = "text/css";
+		insertStyleElement(options, styleElement);
+		return styleElement;
+	}
+
+	function createLinkElement(options) {
+		var linkElement = document.createElement("link");
+		linkElement.rel = "stylesheet";
+		insertStyleElement(options, linkElement);
+		return linkElement;
+	}
+
+	function addStyle(obj, options) {
+		var styleElement, update, remove;
+
+		if (options.singleton) {
+			var styleIndex = singletonCounter++;
+			styleElement = singletonElement || (singletonElement = createStyleElement(options));
+			update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
+			remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
+		} else if(obj.sourceMap &&
+			typeof URL === "function" &&
+			typeof URL.createObjectURL === "function" &&
+			typeof URL.revokeObjectURL === "function" &&
+			typeof Blob === "function" &&
+			typeof btoa === "function") {
+			styleElement = createLinkElement(options);
+			update = updateLink.bind(null, styleElement);
+			remove = function() {
+				removeStyleElement(styleElement);
+				if(styleElement.href)
+					URL.revokeObjectURL(styleElement.href);
+			};
+		} else {
+			styleElement = createStyleElement(options);
+			update = applyToTag.bind(null, styleElement);
+			remove = function() {
+				removeStyleElement(styleElement);
+			};
+		}
+
+		update(obj);
+
+		return function updateStyle(newObj) {
+			if(newObj) {
+				if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
+					return;
+				update(obj = newObj);
+			} else {
+				remove();
+			}
+		};
+	}
+
+	var replaceText = (function () {
+		var textStore = [];
+
+		return function (index, replacement) {
+			textStore[index] = replacement;
+			return textStore.filter(Boolean).join('\n');
+		};
+	})();
+
+	function applyToSingletonTag(styleElement, index, remove, obj) {
+		var css = remove ? "" : obj.css;
+
+		if (styleElement.styleSheet) {
+			styleElement.styleSheet.cssText = replaceText(index, css);
+		} else {
+			var cssNode = document.createTextNode(css);
+			var childNodes = styleElement.childNodes;
+			if (childNodes[index]) styleElement.removeChild(childNodes[index]);
+			if (childNodes.length) {
+				styleElement.insertBefore(cssNode, childNodes[index]);
+			} else {
+				styleElement.appendChild(cssNode);
+			}
+		}
+	}
+
+	function applyToTag(styleElement, obj) {
+		var css = obj.css;
+		var media = obj.media;
+
+		if(media) {
+			styleElement.setAttribute("media", media)
+		}
+
+		if(styleElement.styleSheet) {
+			styleElement.styleSheet.cssText = css;
+		} else {
+			while(styleElement.firstChild) {
+				styleElement.removeChild(styleElement.firstChild);
+			}
+			styleElement.appendChild(document.createTextNode(css));
+		}
+	}
+
+	function updateLink(linkElement, obj) {
+		var css = obj.css;
+		var sourceMap = obj.sourceMap;
+
+		if(sourceMap) {
+			// http://stackoverflow.com/a/26603875
+			css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+		}
+
+		var blob = new Blob([css], { type: "text/css" });
+
+		var oldSrc = linkElement.href;
+
+		linkElement.href = URL.createObjectURL(blob);
+
+		if(oldSrc)
+			URL.revokeObjectURL(oldSrc);
+	}
+
+
+/***/ },
+/* 5 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -366,7 +730,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var HASVIDEO = exports.HASVIDEO = !!document.createElement('video').canPlayType;
 
 /***/ },
-/* 2 */
+/* 6 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -523,24 +887,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 3 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
-	exports.FullscreenApi = undefined;
+	exports.CDNPath = exports.FullscreenApi = undefined;
 	exports.guid = guid;
 	exports.bind = bind;
 	exports.isEmpty = isEmpty;
 	exports.covertTime = covertTime;
 	exports.doFullscreen = doFullscreen;
+	exports.extend = extend;
+	exports.store = store;
 
-	var _dom = __webpack_require__(2);
+	var _dom = __webpack_require__(6);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _message = __webpack_require__(4);
+	var _message = __webpack_require__(8);
 
 	var message = _interopRequireWildcard(_message);
 
@@ -631,18 +997,18 @@ return /******/ (function(modules) { // webpackBootstrap
 		}
 	}
 	function documentFullscreenChange(e) {
-		doFullscreen.__isFullcreen = !!document[FullscreenApi.fullscreenElement]; // 取消全屏的时候返回的是null, 由此可判断全屏状态
+		doFullscreen.__isFullscreen = !!document[FullscreenApi.fullscreenElement]; // 取消全屏的时候返回的是null, 由此可判断全屏状态
 
-		if (!doFullscreen.__isFullcreen) {
+		if (!doFullscreen.__isFullscreen) {
 			dom.off(document, FullscreenApi.fullscreenchange, documentFullscreenChange);
 		}
-		message.pub({ type: _message.MSG.FullScreen, src: 'util', ts: e.timestamp, fullscreen: doFullscreen.__isFullcreen }, doFullscreen.player);
+		message.pub({ type: _message.MSG.FullScreen, src: 'util', ts: e.timestamp, detail: { isFullscreen: doFullscreen.__isFullscreen } }, doFullscreen.player);
 	}
 	function onKeydown(event) {
 		if (event.keyCode === 27) doFullscreen(doFullscreen.player, false);
 	}
 	function doFullscreen(player, enter, owner) {
-		if (typeof enter === 'undefined') return doFullscreen.__isFullcreen || false;
+		if (typeof enter === 'undefined') return doFullscreen.__isFullscreen || false;
 
 		doFullscreen.player = player;
 		if (FullscreenApi.requestFullscreen) {
@@ -654,9 +1020,9 @@ return /******/ (function(modules) { // webpackBootstrap
 			}
 		} else {
 			// 伪全屏,可以引导再按个F11
-			doFullscreen.__isFullcreen = enter;
+			doFullscreen.__isFullscreen = enter;
 
-			if (doFullscreen.__isFullcreen) {
+			if (doFullscreen.__isFullscreen) {
 				doFullscreen.__origOverflow = document.documentElement.style.overflow;
 				document.documentElement.style.overflow = 'hidden'; // hide any scroll bars
 				dom.on(document, 'keydown', onKeydown);
@@ -666,12 +1032,26 @@ return /******/ (function(modules) { // webpackBootstrap
 			}
 
 			dom.toggleClass(document.body, 'vcp-full-window', enter);
-			message.pub({ type: _message.MSG.FullScreen, src: 'util', fullscreen: doFullscreen.__isFullcreen }, doFullscreen.player);
+			message.pub({ type: _message.MSG.FullScreen, src: 'util', detail: { isFullscreen: doFullscreen.__isFullscreen } }, doFullscreen.player);
 		}
 	}
 
+	function extend(newObj, oldObj) {
+		for (var p in oldObj) {
+			if (oldObj.hasOwnProperty(p)) newObj[p] = newObj[p] || oldObj[p];
+		}
+		return newObj;
+	}
+
+	function store(key, value) {
+		if (typeof value === 'undefined') return JSON.parse(localStorage[key] || 'null');
+		localStorage[key] = JSON.stringify(value);
+	}
+
+	var CDNPath = exports.CDNPath = "//imgcache.qq.com/open/qcloud/video/vcplayer/";
+
 /***/ },
-/* 4 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -682,13 +1062,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.sub = sub;
 	exports.unsub = unsub;
 
-	var _util = __webpack_require__(3);
+	var _util = __webpack_require__(7);
 
 	var util = _interopRequireWildcard(_util);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
 
-	var MSG = exports.MSG = { Error: 'error', TimeUpdate: 'timeupdate', Loaded: 'loadeddata', Progress: 'progress', FullScreen: 'fullscreen',
+	var MSG = exports.MSG = { Error: 'error', TimeUpdate: 'timeupdate', Load: 'load', Loaded: 'loadeddata', Progress: 'progress', FullScreen: 'fullscreen',
 		Play: 'play', Pause: 'pause', Ended: 'ended', Seeking: 'seeking', Seeked: 'seeked' };
 
 	var Players = {};
@@ -812,24 +1192,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 5 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(6);
+	var _Component2 = __webpack_require__(10);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _dom = __webpack_require__(2);
+	var _dom = __webpack_require__(6);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _util = __webpack_require__(3);
+	var _util = __webpack_require__(7);
 
 	var util = _interopRequireWildcard(_util);
+
+	var _message = __webpack_require__(8);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
 
@@ -854,24 +1236,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		H5Video.prototype.render = function render(owner) {
 			var options = this.player.options;
-			this.createEl('video', { controls: options.controls, preload: 'auto', autoplay: options.autoplay ? true : null });
-			var isM3u8 = options.src.indexOf('.m3u8') > -1;
-			if (isM3u8) {
-				var self = this;
-				dom.loadScript('/dist/libs/hls.js', function () {
-					if (!Hls.isSupported()) return self.notify.call(self, { type: 'error', code: 4 });
-					var hls = new Hls();
-					hls.loadSource(options.src);
-					hls.attachMedia(self.el);
-				});
-			} else {
-				this.el.src = options.src;
-			}
+			var controls = !options.controls ? null : options.controls;
+			this.createEl('video', { controls: controls, preload: 'auto', autoplay: options.autoplay ? true : null });
 			return _Component.prototype.render.call(this, owner);
+		};
+
+		H5Video.prototype.__hlsLoaded = function __hlsLoaded(src) {
+			if (!Hls.isSupported()) return this.notify({ type: 'error', code: 4 });
+			var hls = new Hls();
+			hls.loadSource(src);
+			hls.attachMedia(this.el);
 		};
 
 		H5Video.prototype.setup = function setup() {
 			var events = ['abort', 'canplay', 'canplaythrough', 'durationchange', 'emptied', 'ended', 'error', 'loadedmetadata', 'loadeddata', 'loadstart', 'pause', 'play', 'playing', 'timeline', 'ratechange', 'seeked', 'seeking', 'stalled', 'suspend', 'timeupdate', 'volumechange', 'waiting'];
+			this.__timebase = +new Date();
 			this.on('loadeddata', this.notify);
 			this.on('progress', this.notify);
 			this.on('play', this.notify);
@@ -881,18 +1260,23 @@ return /******/ (function(modules) { // webpackBootstrap
 			this.on('ended', this.notify);
 			this.on('seeking', this.notify);
 			this.on('seeked', this.notify);
+
+			this.load(this.options.src, this.options.m3u8 ? 'm3u8' : '');
 		};
 
 		H5Video.prototype.notify = function notify(e) {
 			var msg = { type: e.type, src: this, ts: e.timeStamp };
 
 			switch (e.type) {
-				case 'error':
+				case _message.MSG.Loaded:
+					this.__timebase = +new Date() - msg.ts;
+					break;
+				case _message.MSG.Error:
 					var Props = { 1: 'MEDIA_ERR_ABORTED', 2: 'MEDIA_ERR_DECODE', 3: 'MEDIA_ERR_NETWORK', 4: 'MEDIA_ERR_SRC_NOT_SUPPORTED' };
 					msg.detail = this.el && this.el.error || { code: e.code };
 					msg.detail.reason = Props[msg.detail.code];
 					break;
-				case 'ended':
+				case _message.MSG.Ended:
 					this.pause(); // IE9 不会自动改变播放状态，导致伪全屏的时候出现黑屏
 					break;
 			}
@@ -961,28 +1345,45 @@ return /******/ (function(modules) { // webpackBootstrap
 			return util.doFullscreen(this.player, enter, this.owner);
 		};
 
+		H5Video.prototype.load = function load(src, type) {
+			this.pub({ type: _message.MSG.Load, src: this, ts: +new Date() - this.__timebase, detail: { src: src, type: type } });
+			var isM3u8 = src.indexOf('.m3u8') > -1 || type == 'm3u8';
+			if (isM3u8) {
+				var self = this;
+				if (typeof window.Hls == 'undefined') dom.loadScript(util.CDNPath + 'libs/hls.js', function () {
+					self.__hlsLoaded.call(self, src);
+				});else this.__hlsLoaded(src);
+			} else {
+				this.el.src = src;
+			}
+		};
+
+		H5Video.prototype.playing = function playing() {
+			return !this.el.paused;
+		};
+
 		return H5Video;
 	}(_Component3["default"]);
 
 	exports["default"] = H5Video;
 
 /***/ },
-/* 6 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _dom = __webpack_require__(2);
+	var _dom = __webpack_require__(6);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _util = __webpack_require__(3);
+	var _util = __webpack_require__(7);
 
 	var util = _interopRequireWildcard(_util);
 
-	var _message = __webpack_require__(4);
+	var _message = __webpack_require__(8);
 
 	var message = _interopRequireWildcard(_message);
 
@@ -1121,24 +1522,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 7 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(6);
+	var _Component2 = __webpack_require__(10);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _message = __webpack_require__(4);
+	var _message = __webpack_require__(8);
 
-	var _dom = __webpack_require__(2);
+	var _dom = __webpack_require__(6);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _util = __webpack_require__(3);
+	var _util = __webpack_require__(7);
 
 	var util = _interopRequireWildcard(_util);
 
@@ -1165,10 +1566,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 			var _this = _possibleConstructorReturn(this, _Component.call(this, player, 'FlashVideo'));
 
-			var self = _this;
-			window.flashCallback = function (eventName, args) {
-				self.notify(eventName, args && args[0]);
-			};
+			if (!window.flashCallback) {
+				/**
+	    *
+	    * @param eventName
+	    * @param args
+	    * @param args.objectID 每个flash播放器的id
+	    */
+				window.flashCallback = function (eventName, args) {
+					args = args && args[0];
+					var fn = window.flashCallback.fnObj && window.flashCallback.fnObj[args.objectID];
+					fn && fn(eventName, args);
+				};
+				window.flashCallback.fnObj = {};
+			}
 			return _this;
 		}
 
@@ -1185,6 +1596,8 @@ return /******/ (function(modules) { // webpackBootstrap
 			this.owner = owner;
 			this.cover = dom.createEl('div', { 'class': 'vcp-pre-flash' });
 			this.owner.appendChild(this.cover);
+
+			window.flashCallback.fnObj[this.__id] = util.bind(this, this.notify);
 		};
 
 		FlashVideo.prototype.setup = function setup() {
@@ -1192,6 +1605,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		};
 
 		FlashVideo.prototype.doPolling = function doPolling() {
+			if (this.options.live) return; // 直播没必要这个事件
 			clearInterval(this.__timer);
 			this.__timer = setInterval(this.interval.bind(this), 500);
 		};
@@ -1220,6 +1634,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		};
 
 		FlashVideo.prototype.destroy = function destroy() {
+			delete window.flashCallback.fnObj[this.__id];
 			this.endPolling();
 			_Component.prototype.destroy.call(this);
 		};
@@ -1237,23 +1652,25 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 		FlashVideo.prototype.notify = function notify(eventName, info) {
-			var e = { type: eventName, ts: Math.round(+new Date() - this.__timebase) };
+			var e = { type: eventName, ts: +new Date() - this.__timebase };
 			try {
-				// if (eventName != 'mediaTime' && eventName != 'printLog' && eventName != 'netStatus')
-				// 	console.log(eventName, info);
+				if (this.options.debug) {
+					this.pub({ type: e.type, src: this, ts: e.ts, detail: util.extend({ debug: true }, info) });
+				}
 				// 修正flash m3u8的metaData时机
 				if (this.__m3u8 && !this.__real_loaded && eventName == 'mediaTime' && info.videoWidth != 0) {
 					e.type = 'metaData';
 					this.__real_loaded = true;
 				}
 				var keepPrivate = eventName == 'printLog' || eventName == 'canPlay';
+				// keepPrivate = false;
 				switch (e.type) {
 					case 'ready':
 						this.el = getFlashMovieObject(this.__id);
 						this.setup();
 						this.el.setAutoPlay(this.options.autoplay);
-						this.el.playerLoad(this.options.src);
-						this.__timebase = new Date() - info * 1000;
+						this.__timebase = new Date() - info.time;
+						this.load(this.options.src);
 						return;
 						break;
 					case 'metaData':
@@ -1416,6 +1833,15 @@ return /******/ (function(modules) { // webpackBootstrap
 			return util.doFullscreen(this.player, enter, this.owner);
 		};
 
+		FlashVideo.prototype.load = function load(src, type) {
+			this.pub({ type: _message.MSG.Load, src: this, ts: new Date() - this.__timebase, detail: { src: src, type: type } });
+			this.el.playerLoad(src);
+		};
+
+		FlashVideo.prototype.playing = function playing() {
+			return this.el && this.el.getState().playState === 'PLAYING';
+		};
+
 		return FlashVideo;
 	}(_Component3["default"]);
 
@@ -1452,46 +1878,46 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 8 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(6);
+	var _Component2 = __webpack_require__(10);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _PlayToggle = __webpack_require__(9);
+	var _PlayToggle = __webpack_require__(13);
 
 	var _PlayToggle2 = _interopRequireDefault(_PlayToggle);
 
-	var _FullscreenToggle = __webpack_require__(10);
+	var _FullscreenToggle = __webpack_require__(14);
 
 	var _FullscreenToggle2 = _interopRequireDefault(_FullscreenToggle);
 
-	var _Slider = __webpack_require__(11);
+	var _Slider = __webpack_require__(15);
 
-	var _Timeline = __webpack_require__(12);
+	var _Timeline = __webpack_require__(16);
 
 	var _Timeline2 = _interopRequireDefault(_Timeline);
 
-	var _Timelabel = __webpack_require__(13);
+	var _Timelabel = __webpack_require__(17);
 
 	var _Timelabel2 = _interopRequireDefault(_Timelabel);
 
-	var _Volume = __webpack_require__(14);
+	var _Volume = __webpack_require__(18);
 
 	var _Volume2 = _interopRequireDefault(_Volume);
 
-	var _message = __webpack_require__(4);
+	var _message = __webpack_require__(8);
 
-	var _dom = __webpack_require__(2);
+	var _dom = __webpack_require__(6);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _util = __webpack_require__(3);
+	var _util = __webpack_require__(7);
 
 	var util = _interopRequireWildcard(_util);
 
@@ -1581,26 +2007,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports["default"] = Panel;
 
 /***/ },
-/* 9 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(6);
+	var _Component2 = __webpack_require__(10);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _dom = __webpack_require__(2);
+	var _dom = __webpack_require__(6);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _message = __webpack_require__(4);
+	var _message = __webpack_require__(8);
 
 	var message = _interopRequireWildcard(_message);
 
-	var _util = __webpack_require__(3);
+	var _util = __webpack_require__(7);
 
 	var util = _interopRequireWildcard(_util);
 
@@ -1650,26 +2076,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports["default"] = PlayToggle;
 
 /***/ },
-/* 10 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(6);
+	var _Component2 = __webpack_require__(10);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _dom = __webpack_require__(2);
+	var _dom = __webpack_require__(6);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _message = __webpack_require__(4);
+	var _message = __webpack_require__(8);
 
 	var message = _interopRequireWildcard(_message);
 
-	var _util = __webpack_require__(3);
+	var _util = __webpack_require__(7);
 
 	var util = _interopRequireWildcard(_util);
 
@@ -1716,7 +2142,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports["default"] = FullscreenToggle;
 
 /***/ },
-/* 11 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1724,19 +2150,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.__esModule = true;
 	exports.MSG = undefined;
 
-	var _Component2 = __webpack_require__(6);
+	var _Component2 = __webpack_require__(10);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _dom = __webpack_require__(2);
+	var _dom = __webpack_require__(6);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _message = __webpack_require__(4);
+	var _message = __webpack_require__(8);
 
 	var message = _interopRequireWildcard(_message);
 
-	var _util = __webpack_require__(3);
+	var _util = __webpack_require__(7);
 
 	var util = _interopRequireWildcard(_util);
 
@@ -1834,26 +2260,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports["default"] = Slider;
 
 /***/ },
-/* 12 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Slider = __webpack_require__(11);
+	var _Slider = __webpack_require__(15);
 
 	var _Slider2 = _interopRequireDefault(_Slider);
 
-	var _Component2 = __webpack_require__(6);
+	var _Component2 = __webpack_require__(10);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _dom = __webpack_require__(2);
+	var _dom = __webpack_require__(6);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _util = __webpack_require__(3);
+	var _util = __webpack_require__(7);
 
 	var util = _interopRequireWildcard(_util);
 
@@ -1884,7 +2310,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		}
 
 		Timeline.prototype.render = function render(owner) {
-			this.enabled = !this.options.isLive;
+			this.enabled = !this.options.live;
 
 			this.createEl('div', { 'class': 'vcp-timeline' });
 			this.progress = new _Slider2["default"](this.player, false);
@@ -1945,26 +2371,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports["default"] = Timeline;
 
 /***/ },
-/* 13 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Slider = __webpack_require__(11);
+	var _Slider = __webpack_require__(15);
 
 	var _Slider2 = _interopRequireDefault(_Slider);
 
-	var _Component2 = __webpack_require__(6);
+	var _Component2 = __webpack_require__(10);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _dom = __webpack_require__(2);
+	var _dom = __webpack_require__(6);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _util = __webpack_require__(3);
+	var _util = __webpack_require__(7);
 
 	var util = _interopRequireWildcard(_util);
 
@@ -2014,26 +2440,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports["default"] = Timelabel;
 
 /***/ },
-/* 14 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Slider = __webpack_require__(11);
+	var _Slider = __webpack_require__(15);
 
 	var _Slider2 = _interopRequireDefault(_Slider);
 
-	var _Component2 = __webpack_require__(6);
+	var _Component2 = __webpack_require__(10);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _dom = __webpack_require__(2);
+	var _dom = __webpack_require__(6);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _util = __webpack_require__(3);
+	var _util = __webpack_require__(7);
 
 	var util = _interopRequireWildcard(_util);
 
@@ -2120,26 +2546,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports["default"] = Volume;
 
 /***/ },
-/* 15 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(6);
+	var _Component2 = __webpack_require__(10);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _dom = __webpack_require__(2);
+	var _dom = __webpack_require__(6);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _message = __webpack_require__(4);
+	var _message = __webpack_require__(8);
 
 	var message = _interopRequireWildcard(_message);
 
-	var _util = __webpack_require__(3);
+	var _util = __webpack_require__(7);
 
 	var util = _interopRequireWildcard(_util);
 
@@ -2189,7 +2615,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports["default"] = BigPlay;
 
 /***/ },
-/* 16 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2198,19 +2624,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-	var _Component2 = __webpack_require__(6);
+	var _Component2 = __webpack_require__(10);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _dom = __webpack_require__(2);
+	var _dom = __webpack_require__(6);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _util = __webpack_require__(3);
+	var _util = __webpack_require__(7);
 
 	var util = _interopRequireWildcard(_util);
 
-	var _message = __webpack_require__(4);
+	var _message = __webpack_require__(8);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
 
@@ -2233,7 +2659,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			if (_typeof(_this.options.poster) == 'object') {
 				_this.poster = _this.options.poster;
 			} else if (typeof _this.options.poster == 'string') {
-				_this.poster = { src: _this.poster.src };
+				_this.poster = { src: _this.options.poster };
 			}
 			return _this;
 		}
@@ -2253,7 +2679,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				}
 				this.el.appendChild(this.pic);
 
-				this.setPoster(this.poster.start);
+				// this.setPoster(this.poster.start);
 			}
 
 			return _Component.prototype.render.call(this, owner);
@@ -2261,6 +2687,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		Poster.prototype.setup = function setup() {
 			this.on('click', this.onClick);
+			this.sub(_message.MSG.Load, this.player.video, util.bind(this, this.handleMsg));
 			this.sub(_message.MSG.Loaded, this.player.video, util.bind(this, this.handleMsg));
 			this.sub(_message.MSG.Play, this.player.video, util.bind(this, this.handleMsg));
 			this.sub(_message.MSG.Pause, this.player.video, util.bind(this, this.handleMsg));
@@ -2272,11 +2699,14 @@ return /******/ (function(modules) { // webpackBootstrap
 		};
 
 		Poster.prototype.handleMsg = function handleMsg(msg) {
-			console.log('@' + this.name, msg);
+			// console.log('@' + this.name, msg);
 			switch (msg.type) {
+				case _message.MSG.Load:
+					this.__loaded = false;
+					break;
 				case _message.MSG.Loaded:
 					this.__loaded = true;
-					this.setPoster(this.poster.start);
+					if (this.player.playing()) this.hide();else this.setPoster(this.poster.start);
 					break;
 				case _message.MSG.Play:
 					if (!this.__loaded) break;
@@ -2294,44 +2724,30 @@ return /******/ (function(modules) { // webpackBootstrap
 		};
 
 		Poster.prototype.setPoster = function setPoster(src) {
-			var _this2 = this;
+			src = src || this.poster.src;
+			if (!src) return;
 
-			try {
-				var img;
+			if (this.__preload) this.__preload.onload = null; // 图片加载是异步的，所以要清除迟到的onload
+			this.__preload = new Image();
 
-				var _ret = function () {
-					src = src || _this2.poster.src;
-					if (!src) return {
-							v: void 0
-						};
+			var img = this.__preload;
 
-					if (_this2.__preload) _this2.__preload.onload = null; // 图片加载是异步的，所以要清除迟到的onload
-					_this2.__preload = new Image();
+			this.hide();
+			var self = this;
+			img.onload = function () {
+				self.pic.src = img.src;
+				self.show();
 
-					img = _this2.__preload;
+				var stretch = self.poster.style == 'stretch';
+				if (stretch) return;
 
+				var left = '-' + img.width / 2 + 'px',
+				    top = '-' + img.height / 2 + 'px';
 
-					var self = _this2;
-					img.onload = function () {
-						self.pic.src = img.src;
-						self.show();
+				self.pic.style.cssText = 'left: 50%; top: 50%; margin-left: ' + left + '; margin-top: ' + top + ';';
+			};
 
-						var stretch = self.poster.style == 'stretch';
-						if (stretch) return;
-
-						var left = '-' + img.width / 2 + 'px',
-						    top = '-' + img.height / 2 + 'px';
-
-						self.pic.style.cssText = 'left: 50%; top: 50%; margin-left: ' + left + '; margin-top: ' + top + ';';
-					};
-
-					img.src = src;
-				}();
-
-				if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-			} catch (e) {
-				console.log(e);
-			}
+			img.src = src;
 		};
 
 		Poster.prototype.toggle = function toggle(display) {
@@ -2343,6 +2759,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		};
 
 		Poster.prototype.hide = function hide() {
+			this.__preload && (this.__preload.onload = null);
 			this.toggle('none');
 		};
 
@@ -2356,26 +2773,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports["default"] = Poster;
 
 /***/ },
-/* 17 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(6);
+	var _Component2 = __webpack_require__(10);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _dom = __webpack_require__(2);
+	var _dom = __webpack_require__(6);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _message = __webpack_require__(4);
+	var _message = __webpack_require__(8);
 
 	var message = _interopRequireWildcard(_message);
 
-	var _util = __webpack_require__(3);
+	var _util = __webpack_require__(7);
 
 	var util = _interopRequireWildcard(_util);
 
