@@ -176,4 +176,11 @@ export class Player {
 	fullscreen(enter) {
 		return this.video.fullscreen(enter);
 	}
+	load(src, type) {
+		this.loading.show();
+		this.video.load(src, type);
+	}
+	playing() {
+		return this.video.playing();
+	}
 }

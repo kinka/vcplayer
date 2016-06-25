@@ -123,12 +123,13 @@ export default class FlashVideo extends Component {
 				this.__real_loaded = true;
 			}
 			var keepPrivate = (eventName == 'printLog' || eventName == 'canPlay');
+			// keepPrivate = false;
 			switch (e.type) {
 				case 'ready':
 					this.el = getFlashMovieObject(this.__id);
 					this.setup();
 					this.el.setAutoPlay(this.options.autoplay);
-					this.el.playerLoad(this.options.src);
+					this.load(this.options.src);
 					this.__timebase = new Date() - info.time * 1000;
 					return;
 					break;
@@ -280,6 +281,14 @@ export default class FlashVideo extends Component {
 
 	fullscreen(enter) {
 		return util.doFullscreen(this.player, enter, this.owner);
+	}
+
+	load(src, type) {
+		this.pub({type: PlayerMSG.Load, src: this});
+		this.el.playerLoad(src);
+	}
+	playing() {
+		return this.el && this.el.getState().playState === 'PLAYING';
 	}
 }
 

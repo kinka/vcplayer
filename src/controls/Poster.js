@@ -28,13 +28,14 @@ export default class Poster extends Component {
 			}
 			this.el.appendChild(this.pic);
 
-			this.setPoster(this.poster.start);
+			// this.setPoster(this.poster.start);
 		}
 
 		return super.render(owner);
 	}
 	setup() {
 		this.on('click', this.onClick);
+		this.sub(PlayerMsg.Load, this.player.video, util.bind(this, this.handleMsg));
 		this.sub(PlayerMsg.Loaded, this.player.video, util.bind(this, this.handleMsg));
 		this.sub(PlayerMsg.Play, this.player.video, util.bind(this, this.handleMsg));
 		this.sub(PlayerMsg.Pause, this.player.video, util.bind(this, this.handleMsg));
@@ -46,9 +47,15 @@ export default class Poster extends Component {
 	handleMsg(msg) {
 		// console.log('@' + this.name, msg);
 		switch (msg.type) {
+			case PlayerMsg.Load:
+				this.__loaded = false;
+				break;
 			case PlayerMsg.Loaded:
 				this.__loaded = true;
-				this.setPoster(this.poster.start);
+				if (this.player.playing())
+					this.hide();
+				else
+					this.setPoster(this.poster.start);
 				break;
 			case PlayerMsg.Play:
 				if (!this.__loaded) break;
@@ -97,6 +104,7 @@ export default class Poster extends Component {
 		}, 100);
 	}
 	hide() {
+		this.__preload && (this.__preload.onload = null);
 		this.toggle('none');
 	}
 	show() {

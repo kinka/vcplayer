@@ -1,6 +1,7 @@
 import Component from './Component'
 import * as dom from './dom'
 import * as util from './util'
+import {MSG as PlayerMSG}  from './message'
 
 var fsApi = util.FullscreenApi;
 
@@ -13,22 +14,14 @@ export default class H5Video extends Component {
 		var options = this.player.options;
 		var controls = typeof options.controls === 'undefined' ? null : options.controls;
 		this.createEl('video', {controls: controls, preload: 'auto', autoplay: options.autoplay ? true : null});
-		var isM3u8 = options.src.indexOf('.m3u8') > -1 || options.isM3u8;
-		if (isM3u8) {
-			if (typeof window.Hls == 'undefined')
-				dom.loadScript('/dist/libs/hls.js', util.bind(this, this.__hlsLoaded));
-			else
-				this.__hlsLoaded();
-		} else {
-			this.el.src = options.src;
-		}
+		this.load(options.src, options.isM3u8 ? 'm3u8' : 'others');
 		return super.render(owner);
 	}
-	__hlsLoaded() {
+	__hlsLoaded(src) {
 		if (!Hls.isSupported())
 			return this.notify({type: 'error', code: 4});
 		var hls = new Hls();
-		hls.loadSource(this.options.src);
+		hls.loadSource(src);
 		hls.attachMedia(this.el);
 	}
 	setup() {
@@ -117,5 +110,22 @@ export default class H5Video extends Component {
 
 	fullscreen(enter) {
 		return util.doFullscreen(this.player, enter, this.owner);
+	}
+	
+	load(src, type) {
+		this.pub({type: PlayerMSG.Load, src: this});
+		var isM3u8 = src.indexOf('.m3u8') > -1 || type == 'm3u8';
+		if (isM3u8) {
+			var self = this;
+			if (typeof window.Hls == 'undefined')
+				dom.loadScript('/dist/libs/hls.js', function() {self.__hlsLoaded.call(self, src)});
+			else
+				this.__hlsLoaded(src);
+		} else {
+			this.el.src = src;
+		}
+	}
+	playing() {
+		return !this.el.paused;
 	}
 }
