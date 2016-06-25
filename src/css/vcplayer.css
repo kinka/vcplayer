@@ -3,6 +3,7 @@
     z-index: 0;
     font-family: Helvetica;
     background-color: black;
+    zoom: 1;
 }
 .vcp-fullscreen.vcp-player, .vcp-fullscreen video {
     width: 100%!important;

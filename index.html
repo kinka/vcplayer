@@ -36,7 +36,6 @@
                 position: relative;
                 width: 800px;
                 height: 500px;
-                overflow: hidden;
             }
         </style>
         <!--<link rel="stylesheet" href="/src/css/vcplayer.css"/>-->
@@ -44,11 +43,13 @@
     <body>
         <div id="app">
             <div class="action-wrap" style="width: 100%;"><label>播放地址</label><input type="text" id="play_src" style="width: 80%;"></div>
+            <div class="action-wrap" style="width: 100%;"><label>贴片</label><input type="text" id="poster_src" style="width: 80%;"></div>
             <div class="action-wrap"><label>直播</label><input type="checkbox" id="is_live"/></div>
             <div class="action-wrap"><label>调试</label><input type="checkbox" id="is_debug"/></div>
             <div class="action-wrap"><label>原生控件</label><input type="checkbox" id="use_controls"/></div>
-            <div class="action-wrap"><label>仅用flash</label><input type="checkbox" id="use_flash"/></div>
-            <div class="action-wrap"><button>加载视频</button></div>
+            <div class="action-wrap"><label>使用flash</label><input type="checkbox" id="use_flash"/></div>
+            <div class="action-wrap"><label>自动播放</label><input type="checkbox" id="is_autoplay"/></div>
+            <div class="action-wrap"><button id="btn_load">加载视频</button></div>
             <div id="logging"></div>
         </div>
         <div id="demo_video"></div>

@@ -159,3 +159,16 @@ export function doFullscreen(player, enter, owner) {
 		message.pub({type: PlayerMSG.FullScreen, src: 'util', detail: {isFullscreen: doFullscreen.__isFullscreen}}, doFullscreen.player);
 	}
 }
+
+export function extend(newObj, oldObj) {
+	for (var p in oldObj) {
+		if (oldObj.hasOwnProperty(p))
+			newObj[p] = newObj[p] || oldObj[p];
+	}
+	return newObj;
+}
+
+export function store(key, value) {
+	if (typeof value === 'undefined') return JSON.parse(localStorage[key] || 'null');
+	localStorage[key] = JSON.stringify(value);
+}

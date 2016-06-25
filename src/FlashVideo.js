@@ -70,6 +70,7 @@ export default class FlashVideo extends Component {
 		this.on('error', this.notify);
 	}
 	doPolling() {
+		if (this.options.live) return; // 直播没必要这个事件
 		clearInterval(this.__timer);
 		this.__timer = setInterval(this.interval.bind(this), 500);
 	}
@@ -116,7 +117,7 @@ export default class FlashVideo extends Component {
 		var e = {type: eventName, ts: (+new Date() - this.__timebase)};
 		try {
 			if (this.options.debug) {
-				this.pub({type: e.type, src: this, ts: e.ts, detail: info});
+				this.pub({type: e.type, src: this, ts: e.ts, detail: util.extend({debug: true}, info)});
 			}
 			// 修正flash m3u8的metaData时机
 			if (this.__m3u8 && !this.__real_loaded && eventName == 'mediaTime' && info.videoWidth != 0) {

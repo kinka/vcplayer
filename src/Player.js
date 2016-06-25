@@ -1,6 +1,6 @@
-import * as bb from './browser'
+import * as __browser from './browser'
 import * as dom from './dom'
-import * as util from './util'
+import * as __util from './util'
 import * as message from './message'
 import H5Video from './H5Video'
 import FlashVideo from './FlashVideo'
@@ -10,7 +10,8 @@ import Poster from './controls/Poster'
 import Loading from './controls/Loading'
 
 export var MSG = message.MSG;
-export var browser = bb;
+export var browser = __browser;
+export var util = __util;
 /**
  * @param {options}
  * @param options.owner {String} container id
@@ -21,6 +22,7 @@ export var browser = bb;
  * @param options.m3u8 {Boolean}
  * @param options.live {Boolean} 是否直播
  * @param options.debug {Boolean} 是否调试状态
+ * @param options.flash {Boolean} 优先使用flash
  * @method currentTime
  * @method duration
  * @method buffered
@@ -43,7 +45,7 @@ export class Player {
 	render(owner) {
 		this.el = dom.createEl('div', {'class': 'vcp-player'});
 
-		if (true && browser.HASVIDEO) {
+		if (!this.options.flash && browser.HASVIDEO) {
 			var h5 = new H5Video(this);
 			h5.render(this.el);
 			this.video = h5;

@@ -12,7 +12,7 @@ export default class H5Video extends Component {
 	
 	render(owner) {
 		var options = this.player.options;
-		var controls = typeof options.controls === 'undefined' ? null : options.controls;
+		var controls = !options.controls ? null : options.controls;
 		this.createEl('video', {controls: controls, preload: 'auto', autoplay: options.autoplay ? true : null});
 		return super.render(owner);
 	}

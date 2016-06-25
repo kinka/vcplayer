@@ -80,6 +80,7 @@ export default class Poster extends Component {
 
 		var img = this.__preload;
 
+		this.hide();
 		let self = this;
 		img.onload = function() {
 			self.pic.src = img.src;
