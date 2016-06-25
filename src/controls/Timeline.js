@@ -15,7 +15,7 @@ export default class Timeline extends Component {
 	}
 
 	render(owner) {
-		this.enabled = !this.options.isLive;
+		this.enabled = !this.options.live;
 		
 		this.createEl('div', {'class': 'vcp-timeline'});
 		this.progress = new Slider(this.player, false);

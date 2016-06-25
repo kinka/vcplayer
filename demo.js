@@ -2,6 +2,10 @@ import {Player, browser} from './src/player'
 // var Player = vcp.Player, browser = vcp.browser;
 import './src/css/vcplayer.css';
 
+var $ = function(selector) {return document.querySelector(selector)};
+var app = $('#app');
+var log = $('#logging');
+
 window.xxlog = window.xxlog || console.log;
 console.log = function(a,b,c,d,e,f) {
 	try {if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].indexOf('INFO:') > -1) return;} catch (e) {}
@@ -11,9 +15,6 @@ console.log = function(a,b,c,d,e,f) {
 		xxlog.apply(this, arguments);
 };
 
-var $ = function(selector) {return document.querySelector(selector)};
-var app = $('#app');
-
 window.player = new Player({
 	owner: 'demo_video',
 	autoplay: false,
@@ -21,13 +22,14 @@ window.player = new Player({
 	// height: 400,
 	controls: null,
 	volume: 0.2,
+	// debug: true,
 	src: 'http://2527.vod.myqcloud.com/2527_bffd50081d9911e6b0f4d93c5d81f265.f20.mp4',
 	// src: 'http://2527.vod.myqcloud.com/2527_1bf8b2da449211e595f01db4637252be.f20.mp4',
 	// src: 'http://184.72.239.149/vod/smil:BigBuckBunny.smil/playlist.m3u8',
 	// src: 'http://2527.vod.myqcloud.com/2527_542d5a28222411e6aadec1104f4fc9b9.f220.av.m3u8',
 	// src: 'http://2000.liveplay.myqcloud.com/live/2000_f3d7cff5e69511e5b91fa4dcbef5e35a.flv', // live
 	// src: 'http://2000.liveplay.myqcloud.com/2000_f3d7cff5e69511e5b91fa4dcbef5e35a_550.m3u8', // live
-	// isLive: true,
+	// live: true,
 	poster: 'https://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png',
 	poster: {
 		src: 'http://www.imagesbuddy.com/images/130/2014/01/whatever-garfield-face-graphic.jpg',
@@ -39,6 +41,8 @@ window.player = new Player({
 	listener: function(msg) {
 		if (msg.type == 'timeupdate' || msg.type == 'progress' || msg.type === 'printLog') return;
 		console.log(msg.ts, 'g1 ', msg.type, msg.detail)
+		log.innerHTML += Number(msg.ts).toFixed(0) + ': ' + 'g1 <span class="em">[' + msg.type + ']</span>' + JSON.stringify(msg.detail) + '<br/><br/>';
+		log.scrollTop = log.scrollHeight;
 	}
 });
 

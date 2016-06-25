@@ -113,10 +113,11 @@ export default class FlashVideo extends Component {
 	 * @property info.backBufferLength
 	 */
 	notify(eventName, info) {
-		var e = {type: eventName, ts: Math.round(+new Date() - this.__timebase)};
+		var e = {type: eventName, ts: (+new Date() - this.__timebase)};
 		try {
-			// if (eventName != 'mediaTime' && eventName != 'printLog' && eventName != 'netStatus')
-			// 	console.log(eventName, info);
+			if (this.options.debug) {
+				this.pub({type: e.type, src: this, ts: e.ts, detail: info});
+			}
 			// 修正flash m3u8的metaData时机
 			if (this.__m3u8 && !this.__real_loaded && eventName == 'mediaTime' && info.videoWidth != 0) {
 				e.type = 'metaData';
@@ -129,8 +130,8 @@ export default class FlashVideo extends Component {
 					this.el = getFlashMovieObject(this.__id);
 					this.setup();
 					this.el.setAutoPlay(this.options.autoplay);
+					this.__timebase = new Date() - info.time;
 					this.load(this.options.src);
-					this.__timebase = new Date() - info.time * 1000;
 					return;
 					break;
 				case 'metaData':
@@ -284,7 +285,7 @@ export default class FlashVideo extends Component {
 	}
 
 	load(src, type) {
-		this.pub({type: PlayerMSG.Load, src: this});
+		this.pub({type: PlayerMSG.Load, src: this, ts: (new Date() - this.__timebase), detail: {src: src, type: type}});
 		this.el.playerLoad(src);
 	}
 	playing() {

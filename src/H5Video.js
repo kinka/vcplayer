@@ -14,7 +14,6 @@ export default class H5Video extends Component {
 		var options = this.player.options;
 		var controls = typeof options.controls === 'undefined' ? null : options.controls;
 		this.createEl('video', {controls: controls, preload: 'auto', autoplay: options.autoplay ? true : null});
-		this.load(options.src, options.isM3u8 ? 'm3u8' : 'others');
 		return super.render(owner);
 	}
 	__hlsLoaded(src) {
@@ -30,6 +29,7 @@ export default class H5Video extends Component {
 			'loadstart', 'pause', 'play', 'playing', 'timeline', 'ratechange', 'seeked', 'seeking', 'stalled', 'suspend', 'timeupdate',
 			'volumechange', 'waiting'
 		];
+		this.__timebase = +new Date();
 		this.on('loadeddata', this.notify);
 		this.on('progress', this.notify);
 		this.on('play', this.notify);
@@ -39,17 +39,22 @@ export default class H5Video extends Component {
 		this.on('ended', this.notify);
 		this.on('seeking', this.notify);
 		this.on('seeked', this.notify);
+
+		this.load(this.options.src, this.options.m3u8 ? 'm3u8' : '');
 	}
 	notify(e) {
 		var msg = {type: e.type, src: this, ts: e.timeStamp};
 
 		switch (e.type) {
-			case 'error':
+			case PlayerMSG.Loaded:
+				this.__timebase = +new Date() - msg.ts;
+				break;
+			case PlayerMSG.Error:
 				var Props = {1: 'MEDIA_ERR_ABORTED', 2: 'MEDIA_ERR_DECODE', 3: 'MEDIA_ERR_NETWORK', 4: 'MEDIA_ERR_SRC_NOT_SUPPORTED'};
 				msg.detail = (this.el && this.el.error) || {code: e.code};
 				msg.detail.reason = Props[msg.detail.code];
 				break;
-			case 'ended':
+			case PlayerMSG.Ended:
 				this.pause(); // IE9 不会自动改变播放状态，导致伪全屏的时候出现黑屏
 				break;
 		}
@@ -113,7 +118,7 @@ export default class H5Video extends Component {
 	}
 	
 	load(src, type) {
-		this.pub({type: PlayerMSG.Load, src: this});
+		this.pub({type: PlayerMSG.Load, src: this, ts: +new Date() - this.__timebase, detail: {src: src, type: type}});
 		var isM3u8 = src.indexOf('.m3u8') > -1 || type == 'm3u8';
 		if (isM3u8) {
 			var self = this;
