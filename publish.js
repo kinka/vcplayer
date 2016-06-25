@@ -11,7 +11,7 @@ var SrcPath = './src/',
 
 console.log('copy demo.html');
 var demoHtml = fs.readFileSync(SrcPath + '../demo.html').toString();
-fs.writeFileSync(DstPath + 'demo.html', demoHtml.replace('/dist/', CDNPath));
+fs.writeFileSync(DstPath + 'demo.html', demoHtml.replace(new RegExp('/dist/', 'g'), CDNPath));
 console.log('copy done');
 
 console.log('copy libs');

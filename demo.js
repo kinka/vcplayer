@@ -1,5 +1,5 @@
-import {Player, browser, util} from './src/player'
-// var Player = vcp.Player, browser = vcp.browser;
+// import {Player, browser, util} from './src/player'
+var Player = vcp.Player, browser = vcp.browser, util = vcp.util;
 // import './src/css/vcplayer.css';
 
 var $ = function(selector) {return document.querySelector(selector)};
