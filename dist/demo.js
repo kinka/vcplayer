@@ -78,10 +78,10 @@
 	var btnLoad = $('#btn_load');
 	
 	domSrc.value = 'http://2527.vod.myqcloud.com/2527_bffd50081d9911e6b0f4d93c5d81f265.f20.mp4';
-	// domSrc.value = 'http://2527.vod.myqcloud.com/2527_542d5a28222411e6aadec1104f4fc9b9.f220.av.m3u8';
+	domSrc.value = 'http://2527.vod.myqcloud.com/2527_542d5a28222411e6aadec1104f4fc9b9.f220.av.m3u8';
 	domPoster.value = 'http://www.imagesbuddy.com/images/130/2014/01/whatever-garfield-face-graphic.jpg';
 	
-	// domSrc.value = 'rtmp://183.57.53.237/live/507882rYImpsjSnq?txkey=qcloud';
+	domSrc.value = 'rtmp://163.177.90.221:1923/live/58428rMdwlRjuAnN';
 	restore();
 	
 	window.xxlog = window.xxlog || console.log;
@@ -91,7 +91,7 @@
 		} catch (e) {}
 		if (_player.browser.IS_IE8 || _player.browser.IS_IE9) window.xxlog(a || '', b || '', c || '', d || '', e || '', f || '');else xxlog.apply(this, arguments);
 	};
-	newPlayer('demo_video');
+	window.player = newPlayer('demo_video');
 	// newPlayer('demo_video2')
 	function newPlayer(ownerId) {
 		save();
@@ -344,6 +344,16 @@
 			switch (msg.type) {
 				case MSG.Play:
 					dom.addClass(this.el, 'vcp-playing');
+					if (this.video.type() == util.VideoType.RTMP) {
+						this.__wait = true;
+						this.loading.show();
+					}
+					break;
+				case MSG.TimeUpdate:
+					if (this.__wait) {
+						this.__wait = false;
+						this.loading.hide();
+					}
 					break;
 				case MSG.Pause:
 					dom.removeClass(this.el, 'vcp-playing');
@@ -352,7 +362,12 @@
 					dom.removeClass(this.el, 'vcp-playing');
 					break;
 				case MSG.MetaLoaded:
-					this.loading.hide();
+					if (this.options.autoplay && this.video.type() == util.VideoType.RTMP) {
+						this.__wait = true;
+						this.loading.show();
+					} else {
+						this.loading.hide();
+					}
 					this.size(this.options.width, this.options.height);
 					break;
 				case MSG.Seeking:
@@ -1467,19 +1482,25 @@
 	
 		H5Video.prototype.load = function load(src, type) {
 			this.pub({ type: _message.MSG.Load, src: this, ts: +new Date() - this.__timebase, detail: { src: src, type: type } });
-			var isM3u8 = src.indexOf('.m3u8') > -1 || type == 'm3u8';
+			var isM3u8 = src.indexOf('.m3u8') > -1 || type == util.VideoType.M3U8;
 			if (isM3u8) {
+				this.__type = util.VideoType.M3U8;
 				var self = this;
 				if (typeof window.Hls == 'undefined') dom.loadScript(util.CDNPath + 'libs/hls.js', function () {
 					self.__hlsLoaded.call(self, src);
 				});else this.__hlsLoaded(src);
 			} else {
+				this.__type = type;
 				this.el.src = src;
 			}
 		};
 	
 		H5Video.prototype.playing = function playing() {
 			return !this.el.paused;
+		};
+	
+		H5Video.prototype.type = function type() {
+			return this.__type;
 		};
 	
 		return H5Video;
@@ -1749,7 +1770,7 @@
 					this.pub({ type: _message.MSG.Progress, src: this, ts: new Date() - this.__timebase });
 				}
 	
-				if (this.__buffered - this.duration() > 0.25) // 允许一定误差
+				if (this.__buffered >= this.duration()) // 允许一定误差
 					this.endPolling();
 			} else if (!this.__rtmp) {
 				if (this.__bytesloaded != info.bytesLoaded) {
@@ -1787,14 +1808,10 @@
 					this.pub({ type: e.type, src: this, ts: e.ts, detail: util.extend({ debug: true }, info) });
 				}
 	
-				if (this.__m3u8 && !this.__real_loaded && eventName == 'mediaTime' && info.videoWidth != 0) {
+				if (this.__m3u8 && !this.__metaloaded && eventName == 'mediaTime' && info.videoWidth != 0) {
 					// 修正flash m3u8的metaData时机
 					e.type = 'metaData';
-					this.__real_loaded = true;
-				} else if (this.__rtmp && !this.__real_loaded && eventName == 'mediaTime') {
-					// 修正rtmp首画面出现比较慢, loading状态结束太早的问题
-					e.type = 'metaData';
-					this.__real_loaded = true;
+					this.__metaloaded = true;
 				}
 	
 				switch (e.type) {
@@ -1815,13 +1832,14 @@
 						this.__prevPlayState = null;
 						this.__m3u8 = info.type === util.VideoType.M3U8;
 						this.__rtmp = info.type === util.VideoType.RTMP;
+						this.__type = info.type;
 						if (this.__m3u8) {
 							!this.options.autoplay && this.currentTime(0);
-							this.__real_loaded = this.__videoWidth != 0;
-							if (!this.__real_loaded) break; // not yet
+							this.__metaloaded = this.__videoWidth != 0;
+							if (!this.__metaloaded) break; // not yet
 						}
 	
-						this.__real_loaded = true;
+						this.__metaloaded = true;
 	
 						this.doPolling();
 	
@@ -1979,6 +1997,10 @@
 	
 		FlashVideo.prototype.playing = function playing() {
 			return this.el && this.el.getState().playState === State.Playing;
+		};
+	
+		FlashVideo.prototype.type = function type() {
+			return this.__type;
 		};
 	
 		return FlashVideo;

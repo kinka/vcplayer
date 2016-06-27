@@ -17,10 +17,10 @@ var domLive = $('#is_live'),
 var btnLoad = $('#btn_load');
 
 domSrc.value = 'http://2527.vod.myqcloud.com/2527_bffd50081d9911e6b0f4d93c5d81f265.f20.mp4';
-// domSrc.value = 'http://2527.vod.myqcloud.com/2527_542d5a28222411e6aadec1104f4fc9b9.f220.av.m3u8';
+domSrc.value = 'http://2527.vod.myqcloud.com/2527_542d5a28222411e6aadec1104f4fc9b9.f220.av.m3u8';
 domPoster.value = 'http://www.imagesbuddy.com/images/130/2014/01/whatever-garfield-face-graphic.jpg';
 
-// domSrc.value = 'rtmp://183.57.53.237/live/507882rYImpsjSnq?txkey=qcloud';
+domSrc.value = 'rtmp://163.177.90.221:1923/live/58428rMdwlRjuAnN';
 restore();
 
 window.xxlog = window.xxlog || console.log;
@@ -31,7 +31,7 @@ console.log = function(a,b,c,d,e,f) {
 	else
 		xxlog.apply(this, arguments);
 };
-newPlayer('demo_video');
+window.player = newPlayer('demo_video');
 // newPlayer('demo_video2')
 function newPlayer(ownerId) {
 	save();

@@ -227,6 +227,16 @@ return /******/ (function(modules) { // webpackBootstrap
 			switch (msg.type) {
 				case MSG.Play:
 					dom.addClass(this.el, 'vcp-playing');
+					if (this.video.type() == util.VideoType.RTMP) {
+						this.__wait = true;
+						this.loading.show();
+					}
+					break;
+				case MSG.TimeUpdate:
+					if (this.__wait) {
+						this.__wait = false;
+						this.loading.hide();
+					}
 					break;
 				case MSG.Pause:
 					dom.removeClass(this.el, 'vcp-playing');
@@ -235,7 +245,12 @@ return /******/ (function(modules) { // webpackBootstrap
 					dom.removeClass(this.el, 'vcp-playing');
 					break;
 				case MSG.MetaLoaded:
-					this.loading.hide();
+					if (this.options.autoplay && this.video.type() == util.VideoType.RTMP) {
+						this.__wait = true;
+						this.loading.show();
+					} else {
+						this.loading.hide();
+					}
 					this.size(this.options.width, this.options.height);
 					break;
 				case MSG.Seeking:
@@ -1350,19 +1365,25 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		H5Video.prototype.load = function load(src, type) {
 			this.pub({ type: _message.MSG.Load, src: this, ts: +new Date() - this.__timebase, detail: { src: src, type: type } });
-			var isM3u8 = src.indexOf('.m3u8') > -1 || type == 'm3u8';
+			var isM3u8 = src.indexOf('.m3u8') > -1 || type == util.VideoType.M3U8;
 			if (isM3u8) {
+				this.__type = util.VideoType.M3U8;
 				var self = this;
 				if (typeof window.Hls == 'undefined') dom.loadScript(util.CDNPath + 'libs/hls.js', function () {
 					self.__hlsLoaded.call(self, src);
 				});else this.__hlsLoaded(src);
 			} else {
+				this.__type = type;
 				this.el.src = src;
 			}
 		};
 
 		H5Video.prototype.playing = function playing() {
 			return !this.el.paused;
+		};
+
+		H5Video.prototype.type = function type() {
+			return this.__type;
 		};
 
 		return H5Video;
@@ -1632,7 +1653,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					this.pub({ type: _message.MSG.Progress, src: this, ts: new Date() - this.__timebase });
 				}
 
-				if (this.__buffered - this.duration() > 0.25) // 允许一定误差
+				if (this.__buffered >= this.duration()) // 允许一定误差
 					this.endPolling();
 			} else if (!this.__rtmp) {
 				if (this.__bytesloaded != info.bytesLoaded) {
@@ -1670,14 +1691,10 @@ return /******/ (function(modules) { // webpackBootstrap
 					this.pub({ type: e.type, src: this, ts: e.ts, detail: util.extend({ debug: true }, info) });
 				}
 
-				if (this.__m3u8 && !this.__real_loaded && eventName == 'mediaTime' && info.videoWidth != 0) {
+				if (this.__m3u8 && !this.__metaloaded && eventName == 'mediaTime' && info.videoWidth != 0) {
 					// 修正flash m3u8的metaData时机
 					e.type = 'metaData';
-					this.__real_loaded = true;
-				} else if (this.__rtmp && !this.__real_loaded && eventName == 'mediaTime') {
-					// 修正rtmp首画面出现比较慢, loading状态结束太早的问题
-					e.type = 'metaData';
-					this.__real_loaded = true;
+					this.__metaloaded = true;
 				}
 
 				switch (e.type) {
@@ -1698,13 +1715,14 @@ return /******/ (function(modules) { // webpackBootstrap
 						this.__prevPlayState = null;
 						this.__m3u8 = info.type === util.VideoType.M3U8;
 						this.__rtmp = info.type === util.VideoType.RTMP;
+						this.__type = info.type;
 						if (this.__m3u8) {
 							!this.options.autoplay && this.currentTime(0);
-							this.__real_loaded = this.__videoWidth != 0;
-							if (!this.__real_loaded) break; // not yet
+							this.__metaloaded = this.__videoWidth != 0;
+							if (!this.__metaloaded) break; // not yet
 						}
 
-						this.__real_loaded = true;
+						this.__metaloaded = true;
 
 						this.doPolling();
 
@@ -1862,6 +1880,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		FlashVideo.prototype.playing = function playing() {
 			return this.el && this.el.getState().playState === State.Playing;
+		};
+
+		FlashVideo.prototype.type = function type() {
+			return this.__type;
 		};
 
 		return FlashVideo;

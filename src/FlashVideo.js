@@ -92,7 +92,7 @@ export default class FlashVideo extends Component {
 				this.pub({type: PlayerMSG.Progress, src: this, ts: new Date() - this.__timebase});
 			}
 
-			if (this.__buffered - this.duration() > 0.25) // 允许一定误差
+			if (this.__buffered >= this.duration()) // 允许一定误差
 				this.endPolling();
 		} else if (!this.__rtmp) {
 			if (this.__bytesloaded != info.bytesLoaded) {
@@ -128,14 +128,10 @@ export default class FlashVideo extends Component {
 				this.pub({type: e.type, src: this, ts: e.ts, detail: util.extend({debug: true}, info)});
 			}
 
-			if (this.__m3u8 && !this.__real_loaded && eventName == 'mediaTime' && info.videoWidth != 0) {
+			if (this.__m3u8 && !this.__metaloaded && eventName == 'mediaTime' && info.videoWidth != 0) {
 				// 修正flash m3u8的metaData时机
 				e.type = 'metaData';
-				this.__real_loaded = true;
-			} else if (this.__rtmp && !this.__real_loaded && eventName == 'mediaTime') {
-				// 修正rtmp首画面出现比较慢, loading状态结束太早的问题
-				e.type = 'metaData';
-				this.__real_loaded = true;
+				this.__metaloaded = true;
 			}
 
 			switch (e.type) {
@@ -156,13 +152,14 @@ export default class FlashVideo extends Component {
 					this.__prevPlayState = null;
 					this.__m3u8 = info.type === util.VideoType.M3U8;
 					this.__rtmp = info.type === util.VideoType.RTMP;
+					this.__type = info.type;
 					if (this.__m3u8) {
 						!this.options.autoplay && this.currentTime(0);
-						this.__real_loaded = (this.__videoWidth != 0);
-						if (!this.__real_loaded) break; // not yet
+						this.__metaloaded = (this.__videoWidth != 0);
+						if (!this.__metaloaded) break; // not yet
 					}
 
-					this.__real_loaded = true;
+					this.__metaloaded = true;
 
 					this.doPolling();
 
@@ -309,6 +306,9 @@ export default class FlashVideo extends Component {
 	}
 	playing() {
 		return this.el && this.el.getState().playState === State.Playing;
+	}
+	type() {
+		return this.__type;
 	}
 }
 

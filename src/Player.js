@@ -122,6 +122,16 @@ export class Player {
 		switch (msg.type) {
 			case MSG.Play:
 				dom.addClass(this.el, 'vcp-playing');
+				if (this.video.type() == util.VideoType.RTMP) {
+					this.__wait = true;
+					this.loading.show();
+				}
+				break;
+			case MSG.TimeUpdate:
+				if (this.__wait) {
+					this.__wait = false;
+					this.loading.hide();
+				}
 				break;
 			case MSG.Pause:
 				dom.removeClass(this.el, 'vcp-playing');
@@ -130,7 +140,12 @@ export class Player {
 				dom.removeClass(this.el, 'vcp-playing');
 				break;
 			case MSG.MetaLoaded:
-				this.loading.hide();
+				if (this.options.autoplay && this.video.type() == util.VideoType.RTMP) {
+					this.__wait = true;
+					this.loading.show();
+				} else {
+					this.loading.hide();
+				}
 				this.size(this.options.width, this.options.height);
 				break;
 			case MSG.Seeking:

@@ -120,18 +120,23 @@ export default class H5Video extends Component {
 	
 	load(src, type) {
 		this.pub({type: PlayerMSG.Load, src: this, ts: +new Date() - this.__timebase, detail: {src: src, type: type}});
-		var isM3u8 = src.indexOf('.m3u8') > -1 || type == 'm3u8';
+		var isM3u8 = src.indexOf('.m3u8') > -1 || type == util.VideoType.M3U8;
 		if (isM3u8) {
+			this.__type = util.VideoType.M3U8;
 			var self = this;
 			if (typeof window.Hls == 'undefined')
 				dom.loadScript(util.CDNPath + 'libs/hls.js', function() {self.__hlsLoaded.call(self, src)});
 			else
 				this.__hlsLoaded(src);
 		} else {
+			this.__type = type;
 			this.el.src = src;
 		}
 	}
 	playing() {
 		return !this.el.paused;
+	}
+	type() {
+		return this.__type;
 	}
 }
