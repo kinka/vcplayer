@@ -112,6 +112,8 @@ export default class FlashVideo extends Component {
 	 * @property info.seekState
 	 * @property info.bufferLength
 	 * @property info.backBufferLength
+	 * @property info.code
+	 * @property info.msg
 	 */
 	notify(eventName, info) {
 		var e = {type: eventName, ts: (+new Date() - this.__timebase)};
@@ -212,7 +214,7 @@ export default class FlashVideo extends Component {
 					e.type = PlayerMSG.TimeUpdate;
 					break;
 				case 'error':
-					info = {reason: info.code};
+					info = {code: info.code, reason: info.msg || ''};
 					break;
 			}
 

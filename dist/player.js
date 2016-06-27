@@ -1648,6 +1648,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  * @property info.seekState
 	  * @property info.bufferLength
 	  * @property info.backBufferLength
+	  * @property info.code
+	  * @property info.msg
 	  */
 
 
@@ -1750,7 +1752,7 @@ return /******/ (function(modules) { // webpackBootstrap
 						e.type = _message.MSG.TimeUpdate;
 						break;
 					case 'error':
-						info = { reason: info.code };
+						info = { code: info.code, reason: info.msg || '' };
 						break;
 				}
 
