@@ -1,7 +1,7 @@
 import * as util from './util'
 
 
-export var MSG = {Error: 'error', TimeUpdate: 'timeupdate', Load: 'load', Loaded: 'loadeddata', Progress: 'progress', FullScreen: 'fullscreen',
+export var MSG = {Error: 'error', TimeUpdate: 'timeupdate', Load: 'load', MetaLoaded: 'loadedmetadata', Loaded: 'loadeddata', Progress: 'progress', FullScreen: 'fullscreen',
 	Play: 'play', Pause: 'pause', Ended: 'ended', Seeking: 'seeking', Seeked: 'seeked'};
 
 var Players = {};

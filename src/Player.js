@@ -129,7 +129,7 @@ export class Player {
 			case MSG.Ended:
 				dom.removeClass(this.el, 'vcp-playing');
 				break;
-			case MSG.Loaded:
+			case MSG.MetaLoaded:
 				this.loading.hide();
 				this.size(this.options.width, this.options.height);
 				break;

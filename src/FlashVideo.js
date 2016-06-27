@@ -3,6 +3,7 @@ import {MSG as PlayerMSG} from './message'
 import * as dom from './dom'
 import * as util from './util'
 
+var State = {Playing: 'PLAYING', Paused: 'PAUSED', Stop: 'STOP', Seeking: 'SEEKING', Seeked: 'SEEKED'};
 /**
  *
  * @class FlashVideo
@@ -78,7 +79,12 @@ export default class FlashVideo extends Component {
 		clearInterval(this.__timer);
 	}
 	interval() {
-		var info = this.el.getState();
+		var info;
+		try {
+			info = this.el.getState();
+		} catch (e) {
+			this.endPolling(); // 多次load会导致interval非正常结束，于是一直polling
+		}
 		if (this.__m3u8) {
 			var tmp = this.currentTime() + info.bufferLength;
 			if (this.__buffered !== tmp) {
@@ -86,9 +92,9 @@ export default class FlashVideo extends Component {
 				this.pub({type: PlayerMSG.Progress, src: this, ts: new Date() - this.__timebase});
 			}
 
-			if (this.__buffered >= this.duration())
+			if (this.__buffered - this.duration() > 0.25) // 允许一定误差
 				this.endPolling();
-		} else {
+		} else if (!this.__rtmp) {
 			if (this.__bytesloaded != info.bytesLoaded) {
 				this.__bytesloaded = info.bytesLoaded;
 				this.pub({type: PlayerMSG.Progress, src: this, ts: new Date() - this.__timebase});
@@ -121,13 +127,17 @@ export default class FlashVideo extends Component {
 			if (this.options.debug) {
 				this.pub({type: e.type, src: this, ts: e.ts, detail: util.extend({debug: true}, info)});
 			}
-			// 修正flash m3u8的metaData时机
+
 			if (this.__m3u8 && !this.__real_loaded && eventName == 'mediaTime' && info.videoWidth != 0) {
+				// 修正flash m3u8的metaData时机
+				e.type = 'metaData';
+				this.__real_loaded = true;
+			} else if (this.__rtmp && !this.__real_loaded && eventName == 'mediaTime') {
+				// 修正rtmp首画面出现比较慢, loading状态结束太早的问题
 				e.type = 'metaData';
 				this.__real_loaded = true;
 			}
-			var keepPrivate = (eventName == 'printLog' || eventName == 'canPlay');
-			// keepPrivate = false;
+
 			switch (e.type) {
 				case 'ready':
 					this.el = getFlashMovieObject(this.__id);
@@ -138,18 +148,22 @@ export default class FlashVideo extends Component {
 					return;
 					break;
 				case 'metaData':
-					e.type = PlayerMSG.Loaded;
+					e.type = PlayerMSG.MetaLoaded;
 					this.__videoWidth = info.videoWidth;
 					this.__videoHeight = info.videoHeight;
 					this.__duration = info.duration;
 					this.__bytesTotal = info.bytesTotal;
 					this.__prevPlayState = null;
-					this.__m3u8 = info.type === 'm3u8';
+					this.__m3u8 = info.type === util.VideoType.M3U8;
+					this.__rtmp = info.type === util.VideoType.RTMP;
 					if (this.__m3u8) {
 						!this.options.autoplay && this.currentTime(0);
 						this.__real_loaded = (this.__videoWidth != 0);
-						if (!this.__real_loaded) return; // not yet
+						if (!this.__real_loaded) break; // not yet
 					}
+
+					this.__real_loaded = true;
+
 					this.doPolling();
 
 					var self = this;
@@ -159,16 +173,17 @@ export default class FlashVideo extends Component {
 						self.cover = null;
 					}, 500);
 					break;
+				// todo PlayerMSG.Loaded
 				case 'playState':
-					if (info.playState == 'PLAYING') {
+					if (info.playState == State.Playing) {
 						this.__playing = true;
 						this.__stopped = false;
 						e.type = PlayerMSG.Play;
-					} else if (info.playState == 'PAUSED') {
+					} else if (info.playState == State.Paused) {
 						this.__playing = false;
 						this.__stopped = false;
 						e.type = PlayerMSG.Pause;
-					} else if (info.playState == 'STOP') {
+					} else if (info.playState == State.Stop) {
 						this.__playing = false;
 						this.__stopped = true;
 						e.type = PlayerMSG.Ended;
@@ -178,12 +193,12 @@ export default class FlashVideo extends Component {
 					}
 					break;
 				case 'seekState':
-					if (info.seekState == 'SEEKING') {
+					if (info.seekState == State.Seeking) {
 						e.type = PlayerMSG.Seeking;
-					} else if (info.seekState == 'SEEKED') {
+					} else if (info.seekState == State.Seeked) {
 						if (!this.__m3u8 // m3u8倒没有这个问题
-							&& info.playState == 'PAUSED'
-							|| info.playState == 'STOP' // 播放结束后seek状态不变更，所以强制play以恢复正常状态
+							&& info.playState == State.Paused
+							|| info.playState == State.Stop // 播放结束后seek状态不变更，所以强制play以恢复正常状态
 						) {
 							this.play();
 							this.__prevPlayState = info.playState;
@@ -196,16 +211,16 @@ export default class FlashVideo extends Component {
 					break;
 				case 'netStatus':
 					if (info.code == 'NetStream.Buffer.Full') {
-						if (this.__prevPlayState == 'PAUSED' || this.__prevPlayState == 'STOP') {
+						if (this.__prevPlayState == State.Paused || this.__prevPlayState == State.Stop) {
 							this.pause();
 						}
 						this.__prevPlayState = null;
 						e.type = PlayerMSG.Seeked;
 					} else if (info.code == 'NetStream.Seek.Complete') { // 播放到结尾再点播放会自动停止,所以force play again
 						this.play();
-						return;
+						break;
 					} else {
-						return; // 信息太多了。。。
+						break; // 信息太多了。。。
 					}
 					break;
 				case 'mediaTime':
@@ -218,6 +233,7 @@ export default class FlashVideo extends Component {
 					break;
 			}
 
+			var keepPrivate = (eventName == 'printLog' || eventName == 'canPlay');
 			!keepPrivate && this.pub({type: e.type, src: this, ts: e.ts, detail: info});
 		} catch (err) {
 			console.error(eventName + ' ' + e.type, err);
@@ -289,10 +305,10 @@ export default class FlashVideo extends Component {
 
 	load(src, type) {
 		this.pub({type: PlayerMSG.Load, src: this, ts: (new Date() - this.__timebase), detail: {src: src, type: type}});
-		this.el.playerLoad(src);
+		this.el && this.el.playerLoad(src);
 	}
 	playing() {
-		return this.el && this.el.getState().playState === 'PLAYING';
+		return this.el && this.el.getState().playState === State.Playing;
 	}
 }
 

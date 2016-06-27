@@ -30,17 +30,18 @@ export default class H5Video extends Component {
 			'volumechange', 'waiting'
 		];
 		this.__timebase = +new Date();
-		this.on('loadeddata', this.notify);
-		this.on('progress', this.notify);
-		this.on('play', this.notify);
-		this.on('pause', this.notify);
-		this.on('error', this.notify);
-		this.on('timeupdate', this.notify);
-		this.on('ended', this.notify);
-		this.on('seeking', this.notify);
-		this.on('seeked', this.notify);
+		this.on(PlayerMSG.MetaLoaded, this.notify);
+		this.on(PlayerMSG.Loaded, this.notify);
+		this.on(PlayerMSG.Progress, this.notify);
+		this.on(PlayerMSG.Play, this.notify);
+		this.on(PlayerMSG.Pause, this.notify);
+		this.on(PlayerMSG.Error, this.notify);
+		this.on(PlayerMSG.TimeUpdate, this.notify);
+		this.on(PlayerMSG.Ended, this.notify);
+		this.on(PlayerMSG.Seeking, this.notify);
+		this.on(PlayerMSG.Seeked, this.notify);
 
-		this.load(this.options.src, this.options.m3u8 ? 'm3u8' : '');
+		this.load(this.options.src, this.options.m3u8 ? util.VideoType.M3U8 : '');
 	}
 	notify(e) {
 		var msg = {type: e.type, src: this, ts: e.timeStamp};

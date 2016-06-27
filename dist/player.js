@@ -234,7 +234,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				case MSG.Ended:
 					dom.removeClass(this.el, 'vcp-playing');
 					break;
-				case MSG.Loaded:
+				case MSG.MetaLoaded:
 					this.loading.hide();
 					this.size(this.options.width, this.options.height);
 					break;
@@ -893,7 +893,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	exports.__esModule = true;
-	exports.CDNPath = exports.FullscreenApi = undefined;
+	exports.VideoType = exports.CDNPath = exports.FullscreenApi = undefined;
 	exports.guid = guid;
 	exports.bind = bind;
 	exports.isEmpty = isEmpty;
@@ -1050,6 +1050,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var CDNPath = exports.CDNPath = "//imgcache.qq.com/open/qcloud/video/vcplayer/";
 
+	var VideoType = exports.VideoType = { RTMP: 'rtmp', M3U8: 'm3u8' };
+
 /***/ },
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
@@ -1068,7 +1070,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
 
-	var MSG = exports.MSG = { Error: 'error', TimeUpdate: 'timeupdate', Load: 'load', Loaded: 'loadeddata', Progress: 'progress', FullScreen: 'fullscreen',
+	var MSG = exports.MSG = { Error: 'error', TimeUpdate: 'timeupdate', Load: 'load', MetaLoaded: 'loadedmetadata', Loaded: 'loadeddata', Progress: 'progress', FullScreen: 'fullscreen',
 		Play: 'play', Pause: 'pause', Ended: 'ended', Seeking: 'seeking', Seeked: 'seeked' };
 
 	var Players = {};
@@ -1251,17 +1253,18 @@ return /******/ (function(modules) { // webpackBootstrap
 		H5Video.prototype.setup = function setup() {
 			var events = ['abort', 'canplay', 'canplaythrough', 'durationchange', 'emptied', 'ended', 'error', 'loadedmetadata', 'loadeddata', 'loadstart', 'pause', 'play', 'playing', 'timeline', 'ratechange', 'seeked', 'seeking', 'stalled', 'suspend', 'timeupdate', 'volumechange', 'waiting'];
 			this.__timebase = +new Date();
-			this.on('loadeddata', this.notify);
-			this.on('progress', this.notify);
-			this.on('play', this.notify);
-			this.on('pause', this.notify);
-			this.on('error', this.notify);
-			this.on('timeupdate', this.notify);
-			this.on('ended', this.notify);
-			this.on('seeking', this.notify);
-			this.on('seeked', this.notify);
+			this.on(_message.MSG.MetaLoaded, this.notify);
+			this.on(_message.MSG.Loaded, this.notify);
+			this.on(_message.MSG.Progress, this.notify);
+			this.on(_message.MSG.Play, this.notify);
+			this.on(_message.MSG.Pause, this.notify);
+			this.on(_message.MSG.Error, this.notify);
+			this.on(_message.MSG.TimeUpdate, this.notify);
+			this.on(_message.MSG.Ended, this.notify);
+			this.on(_message.MSG.Seeking, this.notify);
+			this.on(_message.MSG.Seeked, this.notify);
 
-			this.load(this.options.src, this.options.m3u8 ? 'm3u8' : '');
+			this.load(this.options.src, this.options.m3u8 ? util.VideoType.M3U8 : '');
 		};
 
 		H5Video.prototype.notify = function notify(e) {
@@ -1553,6 +1556,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	var State = { Playing: 'PLAYING', Paused: 'PAUSED', Stop: 'STOP', Seeking: 'SEEKING', Seeked: 'SEEKED' };
 	/**
 	 *
 	 * @class FlashVideo
@@ -1615,7 +1619,12 @@ return /******/ (function(modules) { // webpackBootstrap
 		};
 
 		FlashVideo.prototype.interval = function interval() {
-			var info = this.el.getState();
+			var info;
+			try {
+				info = this.el.getState();
+			} catch (e) {
+				this.endPolling(); // 多次load会导致interval非正常结束，于是一直polling
+			}
 			if (this.__m3u8) {
 				var tmp = this.currentTime() + info.bufferLength;
 				if (this.__buffered !== tmp) {
@@ -1623,8 +1632,9 @@ return /******/ (function(modules) { // webpackBootstrap
 					this.pub({ type: _message.MSG.Progress, src: this, ts: new Date() - this.__timebase });
 				}
 
-				if (this.__buffered >= this.duration()) this.endPolling();
-			} else {
+				if (this.__buffered - this.duration() > 0.25) // 允许一定误差
+					this.endPolling();
+			} else if (!this.__rtmp) {
 				if (this.__bytesloaded != info.bytesLoaded) {
 					this.__bytesloaded = info.bytesLoaded;
 					this.pub({ type: _message.MSG.Progress, src: this, ts: new Date() - this.__timebase });
@@ -1659,13 +1669,17 @@ return /******/ (function(modules) { // webpackBootstrap
 				if (this.options.debug) {
 					this.pub({ type: e.type, src: this, ts: e.ts, detail: util.extend({ debug: true }, info) });
 				}
-				// 修正flash m3u8的metaData时机
+
 				if (this.__m3u8 && !this.__real_loaded && eventName == 'mediaTime' && info.videoWidth != 0) {
+					// 修正flash m3u8的metaData时机
+					e.type = 'metaData';
+					this.__real_loaded = true;
+				} else if (this.__rtmp && !this.__real_loaded && eventName == 'mediaTime') {
+					// 修正rtmp首画面出现比较慢, loading状态结束太早的问题
 					e.type = 'metaData';
 					this.__real_loaded = true;
 				}
-				var keepPrivate = eventName == 'printLog' || eventName == 'canPlay';
-				// keepPrivate = false;
+
 				switch (e.type) {
 					case 'ready':
 						this.el = getFlashMovieObject(this.__id);
@@ -1676,18 +1690,22 @@ return /******/ (function(modules) { // webpackBootstrap
 						return;
 						break;
 					case 'metaData':
-						e.type = _message.MSG.Loaded;
+						e.type = _message.MSG.MetaLoaded;
 						this.__videoWidth = info.videoWidth;
 						this.__videoHeight = info.videoHeight;
 						this.__duration = info.duration;
 						this.__bytesTotal = info.bytesTotal;
 						this.__prevPlayState = null;
-						this.__m3u8 = info.type === 'm3u8';
+						this.__m3u8 = info.type === util.VideoType.M3U8;
+						this.__rtmp = info.type === util.VideoType.RTMP;
 						if (this.__m3u8) {
 							!this.options.autoplay && this.currentTime(0);
 							this.__real_loaded = this.__videoWidth != 0;
-							if (!this.__real_loaded) return; // not yet
+							if (!this.__real_loaded) break; // not yet
 						}
+
+						this.__real_loaded = true;
+
 						this.doPolling();
 
 						var self = this;
@@ -1697,16 +1715,17 @@ return /******/ (function(modules) { // webpackBootstrap
 							self.cover = null;
 						}, 500);
 						break;
+					// todo PlayerMSG.Loaded
 					case 'playState':
-						if (info.playState == 'PLAYING') {
+						if (info.playState == State.Playing) {
 							this.__playing = true;
 							this.__stopped = false;
 							e.type = _message.MSG.Play;
-						} else if (info.playState == 'PAUSED') {
+						} else if (info.playState == State.Paused) {
 							this.__playing = false;
 							this.__stopped = false;
 							e.type = _message.MSG.Pause;
-						} else if (info.playState == 'STOP') {
+						} else if (info.playState == State.Stop) {
 							this.__playing = false;
 							this.__stopped = true;
 							e.type = _message.MSG.Ended;
@@ -1716,11 +1735,11 @@ return /******/ (function(modules) { // webpackBootstrap
 						}
 						break;
 					case 'seekState':
-						if (info.seekState == 'SEEKING') {
+						if (info.seekState == State.Seeking) {
 							e.type = _message.MSG.Seeking;
-						} else if (info.seekState == 'SEEKED') {
+						} else if (info.seekState == State.Seeked) {
 							if (!this.__m3u8 // m3u8倒没有这个问题
-							 && info.playState == 'PAUSED' || info.playState == 'STOP' // 播放结束后seek状态不变更，所以强制play以恢复正常状态
+							 && info.playState == State.Paused || info.playState == State.Stop // 播放结束后seek状态不变更，所以强制play以恢复正常状态
 							) {
 									this.play();
 									this.__prevPlayState = info.playState;
@@ -1733,7 +1752,7 @@ return /******/ (function(modules) { // webpackBootstrap
 						break;
 					case 'netStatus':
 						if (info.code == 'NetStream.Buffer.Full') {
-							if (this.__prevPlayState == 'PAUSED' || this.__prevPlayState == 'STOP') {
+							if (this.__prevPlayState == State.Paused || this.__prevPlayState == State.Stop) {
 								this.pause();
 							}
 							this.__prevPlayState = null;
@@ -1741,9 +1760,9 @@ return /******/ (function(modules) { // webpackBootstrap
 						} else if (info.code == 'NetStream.Seek.Complete') {
 							// 播放到结尾再点播放会自动停止,所以force play again
 							this.play();
-							return;
+							break;
 						} else {
-							return; // 信息太多了。。。
+							break; // 信息太多了。。。
 						}
 						break;
 					case 'mediaTime':
@@ -1756,6 +1775,7 @@ return /******/ (function(modules) { // webpackBootstrap
 						break;
 				}
 
+				var keepPrivate = eventName == 'printLog' || eventName == 'canPlay';
 				!keepPrivate && this.pub({ type: e.type, src: this, ts: e.ts, detail: info });
 			} catch (err) {
 				console.error(eventName + ' ' + e.type, err);
@@ -1837,11 +1857,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		FlashVideo.prototype.load = function load(src, type) {
 			this.pub({ type: _message.MSG.Load, src: this, ts: new Date() - this.__timebase, detail: { src: src, type: type } });
-			this.el.playerLoad(src);
+			this.el && this.el.playerLoad(src);
 		};
 
 		FlashVideo.prototype.playing = function playing() {
-			return this.el && this.el.getState().playState === 'PLAYING';
+			return this.el && this.el.getState().playState === State.Playing;
 		};
 
 		return FlashVideo;
