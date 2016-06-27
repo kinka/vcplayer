@@ -1,6 +1,6 @@
-// import {Player, browser, util} from './src/player'
-var Player = vcp.Player, browser = vcp.browser, util = vcp.util;
-// import './src/css/vcplayer.css';
+import {Player, browser, util} from './src/player'
+// var Player = vcp.Player, browser = vcp.browser, util = vcp.util;
+import './src/css/vcplayer.css';
 
 var $ = function(selector) {return document.querySelector(selector)};
 var $$ = function(selector) {return document.querySelectorAll(selector)};
@@ -20,7 +20,7 @@ domSrc.value = 'http://2527.vod.myqcloud.com/2527_bffd50081d9911e6b0f4d93c5d81f2
 domSrc.value = 'http://2527.vod.myqcloud.com/2527_542d5a28222411e6aadec1104f4fc9b9.f220.av.m3u8';
 domPoster.value = 'http://www.imagesbuddy.com/images/130/2014/01/whatever-garfield-face-graphic.jpg';
 
-domSrc.value = 'rtmp://183.57.53.199/live/67554r3wrLzOdZvd?txkey=qcloud';
+// domSrc.value = 'rtmp://183.57.53.237/live/507882rYImpsjSnq?txkey=qcloud';
 restore();
 
 window.xxlog = window.xxlog || console.log;
@@ -64,8 +64,8 @@ function newPlayer(ownerId) {
 			// style: 'stretch'
 		},
 		listener: function(msg) {
-			if (msg.type == 'timeupdate' || msg.type === 'printLog') return;
 			console.log(msg.ts, 'g' + this.guid, msg.type, msg.detail)
+			if (msg.type == 'timeupdate' || msg.type === 'printLog' || msg.type == 'mediaTime') return;
 			log.innerHTML += Number(msg.ts/1000).toFixed(0) + ': p' + this.guid + ' <span class="em">[' + msg.type + ']</span>'
 				+ (msg.detail ? JSON.stringify(msg.detail) : '')+ '<br/><br/>';
 			log.scrollTop = log.scrollHeight;

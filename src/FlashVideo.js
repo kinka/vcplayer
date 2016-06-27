@@ -220,7 +220,7 @@ export default class FlashVideo extends Component {
 
 			!keepPrivate && this.pub({type: e.type, src: this, ts: e.ts, detail: info});
 		} catch (err) {
-			console.log(eventName + ' ' + e.type, err);
+			console.error(eventName + ' ' + e.type, err);
 		}
 	}
 

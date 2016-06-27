@@ -10,6 +10,8 @@ export default class Poster extends Component {
 			this.poster = this.options.poster;
 		} else if (typeof this.options.poster == 'string') {
 			this.poster = {src: this.options.poster}
+		} else {
+			this.poster = {};
 		}
 	}
 

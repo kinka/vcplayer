@@ -3,7 +3,6 @@
     z-index: 0;
     font-family: Helvetica;
     background-color: black;
-    zoom: 1;
 }
 .vcp-fullscreen.vcp-player, .vcp-fullscreen video {
     width: 100%!important;
@@ -87,7 +86,6 @@ body.vcp-full-window {
     float: left;
     background: rgb(196, 196, 196);
     height: 10px;
-    /*border: 1px solid #d8d8d8;*/
     opacity: 0.8;
     filter: alpha(opacity=80);
     cursor: pointer;
@@ -106,7 +104,7 @@ body.vcp-full-window {
     position: absolute;
     top: 0;
     left: 0;
-    border-radius: 1em;
+    border-radius: 1em!important;
     height: 10px;
     margin-left: -5px;
     width: 10px;
@@ -115,8 +113,8 @@ body.vcp-full-window {
 .vcp-slider-vertical {
     position: relative;
     width: 0.5em;
-    height: 10em;
-    top: -7em;
+    height: 8em;
+    top: -5.6em;
     z-index: 1001;
     background-color: rgb(28, 28, 28);
     opacity: 0.9;
@@ -136,7 +134,7 @@ body.vcp-full-window {
     background-color: aliceblue;
     width: 0.8em;
     height: 0.8em;
-    border-radius: 0.8em;
+    border-radius: 0.8em!important;
     margin-top: -0.4em;
     top: 0;
     left: -0.15em;
@@ -172,10 +170,9 @@ body.vcp-full-window {
 /* 时间展示 */
 .vcp-timelabel {
     display: inline-block;
-    font-size: 12px;
-    line-height: 48px;
-    height: 48px;
-    width: 48px;
+    line-height: 3em;
+    height: 3em;
+    width: 3em;
     float: left;
     color: white;
     padding: 0 9px;
@@ -184,8 +181,8 @@ body.vcp-full-window {
 }
 /* 音量控制 */
 .vcp-volume {
-    height: 48px;
-    width: 48px;
+    height: 3em;
+    width: 3em;
     cursor: pointer;
     position: relative;
     z-index: 1001;
@@ -198,8 +195,8 @@ body.vcp-full-window {
     background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/volume.png);
     background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/volume.svg), none;
     display: inline-block;
-    width: 48px;
-    height: 48px;
+    width: 3em;
+    height: 3em;
     position: absolute;
     left: 0;
     top: 0;
@@ -209,7 +206,7 @@ body.vcp-full-window {
     background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/muted.svg), none;
 }
 .vcp-volume .vcp-slider-vertical {
-    top: -10.4em;
+    top: -8.4em;
     left: 1em;
     display: none;
 }
@@ -221,11 +218,11 @@ body.vcp-full-window {
     display: block;
 }
 .vcp-volume .vcp-volume-bg {
-    height: 10.8em;
+    height: 8.8em;
     width: 2em;
     position: absolute;
     left: 0.25em;
-    top: -10.8em;
+    top: -8.8em;
     background: rgb(36,36,36);
     display: none;
 }
@@ -235,8 +232,8 @@ body.vcp-full-window {
 /* 全屏控件 */
 .vcp-fullscreen-toggle {
     position: relative;
-    width: 48px;
-    height: 48px;
+    width: 3em;
+    height: 3em;
     float: right;
     cursor: pointer;
     z-index: 1001;
@@ -252,7 +249,7 @@ body.vcp-full-window {
     position: absolute;
     left: 50%;
     top: 50%;
-    margin-top: -48px;
+    margin-top: -3em;
 }
 
 .vcp-poster {
