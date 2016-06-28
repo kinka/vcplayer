@@ -175,9 +175,20 @@ return /******/ (function(modules) { // webpackBootstrap
 			this.options.width = this.options.width || owner.offsetWidth;
 			this.options.height = this.options.height || owner.offsetHeight;
 			this.size(this.options.width, this.options.height);
+
+			this.setup();
 		};
 
-		Player.prototype.size = function size(mW, mH) {
+		/**
+	  *
+	  * @param mW
+	  * @param mH
+	  * @param style [String] fit | cover
+	  */
+
+
+		Player.prototype.size = function size(mW, mH, style) {
+			style = style || 'fit';
 			var vW = this.video.videoWidth(),
 			    vH = this.video.videoHeight();
 			var dW = mW,
@@ -185,19 +196,17 @@ return /******/ (function(modules) { // webpackBootstrap
 			if (vW && vH) {
 				var ratio = vW / vH;
 				// console.log(ratio, vW, vH, mW, mH)
-				var vertical = mW / mH < 1;
-
-				if (vertical) {
-					// 高度优先
-					dH = mH;
-					dW = dH * ratio;
-				} else {
+				if (style == 'fit') {
 					dW = mW;
 					dH = dW / ratio;
+					if (dH > mH) {
+						// 高度超出容器
+						dW *= mH / dH;
+						dH = mH;
+					}
 				}
 			}
 
-			// console.log(dW, dH)
 			this.video.width(dW);
 			this.video.height(dH);
 
@@ -208,7 +217,9 @@ return /******/ (function(modules) { // webpackBootstrap
 			this.height = dH;
 		};
 
-		Player.prototype.setup = function setup() {};
+		Player.prototype.setup = function setup() {
+			this.__handleEvent = util.bind(this, this.handleEvent);
+		};
 
 		Player.prototype.destroy = function destroy() {
 			this.video && this.video.destroy();
@@ -223,6 +234,35 @@ return /******/ (function(modules) { // webpackBootstrap
 			this.listener = listener;
 		};
 
+		Player.prototype.handleEvent = function handleEvent(e) {
+			switch (e.type) {
+				case 'mousemove':
+					// 播放时检测鼠标是否移动，如果移动则出现控制栏
+					if (this.__lastmove && new Date() - this.__lastmove < 100) break;
+
+					var self = this;
+					this.__movecnt = this.__movecnt || 0;
+					this.__movecnt++;
+					if (this.__movecnt < 5) {
+						setTimeout(function () {
+							self.__movecnt = 0;
+						}, 500);
+						break;
+					}
+					this.__movecnt = 0;
+
+					this.__lastmove = +new Date();
+					clearTimeout(this.__moveid);
+
+					self.panel.show();
+					this.__moveid = setTimeout(function () {
+						self.playing() && self.panel.hide();
+						console.log('not moving');
+					}, 3000);
+					break;
+			}
+		};
+
 		Player.prototype.handleMsg = function handleMsg(msg) {
 			switch (msg.type) {
 				case MSG.Play:
@@ -231,6 +271,8 @@ return /******/ (function(modules) { // webpackBootstrap
 						this.__wait = true;
 						this.loading.show();
 					}
+
+					dom.on(this.el, 'mousemove', this.__handleEvent);
 					break;
 				case MSG.TimeUpdate:
 					if (this.__wait) {
@@ -239,9 +281,13 @@ return /******/ (function(modules) { // webpackBootstrap
 					}
 					break;
 				case MSG.Pause:
+					dom.off(this.el, 'mousemove', this.__handleEvent);
+
 					dom.removeClass(this.el, 'vcp-playing');
 					break;
 				case MSG.Ended:
+					dom.off(this.el, 'mousemove', this.__handleEvent);
+
 					dom.removeClass(this.el, 'vcp-playing');
 					break;
 				case MSG.MetaLoaded:
@@ -265,6 +311,9 @@ return /******/ (function(modules) { // webpackBootstrap
 						// fix IE9 按esc toggle 时背景图片出不来
 						dom.toggleClass(self.el, 'vcp-fullscreen', msg.detail.isFullscreen);
 					}, 0);
+					break;
+				case MSG.Error:
+					alert(msg.code + ' ' + msg.reason);
 					break;
 			}
 
@@ -357,7 +406,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	// module
-	exports.push([module.id, ".vcp-player {\r\n    position: relative;\r\n    z-index: 0;\r\n    font-family: Helvetica;\r\n    background-color: black;\r\n}\r\n.vcp-fullscreen.vcp-player, .vcp-fullscreen video {\r\n    width: 100%!important;\r\n    height: 100%!important;\r\n}\r\n/* 伪全屏 */\r\nbody.vcp-full-window {\r\n    width: 100%!important;\r\n    height: 100%!important;\r\n    overflow-y: auto;\r\n}\r\n.vcp-full-window .vcp-player {\r\n    position: fixed;\r\n    left: 0;\r\n    top: 0;\r\n}\r\n\r\n/* chrome flash 成功加载到DOM之前会闪白屏，所以加个黑屏遮一遮 */\r\n.vcp-pre-flash {\r\n    z-index: 1000; background: black; width: 100%; height: 100%; position: absolute; top: 0; left: 0;\r\n}\r\n.vcp-controls-panel {\r\n    position: absolute;\r\n    bottom: 0;\r\n    width: 100%;\r\n    font-size: 16px;\r\n    height: 3em;\r\n    z-index: 1000;\r\n}\r\n.vcp-panel-bg {\r\n    width: 100%;\r\n    height: 100%;\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n    background-color: rgb(36, 36, 36);\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n    z-index: 1000;\r\n}\r\n.vcp-playing .vcp-controls-panel {\r\n    display: none;\r\n}\r\n.vcp-player:hover .vcp-controls-panel {\r\n    display: block;\r\n}\r\n\r\n.vcp-playtoggle {\r\n    cursor: pointer;\r\n    position: relative;\r\n    z-index: 1001;\r\n    width: 3em;\r\n    height: 100%;\r\n    float: left;\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/play_btn.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/play_btn.svg), none;\r\n}\r\n.vcp-playtoggle:hover {\r\n    background-color: slategray;\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n}\r\n.vcp-playing .vcp-playtoggle {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/stop_btn.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/stop_btn.svg), none;\r\n}\r\n.vcp-bigplay {\r\n    width: 100%;\r\n    height: 100%;\r\n    position: absolute;\r\n    background-color: white\\0;\r\n    filter: alpha(opacity=0); /*奇怪的IE8/9鼠标事件穿透*/\r\n    z-index: 1000;\r\n    top: 0;\r\n    left: 0;\r\n}\r\n\r\n.vcp-slider {\r\n    position: relative;\r\n    z-index: 1001;\r\n    float: left;\r\n    background: rgb(196, 196, 196);\r\n    height: 10px;\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n    cursor: pointer;\r\n}\r\n.vcp-slider .vcp-slider-track {\r\n    width: 0;\r\n    height: 100%;\r\n    margin-top: 0;\r\n    opacity: 1;\r\n    filter: alpha(opacity=100);\r\n    background-color: dodgerblue; /*beautiful blue*/\r\n}\r\n.vcp-slider .vcp-slider-thumb {\r\n    cursor: pointer;\r\n    background-color: white;\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    border-radius: 1em!important;\r\n    height: 10px;\r\n    margin-left: -5px;\r\n    width: 10px;\r\n}\r\n\r\n.vcp-slider-vertical {\r\n    position: relative;\r\n    width: 0.5em;\r\n    height: 8em;\r\n    top: -5.6em;\r\n    z-index: 1001;\r\n    background-color: rgb(28, 28, 28);\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n    cursor: pointer;\r\n}\r\n.vcp-slider-vertical .vcp-slider-track {\r\n    background-color: rgb(18, 117, 207);\r\n    width: 0.5em;\r\n    height: 100%;\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n}\r\n.vcp-slider-vertical .vcp-slider-thumb {\r\n    cursor: pointer;\r\n    position: absolute;\r\n    background-color: aliceblue;\r\n    width: 0.8em;\r\n    height: 0.8em;\r\n    border-radius: 0.8em!important;\r\n    margin-top: -0.4em;\r\n    top: 0;\r\n    left: -0.15em;\r\n}\r\n/* 时间线/进度条 */\r\n.vcp-timeline {\r\n    top: -10px;\r\n    left: 0;\r\n    height: 10px;\r\n    position: absolute;\r\n    z-index: 1001;\r\n    width: 100%;\r\n}\r\n.vcp-timeline .vcp-slider-thumb {\r\n    top: -3px;\r\n}\r\n.vcp-timeline .vcp-slider {\r\n    margin-top: 8px;\r\n    height: 2px;\r\n    width: 100%;\r\n}\r\n.vcp-timeline:hover .vcp-slider {\r\n    margin-top: 0;\r\n    height: 10px;\r\n}\r\n.vcp-timeline:hover .vcp-slider-thumb {\r\n    display: block;\r\n    width: 16px;\r\n    height: 16px;\r\n    top: -3px;\r\n    margin-left: -8px;\r\n}\r\n/* 时间展示 */\r\n.vcp-timelabel {\r\n    display: inline-block;\r\n    line-height: 3em;\r\n    height: 3em;\r\n    width: 3em;\r\n    float: left;\r\n    color: white;\r\n    padding: 0 9px;\r\n    z-index: 1001;\r\n    position: relative;\r\n}\r\n/* 音量控制 */\r\n.vcp-volume {\r\n    height: 3em;\r\n    width: 3em;\r\n    cursor: pointer;\r\n    position: relative;\r\n    z-index: 1001;\r\n    float: right;\r\n    background-color: transparent;\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n}\r\n.vcp-volume-icon {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/volume.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/volume.svg), none;\r\n    display: inline-block;\r\n    width: 3em;\r\n    height: 3em;\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n}\r\n.vcp-volume-muted .vcp-volume-icon {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/muted.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/muted.svg), none;\r\n}\r\n.vcp-volume .vcp-slider-vertical {\r\n    top: -8.4em;\r\n    left: 1em;\r\n    display: none;\r\n}\r\n.vcp-volume .vcp-slider-track {\r\n    position: absolute;\r\n    bottom: 0;\r\n}\r\n.vcp-volume:hover .vcp-slider-vertical {\r\n    display: block;\r\n}\r\n.vcp-volume .vcp-volume-bg {\r\n    height: 8.8em;\r\n    width: 2em;\r\n    position: absolute;\r\n    left: 0.25em;\r\n    top: -8.8em;\r\n    background: rgb(36,36,36);\r\n    display: none;\r\n}\r\n.vcp-volume:hover .vcp-volume-bg, .vcp-volume:hover .vcp-slider-vertical {\r\n    display: block;\r\n}\r\n/* 全屏控件 */\r\n.vcp-fullscreen-toggle {\r\n    position: relative;\r\n    width: 3em;\r\n    height: 3em;\r\n    float: right;\r\n    cursor: pointer;\r\n    z-index: 1001;\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen.svg), none;\r\n}\r\n.vcp-fullscreen .vcp-fullscreen-toggle {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen_exit.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen_exit.svg), none;\r\n}\r\n\r\n.vcp-loading {\r\n    position: absolute;\r\n    left: 50%;\r\n    top: 50%;\r\n    margin-top: -3em;\r\n}\r\n\r\n.vcp-poster {\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n    overflow: hidden;\r\n    z-index: 1000;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n.vcp-poster-pic {\r\n    position: relative;\r\n}", ""]);
+	exports.push([module.id, ".vcp-player {\r\n    position: relative;\r\n    z-index: 0;\r\n    font-family: Helvetica;\r\n    background-color: black;\r\n}\r\n.vcp-fullscreen.vcp-player, .vcp-fullscreen video {\r\n    width: 100%!important;\r\n    height: 100%!important;\r\n}\r\n/* 伪全屏 */\r\nbody.vcp-full-window {\r\n    width: 100%!important;\r\n    height: 100%!important;\r\n    overflow-y: auto;\r\n}\r\n.vcp-full-window .vcp-player {\r\n    position: fixed;\r\n    left: 0;\r\n    top: 0;\r\n}\r\n\r\n/* chrome flash 成功加载到DOM之前会闪白屏，所以加个黑屏遮一遮 */\r\n.vcp-pre-flash {\r\n    z-index: 1000; background: black; width: 100%; height: 100%; position: absolute; top: 0; left: 0;\r\n}\r\n.vcp-controls-panel {\r\n    position: absolute;\r\n    bottom: 0;\r\n    width: 100%;\r\n    font-size: 16px;\r\n    height: 3em;\r\n    z-index: 1000;\r\n}\r\n.vcp-panel-bg {\r\n    width: 100%;\r\n    height: 100%;\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n    background-color: rgb(36, 36, 36);\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n    z-index: 1000;\r\n}\r\n\r\n.vcp-playtoggle {\r\n    cursor: pointer;\r\n    position: relative;\r\n    z-index: 1001;\r\n    width: 3em;\r\n    height: 100%;\r\n    float: left;\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/play_btn.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/play_btn.svg), none;\r\n}\r\n.vcp-playtoggle:hover {\r\n    background-color: slategray;\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n}\r\n.vcp-playing .vcp-playtoggle {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/stop_btn.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/stop_btn.svg), none;\r\n}\r\n.vcp-bigplay {\r\n    width: 100%;\r\n    height: 100%;\r\n    position: absolute;\r\n    background-color: white\\0;\r\n    filter: alpha(opacity=0); /*奇怪的IE8/9鼠标事件穿透*/\r\n    z-index: 1000;\r\n    top: 0;\r\n    left: 0;\r\n}\r\n\r\n.vcp-slider {\r\n    position: relative;\r\n    z-index: 1001;\r\n    float: left;\r\n    background: rgb(196, 196, 196);\r\n    height: 10px;\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n    cursor: pointer;\r\n}\r\n.vcp-slider .vcp-slider-track {\r\n    width: 0;\r\n    height: 100%;\r\n    margin-top: 0;\r\n    opacity: 1;\r\n    filter: alpha(opacity=100);\r\n    background-color: dodgerblue; /*beautiful blue*/\r\n}\r\n.vcp-slider .vcp-slider-thumb {\r\n    cursor: pointer;\r\n    background-color: white;\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    border-radius: 1em!important;\r\n    height: 10px;\r\n    margin-left: -5px;\r\n    width: 10px;\r\n}\r\n\r\n.vcp-slider-vertical {\r\n    position: relative;\r\n    width: 0.5em;\r\n    height: 8em;\r\n    top: -5.6em;\r\n    z-index: 1001;\r\n    background-color: rgb(28, 28, 28);\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n    cursor: pointer;\r\n}\r\n.vcp-slider-vertical .vcp-slider-track {\r\n    background-color: rgb(18, 117, 207);\r\n    width: 0.5em;\r\n    height: 100%;\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n}\r\n.vcp-slider-vertical .vcp-slider-thumb {\r\n    cursor: pointer;\r\n    position: absolute;\r\n    background-color: aliceblue;\r\n    width: 0.8em;\r\n    height: 0.8em;\r\n    border-radius: 0.8em!important;\r\n    margin-top: -0.4em;\r\n    top: 0;\r\n    left: -0.15em;\r\n}\r\n/* 时间线/进度条 */\r\n.vcp-timeline {\r\n    top: -10px;\r\n    left: 0;\r\n    height: 10px;\r\n    position: absolute;\r\n    z-index: 1001;\r\n    width: 100%;\r\n}\r\n.vcp-timeline .vcp-slider-thumb {\r\n    top: -3px;\r\n}\r\n.vcp-timeline .vcp-slider {\r\n    margin-top: 8px;\r\n    height: 2px;\r\n    width: 100%;\r\n}\r\n.vcp-timeline:hover .vcp-slider {\r\n    margin-top: 0;\r\n    height: 10px;\r\n}\r\n.vcp-timeline:hover .vcp-slider-thumb {\r\n    display: block;\r\n    width: 16px;\r\n    height: 16px;\r\n    top: -3px;\r\n    margin-left: -8px;\r\n}\r\n/* 时间展示 */\r\n.vcp-timelabel {\r\n    display: inline-block;\r\n    line-height: 3em;\r\n    height: 3em;\r\n    width: 3em;\r\n    float: left;\r\n    color: white;\r\n    padding: 0 9px;\r\n    z-index: 1001;\r\n    position: relative;\r\n}\r\n/* 音量控制 */\r\n.vcp-volume {\r\n    height: 3em;\r\n    width: 3em;\r\n    cursor: pointer;\r\n    position: relative;\r\n    z-index: 1001;\r\n    float: right;\r\n    background-color: transparent;\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n}\r\n.vcp-volume-icon {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/volume.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/volume.svg), none;\r\n    display: inline-block;\r\n    width: 3em;\r\n    height: 3em;\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n}\r\n.vcp-volume-muted .vcp-volume-icon {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/muted.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/muted.svg), none;\r\n}\r\n.vcp-volume .vcp-slider-vertical {\r\n    top: -8.4em;\r\n    left: 1em;\r\n    display: none;\r\n}\r\n.vcp-volume .vcp-slider-track {\r\n    position: absolute;\r\n    bottom: 0;\r\n}\r\n.vcp-volume:hover .vcp-slider-vertical {\r\n    display: block;\r\n}\r\n.vcp-volume .vcp-volume-bg {\r\n    height: 8.8em;\r\n    width: 2em;\r\n    position: absolute;\r\n    left: 0.25em;\r\n    top: -8.8em;\r\n    background: rgb(36,36,36);\r\n    display: none;\r\n}\r\n.vcp-volume:hover .vcp-volume-bg, .vcp-volume:hover .vcp-slider-vertical {\r\n    display: block;\r\n}\r\n/* 全屏控件 */\r\n.vcp-fullscreen-toggle {\r\n    position: relative;\r\n    width: 3em;\r\n    height: 3em;\r\n    float: right;\r\n    cursor: pointer;\r\n    z-index: 1001;\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen.svg), none;\r\n}\r\n.vcp-fullscreen .vcp-fullscreen-toggle {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen_exit.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen_exit.svg), none;\r\n}\r\n\r\n.vcp-loading {\r\n    position: absolute;\r\n    left: 50%;\r\n    top: 50%;\r\n    margin-top: -3em;\r\n}\r\n\r\n.vcp-poster {\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n    overflow: hidden;\r\n    z-index: 1000;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n.vcp-poster-pic {\r\n    position: relative;\r\n}\r\n\r\n/* animations */\r\n@-webkit-keyframes fadeOut {\r\n    from {\r\n        opacity: 1;\r\n    }\r\n\r\n    to {\r\n        opacity: 0;\r\n    }\r\n}\r\n\r\n@keyframes fadeOut {\r\n    from {\r\n        opacity: 1;\r\n    }\r\n\r\n    to {\r\n        opacity: 0;\r\n    }\r\n}\r\n\r\n.fadeOut {\r\n    -webkit-animation: fadeOut ease 0.8s;\r\n    animation: fadeOut ease 0.8s;\r\n}\r\n\r\n@-webkit-keyframes fadeIn {\r\n    from {\r\n        opacity: 0;\r\n    }\r\n\r\n    to {\r\n        opacity: 1;\r\n    }\r\n}\r\n\r\n@keyframes fadeIn {\r\n    from {\r\n        opacity: 0;\r\n    }\r\n\r\n    to {\r\n        opacity: 1;\r\n    }\r\n}\r\n\r\n.fadeIn {\r\n    -webkit-animation: fadeIn ease 0.8s;\r\n    animation: fadeIn ease 0.8s;\r\n    animation-fill-mode: both;\r\n}", ""]);
 
 	// exports
 
@@ -1124,21 +1173,25 @@ return /******/ (function(modules) { // webpackBootstrap
 		doPub('*', msg, scope);
 	}
 	function doPub(type, msg, scope) {
-		var listeners = getListeners(scope);
-		var fnCache = getFnCache(scope);
+		try {
+			var listeners = getListeners(scope);
+			var fnCache = getFnCache(scope);
 
-		if (!listeners[type]) return;
+			if (!listeners[type]) return;
 
-		var fnObjs = listeners[type];
-		for (var guid in fnObjs) {
-			if (!fnObjs.hasOwnProperty(guid)) continue;
-			var targets = fnObjs[guid];
-			var fn = fnCache[guid];
-			if (!(typeof fn === 'function')) return false;
-			for (var i = 0; i < targets.length; i++) {
-				var target = targets[i];
-				if (target === '*' || target === msg.src) fn(msg);
+			var fnObjs = listeners[type];
+			for (var guid in fnObjs) {
+				if (!fnObjs.hasOwnProperty(guid)) continue;
+				var targets = fnObjs[guid];
+				var fn = fnCache[guid];
+				if (!(typeof fn === 'function')) return false;
+				for (var i = 0; i < targets.length; i++) {
+					var target = targets[i];
+					if (target === '*' || target === msg.src) fn(msg);
+				}
 			}
+		} catch (e) {
+			window.console && console.error && console.error(e);
 		}
 	}
 	/**
@@ -1286,7 +1339,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			var msg = { type: e.type, src: this, ts: e.timeStamp };
 
 			switch (e.type) {
-				case _message.MSG.Loaded:
+				case _message.MSG.MetaLoaded:
 					this.__timebase = +new Date() - msg.ts;
 					break;
 				case _message.MSG.Error:
@@ -1612,7 +1665,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			this.__timebase = +new Date();
 
 			var swfurl = 'http://imgcache.qq.com/open/qcloud/video/player/release/QCPlayer.swf';
-			swfurl = 'http://test.qzs.qq.com/iot/demo/player/QCPlayer.swf';
+			// swfurl = 'http://test.qzs.qq.com/iot/demo/player/QCPlayer.swf';
 			var options = this.player.options;
 			var wmode = 'opaque';
 			var id = 'obj_vcplayer_' + this.player.guid;
@@ -1719,7 +1772,7 @@ return /******/ (function(modules) { // webpackBootstrap
 						if (this.__m3u8) {
 							!this.options.autoplay && this.currentTime(0);
 							this.__metaloaded = this.__videoWidth != 0;
-							if (!this.__metaloaded) break; // not yet
+							if (!this.__metaloaded) return; // not yet
 						}
 
 						this.__metaloaded = true;
@@ -1753,6 +1806,8 @@ return /******/ (function(modules) { // webpackBootstrap
 						}
 						break;
 					case 'seekState':
+						if (!this.__metaloaded) return;
+
 						if (info.seekState == State.Seeking) {
 							e.type = _message.MSG.Seeking;
 						} else if (info.seekState == State.Seeked) {
@@ -2021,18 +2076,27 @@ return /******/ (function(modules) { // webpackBootstrap
 			this.sub(_Slider.MSG.Changed, this.timeline.progress, handler);
 			this.sub(_message.MSG.TimeUpdate, this.player.video, handler);
 			this.sub(_message.MSG.Progress, this.player.video, handler);
-			this.sub(_message.MSG.Loaded, this.player.video, handler);
+			this.sub(_message.MSG.MetaLoaded, this.player.video, handler);
+			this.sub(_message.MSG.Pause, this.player.video, handler);
+			this.sub(_message.MSG.Play, this.player.video, handler);
 		};
 
 		Panel.prototype.handleMsg = function handleMsg(msg) {
 			switch (msg.type) {
-				case _message.MSG.Loaded:
+				case _message.MSG.MetaLoaded:
 					this.timeline.percent(this.player.percent());
 					this.timeline.buffered(this.player.buffered());
 					this.volume.percent(this.options.volume);
+					this.show();
 					break;
 				case _message.MSG.TimeUpdate:
 					if (!this.timeline.scrubbing) this.timeline.percent(this.player.percent());
+					break;
+				case _message.MSG.Pause:
+					this.show();
+					break;
+				case _message.MSG.Play:
+					this.hide();
 					break;
 				case _message.MSG.Progress:
 					this.timeline.buffered(this.player.buffered()); // todo IE9 会最后一段时间就不触发progress了
@@ -2043,6 +2107,26 @@ return /******/ (function(modules) { // webpackBootstrap
 					}
 					break;
 			}
+		};
+
+		Panel.prototype.show = function show() {
+			if (this.el.style.display === 'block') return;
+
+			dom.removeClass(this.el, 'fadeOut');
+			dom.addClass(this.el, 'fadeIn');
+			var self = this;
+			setTimeout(function () {
+				self.el.style.display = "block";
+			}, 500);
+		};
+
+		Panel.prototype.hide = function hide() {
+			dom.removeClass(this.el, 'fadeIn');
+			dom.addClass(this.el, 'fadeOut');
+			var self = this;
+			setTimeout(function () {
+				self.el.style.display = "none";
+			}, 500);
 		};
 
 		return Panel;
@@ -2254,6 +2338,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 			this.ownerDoc = document.body.ownerDocument;
 			this.on('mousedown', this.mousedown);
+			this.on('touchstart', this.mousedown);
 		};
 
 		Slider.prototype.handleMsg = function handleMsg(msg) {};
@@ -2265,6 +2350,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 			this.on(this.ownerDoc, 'mouseup', this.mouseup);
 			this.on(this.ownerDoc, 'mousemove', this.mousemove);
+			this.on(this.ownerDoc, 'touchend', this.mouseup);
+			this.on(this.ownerDoc, 'touchmove', this.mousemove);
 
 			this.mousemove(e);
 			return false;
@@ -2275,6 +2362,8 @@ return /******/ (function(modules) { // webpackBootstrap
 			// console.log(e.type, target.className, e.toElement.className, this);
 			this.off(this.ownerDoc, 'mouseup', this.mouseup);
 			this.off(this.ownerDoc, 'mousemove', this.mousemove);
+			this.off(this.ownerDoc, 'touchend', this.mouseup);
+			this.off(this.ownerDoc, 'touchmove', this.mousemove);
 			this.pub({ type: MSG.Changed, src: this, "private": true });
 		};
 
@@ -2734,7 +2823,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		Poster.prototype.setup = function setup() {
 			this.on('click', this.onClick);
 			this.sub(_message.MSG.Load, this.player.video, util.bind(this, this.handleMsg));
-			this.sub(_message.MSG.Loaded, this.player.video, util.bind(this, this.handleMsg));
+			this.sub(_message.MSG.MetaLoaded, this.player.video, util.bind(this, this.handleMsg));
 			this.sub(_message.MSG.Play, this.player.video, util.bind(this, this.handleMsg));
 			this.sub(_message.MSG.Pause, this.player.video, util.bind(this, this.handleMsg));
 			this.sub(_message.MSG.Ended, this.player.video, util.bind(this, this.handleMsg));
@@ -2750,7 +2839,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				case _message.MSG.Load:
 					this.__loaded = false;
 					break;
-				case _message.MSG.Loaded:
+				case _message.MSG.MetaLoaded:
 					this.__loaded = true;
 					if (this.player.playing()) this.hide();else this.setPoster(this.poster.start);
 					break;

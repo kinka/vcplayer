@@ -43,12 +43,6 @@ body.vcp-full-window {
     filter: alpha(opacity=80);
     z-index: 1000;
 }
-.vcp-playing .vcp-controls-panel {
-    display: none;
-}
-.vcp-player:hover .vcp-controls-panel {
-    display: block;
-}
 
 .vcp-playtoggle {
     cursor: pointer;
@@ -263,4 +257,56 @@ body.vcp-full-window {
 }
 .vcp-poster-pic {
     position: relative;
+}
+
+/* animations */
+@-webkit-keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+.fadeOut {
+    -webkit-animation: fadeOut ease 0.8s;
+    animation: fadeOut ease 0.8s;
+}
+
+@-webkit-keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.fadeIn {
+    -webkit-animation: fadeIn ease 0.8s;
+    animation: fadeIn ease 0.8s;
+    animation-fill-mode: both;
 }

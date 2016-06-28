@@ -47,7 +47,7 @@ export default class H5Video extends Component {
 		var msg = {type: e.type, src: this, ts: e.timeStamp};
 
 		switch (e.type) {
-			case PlayerMSG.Loaded:
+			case PlayerMSG.MetaLoaded:
 				this.__timebase = +new Date() - msg.ts;
 				break;
 			case PlayerMSG.Error:

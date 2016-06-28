@@ -75,26 +75,34 @@ export class Player {
 		this.options.width = this.options.width || owner.offsetWidth;
 		this.options.height = this.options.height || owner.offsetHeight;
 		this.size(this.options.width, this.options.height);
+
+		this.setup();
 	}
-	size(mW, mH) {
+
+	/**
+	 *
+	 * @param mW
+	 * @param mH
+	 * @param style [String] fit | cover
+	 */
+	size(mW, mH, style) {
+		style = style || 'fit';
 		var vW = this.video.videoWidth(),
 			vH = this.video.videoHeight();
 		var dW = mW, dH = mH;
 		if (vW && vH) {
 			var ratio = vW / vH;
 			// console.log(ratio, vW, vH, mW, mH)
-			var vertical = mW / mH < 1;
-
-			if (vertical) { // 高度优先
-				dH = mH;
-				dW = dH * ratio;
-			} else {
+			if (style == 'fit') {
 				dW = mW;
 				dH = dW / ratio;
+				if (dH > mH) { // 高度超出容器
+					dW *= mH / dH;
+					dH = mH;
+				}
 			}
 		}
 
-		// console.log(dW, dH)
 		this.video.width(dW);
 		this.video.height(dH);
 
@@ -105,7 +113,7 @@ export class Player {
 		this.height = dH;
 	}
 	setup() {
-
+		this.__handleEvent = util.bind(this, this.handleEvent);
 	}
 	destroy() {
 		this.video && this.video.destroy();
@@ -118,6 +126,35 @@ export class Player {
 	setListener(listener) {
 		this.listener = listener;
 	}
+	handleEvent(e) {
+		switch (e.type) {
+			case 'mousemove':
+				// 播放时检测鼠标是否移动，如果移动则出现控制栏
+				if (this.__lastmove && new Date() - this.__lastmove < 100)
+					break;
+
+				var self = this;
+				this.__movecnt = this.__movecnt || 0;
+				this.__movecnt++;
+				if (this.__movecnt < 5) {
+					setTimeout(function() {
+						self.__movecnt = 0;
+					}, 500);
+					break;
+				}
+				this.__movecnt = 0;
+
+				this.__lastmove = +new Date();
+				clearTimeout(this.__moveid);
+
+				self.panel.show();
+				this.__moveid = setTimeout(function() {
+					self.playing() && self.panel.hide();
+					console.log('not moving')
+				}, 3000);
+				break;
+		}
+	}
 	handleMsg(msg) {
 		switch (msg.type) {
 			case MSG.Play:
@@ -126,6 +163,8 @@ export class Player {
 					this.__wait = true;
 					this.loading.show();
 				}
+
+				dom.on(this.el, 'mousemove', this.__handleEvent);
 				break;
 			case MSG.TimeUpdate:
 				if (this.__wait) {
@@ -134,9 +173,13 @@ export class Player {
 				}
 				break;
 			case MSG.Pause:
+				dom.off(this.el, 'mousemove', this.__handleEvent);
+				
 				dom.removeClass(this.el, 'vcp-playing');
 				break;
 			case MSG.Ended:
+				dom.off(this.el, 'mousemove', this.__handleEvent);
+				
 				dom.removeClass(this.el, 'vcp-playing');
 				break;
 			case MSG.MetaLoaded:
@@ -159,6 +202,9 @@ export class Player {
 				setTimeout(function() { // fix IE9 按esc toggle 时背景图片出不来
 					dom.toggleClass(self.el, 'vcp-fullscreen', msg.detail.isFullscreen);
 				}, 0);
+				break;
+			case MSG.Error:
+				alert(msg.code + ' ' + msg.reason);
 				break;
 		}
 

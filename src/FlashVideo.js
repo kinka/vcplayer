@@ -32,7 +32,7 @@ export default class FlashVideo extends Component {
 		this.__timebase = +new Date();
 
 		var swfurl = 'http://imgcache.qq.com/open/qcloud/video/player/release/QCPlayer.swf';
-		swfurl = 'http://test.qzs.qq.com/iot/demo/player/QCPlayer.swf';
+		// swfurl = 'http://test.qzs.qq.com/iot/demo/player/QCPlayer.swf';
 		var options = this.player.options;
 		var wmode = 'opaque';
 		var id = 'obj_vcplayer_' + this.player.guid;
@@ -156,7 +156,7 @@ export default class FlashVideo extends Component {
 					if (this.__m3u8) {
 						!this.options.autoplay && this.currentTime(0);
 						this.__metaloaded = (this.__videoWidth != 0);
-						if (!this.__metaloaded) break; // not yet
+						if (!this.__metaloaded) return; // not yet
 					}
 
 					this.__metaloaded = true;
@@ -190,6 +190,8 @@ export default class FlashVideo extends Component {
 					}
 					break;
 				case 'seekState':
+					if (!this.__metaloaded) return;
+
 					if (info.seekState == State.Seeking) {
 						e.type = PlayerMSG.Seeking;
 					} else if (info.seekState == State.Seeked) {

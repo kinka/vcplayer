@@ -29,6 +29,7 @@ export default class Slider extends Component {
 		
 		this.ownerDoc = document.body.ownerDocument;
 		this.on('mousedown', this.mousedown);
+		this.on('touchstart', this.mousedown);
 	}
 	handleMsg(msg) {
 		
@@ -40,6 +41,8 @@ export default class Slider extends Component {
 
 		this.on(this.ownerDoc, 'mouseup', this.mouseup);
 		this.on(this.ownerDoc, 'mousemove', this.mousemove);
+		this.on(this.ownerDoc, 'touchend', this.mouseup);
+		this.on(this.ownerDoc, 'touchmove', this.mousemove);
 
 		this.mousemove(e);
 		return false;
@@ -49,6 +52,8 @@ export default class Slider extends Component {
 		// console.log(e.type, target.className, e.toElement.className, this);
 		this.off(this.ownerDoc, 'mouseup', this.mouseup);
 		this.off(this.ownerDoc, 'mousemove', this.mousemove);
+		this.off(this.ownerDoc, 'touchend', this.mouseup);
+		this.off(this.ownerDoc, 'touchmove', this.mousemove);
 		this.pub({type: MSG.Changed, src: this, private: true});
 	}
 	mousemove(e) {

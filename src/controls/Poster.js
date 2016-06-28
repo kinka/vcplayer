@@ -38,7 +38,7 @@ export default class Poster extends Component {
 	setup() {
 		this.on('click', this.onClick);
 		this.sub(PlayerMsg.Load, this.player.video, util.bind(this, this.handleMsg));
-		this.sub(PlayerMsg.Loaded, this.player.video, util.bind(this, this.handleMsg));
+		this.sub(PlayerMsg.MetaLoaded, this.player.video, util.bind(this, this.handleMsg));
 		this.sub(PlayerMsg.Play, this.player.video, util.bind(this, this.handleMsg));
 		this.sub(PlayerMsg.Pause, this.player.video, util.bind(this, this.handleMsg));
 		this.sub(PlayerMsg.Ended, this.player.video, util.bind(this, this.handleMsg));
@@ -52,7 +52,7 @@ export default class Poster extends Component {
 			case PlayerMsg.Load:
 				this.__loaded = false;
 				break;
-			case PlayerMsg.Loaded:
+			case PlayerMsg.MetaLoaded:
 				this.__loaded = true;
 				if (this.player.playing())
 					this.hide();

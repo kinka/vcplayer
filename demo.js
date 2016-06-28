@@ -20,7 +20,7 @@ domSrc.value = 'http://2527.vod.myqcloud.com/2527_bffd50081d9911e6b0f4d93c5d81f2
 domSrc.value = 'http://2527.vod.myqcloud.com/2527_542d5a28222411e6aadec1104f4fc9b9.f220.av.m3u8';
 domPoster.value = 'http://www.imagesbuddy.com/images/130/2014/01/whatever-garfield-face-graphic.jpg';
 
-domSrc.value = 'rtmp://163.177.90.221:1923/live/58428rMdwlRjuAnN';
+// domSrc.value = 'rtmp://163.177.90.221:1923/live/58428rMdwlRjuAnN';
 restore();
 
 window.xxlog = window.xxlog || console.log;

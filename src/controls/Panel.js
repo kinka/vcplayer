@@ -47,18 +47,27 @@ export default class Panel extends Component {
 		this.sub(SliderMSG.Changed, this.timeline.progress, handler);
 		this.sub(PlayerMSG.TimeUpdate, this.player.video, handler);
 		this.sub(PlayerMSG.Progress, this.player.video, handler);
-		this.sub(PlayerMSG.Loaded, this.player.video, handler);
+		this.sub(PlayerMSG.MetaLoaded, this.player.video, handler);
+		this.sub(PlayerMSG.Pause, this.player.video, handler);
+		this.sub(PlayerMSG.Play, this.player.video, handler);
 	}
 	handleMsg(msg) {
 		switch (msg.type) {
-			case PlayerMSG.Loaded:
+			case PlayerMSG.MetaLoaded:
 				this.timeline.percent(this.player.percent());
 				this.timeline.buffered(this.player.buffered());
 				this.volume.percent(this.options.volume);
+				this.show();
 				break;
 			case PlayerMSG.TimeUpdate:
 				if (!this.timeline.scrubbing)
 					this.timeline.percent(this.player.percent());
+				break;
+			case PlayerMSG.Pause:
+				this.show();
+				break;
+			case PlayerMSG.Play:
+				this.hide();
 				break;
 			case PlayerMSG.Progress:
 				this.timeline.buffered(this.player.buffered()); // todo IE9 会最后一段时间就不触发progress了
@@ -69,6 +78,23 @@ export default class Panel extends Component {
 				}
 				break;
 		}
+	}
+	show() {
+		if (this.el.style.display === 'block') return;
 		
+		dom.removeClass(this.el, 'fadeOut');
+		dom.addClass(this.el, 'fadeIn');
+		var self = this;
+		setTimeout(function() {
+			self.el.style.display = "block";
+		}, 500);
+	}
+	hide() {
+		dom.removeClass(this.el, 'fadeIn');
+		dom.addClass(this.el, 'fadeOut');
+		var self = this;
+		setTimeout(function() {
+			self.el.style.display = "none";
+		}, 500);
 	}
 }

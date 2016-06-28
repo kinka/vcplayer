@@ -40,22 +40,26 @@ export function pub(msg, scope) {
 	doPub('*', msg, scope);
 }
 function doPub(type, msg, scope) {
-	var listeners = getListeners(scope);
-	var fnCache = getFnCache(scope);
+	try {
+		var listeners = getListeners(scope);
+		var fnCache = getFnCache(scope);
 
-	if (!listeners[type]) return;
+		if (!listeners[type]) return;
 
-	let fnObjs = listeners[type];
-	for (let guid in fnObjs) {
-		if (!fnObjs.hasOwnProperty(guid)) continue;
-		let targets = fnObjs[guid];
-		let fn = fnCache[guid];
-		if (!(typeof fn === 'function')) return false;
-		for (let i=0; i<targets.length; i++) {
-			let target = targets[i];
-			if (target === '*' || target === msg.src)
-				fn(msg);
+		let fnObjs = listeners[type];
+		for (let guid in fnObjs) {
+			if (!fnObjs.hasOwnProperty(guid)) continue;
+			let targets = fnObjs[guid];
+			let fn = fnCache[guid];
+			if (!(typeof fn === 'function')) return false;
+			for (let i=0; i<targets.length; i++) {
+				let target = targets[i];
+				if (target === '*' || target === msg.src)
+					fn(msg);
+			}
 		}
+	} catch (e) {
+		window.console && console.error && console.error(e);
 	}
 }
 /**
