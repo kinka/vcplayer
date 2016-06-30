@@ -66,7 +66,7 @@ const apiMap = [
 	],
 	// WebKit
 	[
-		'webkitRequestFullscreen',
+		'webkitRequesFullscreen',
 		'webkitExitFullscreen',
 		'webkitFullscreenElement',
 		'webkitFullscreenEnabled',

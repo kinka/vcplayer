@@ -37,7 +37,8 @@
             }
             #demo_video, #demo_video2 {
                 position: relative;
-                width: 800px;
+                /*width: 800px;*/
+                width: 50%;
                 height: 500px;
             }
             @media (max-width: 667px) {
@@ -56,8 +57,12 @@
     </head>
     <body>
         <div id="app">
+            <div class="action-wrap" style="width: 100%;"><input type="radio" name="play_group" id="r_play_mp4" checked><label>mp4</label><input type="text" id="play_mp4" style="width: 80%;"></div>
+            <div class="action-wrap" style="width: 100%;"><input type="radio" name="play_group" id="r_play_m3u8"><label>m3u8</label><input type="text" id="play_m3u8" style="width: 80%;"></div>
+            <div class="action-wrap" style="width: 100%;"><input type="radio" name="play_group" id="r_play_rtmp"><label>rtmp</label><input type="text" id="play_rtmp" style="width: 80%;"></div>
+            <div class="action-wrap" style="width: 100%;"><input type="radio" name="play_group" id="r_play_flv"><label>flv</label><input type="text" id="play_flv" style="width: 80%;"></div>
             <div class="action-wrap" style="width: 100%;"><label>播放地址</label><input type="text" id="play_src" style="width: 80%;"></div>
-            <div class="action-wrap" style="width: 100%;"><label>贴片</label><input type="text" id="poster_src" style="width: 80%;"></div>
+            <div class="action-wrap" style="width: 100%;"><input type="checkbox" id="c_poster"><label>贴片</label><input type="text" id="poster_src" style="width: 80%;"></div>
             <div class="action-wrap"><label>直播</label><input type="checkbox" id="is_live"/></div>
             <div class="action-wrap"><label>调试</label><input type="checkbox" id="is_debug"/></div>
             <div class="action-wrap"><label>原生控件</label><input type="checkbox" id="use_controls"/></div>

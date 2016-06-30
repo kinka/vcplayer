@@ -13,7 +13,8 @@ export default class H5Video extends Component {
 	render(owner) {
 		var options = this.player.options;
 		var controls = !options.controls ? null : options.controls;
-		this.createEl('video', {controls: controls, preload: 'auto', autoplay: options.autoplay ? true : null});
+		var autoplay = options.autoplay ? true : null;
+		this.createEl('video', {controls: controls, preload: 'auto', autoplay: autoplay});
 		return super.render(owner);
 	}
 	__hlsLoaded(src) {
@@ -40,6 +41,7 @@ export default class H5Video extends Component {
 		this.on(PlayerMSG.Ended, this.notify);
 		this.on(PlayerMSG.Seeking, this.notify);
 		this.on(PlayerMSG.Seeked, this.notify);
+		this.on('durationchange', this.notify);
 
 		this.load(this.options.src, this.options.m3u8 ? util.VideoType.M3U8 : '');
 	}
@@ -57,6 +59,10 @@ export default class H5Video extends Component {
 				break;
 			case PlayerMSG.Ended:
 				this.pause(); // IE9 不会自动改变播放状态，导致伪全屏的时候出现黑屏
+				break;
+			case 'durationchange':
+				if (this.videoHeight() != 0)
+					msg.type = PlayerMSG.Resize;
 				break;
 		}
 
@@ -121,7 +127,8 @@ export default class H5Video extends Component {
 	load(src, type) {
 		this.pub({type: PlayerMSG.Load, src: this, ts: +new Date() - this.__timebase, detail: {src: src, type: type}});
 		var isM3u8 = src.indexOf('.m3u8') > -1 || type == util.VideoType.M3U8;
-		if (isM3u8) {
+		var canPlayHLS = isM3u8 && this.el.canPlayType('application/x-mpegurl') == 'maybe';
+		if (isM3u8 && !canPlayHLS) {
 			this.__type = util.VideoType.M3U8;
 			var self = this;
 			if (typeof window.Hls == 'undefined')

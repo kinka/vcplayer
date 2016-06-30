@@ -257,7 +257,6 @@ return /******/ (function(modules) { // webpackBootstrap
 					self.panel.show();
 					this.__moveid = setTimeout(function () {
 						self.playing() && self.panel.hide();
-						console.log('not moving');
 					}, 3000);
 					break;
 			}
@@ -313,7 +312,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					}, 0);
 					break;
 				case MSG.Error:
-					alert(msg.code + ' ' + msg.reason);
+
 					break;
 			}
 
@@ -1034,7 +1033,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// Spec: https://dvcs.w3.org/hg/fullscreen/raw-file/tip/Overview.html
 	['requestFullscreen', 'exitFullscreen', 'fullscreenElement', 'fullscreenEnabled', 'fullscreenchange', 'fullscreenerror'],
 	// WebKit
-	['webkitRequestFullscreen', 'webkitExitFullscreen', 'webkitFullscreenElement', 'webkitFullscreenEnabled', 'webkitfullscreenchange', 'webkitfullscreenerror'],
+	['webkitRequesFullscreen', 'webkitExitFullscreen', 'webkitFullscreenElement', 'webkitFullscreenEnabled', 'webkitfullscreenchange', 'webkitfullscreenerror'],
 	// Old WebKit (Safari 5.1)
 	['webkitRequestFullScreen', 'webkitCancelFullScreen', 'webkitCurrentFullScreenElement', 'webkitCancelFullScreen', 'webkitfullscreenchange', 'webkitfullscreenerror'],
 	// Mozilla
@@ -1135,7 +1134,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
 
 	var MSG = exports.MSG = { Error: 'error', TimeUpdate: 'timeupdate', Load: 'load', MetaLoaded: 'loadedmetadata', Loaded: 'loadeddata', Progress: 'progress', FullScreen: 'fullscreen',
-		Play: 'play', Pause: 'pause', Ended: 'ended', Seeking: 'seeking', Seeked: 'seeked' };
+		Play: 'play', Pause: 'pause', Ended: 'ended', Seeking: 'seeking', Seeked: 'seeked', Resize: 'resize' };
 
 	var Players = {};
 	var fnCaches = {};
@@ -1307,7 +1306,8 @@ return /******/ (function(modules) { // webpackBootstrap
 		H5Video.prototype.render = function render(owner) {
 			var options = this.player.options;
 			var controls = !options.controls ? null : options.controls;
-			this.createEl('video', { controls: controls, preload: 'auto', autoplay: options.autoplay ? true : null });
+			var autoplay = options.autoplay ? true : null;
+			this.createEl('video', { controls: controls, preload: 'auto', autoplay: autoplay });
 			return _Component.prototype.render.call(this, owner);
 		};
 
@@ -1331,6 +1331,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			this.on(_message.MSG.Ended, this.notify);
 			this.on(_message.MSG.Seeking, this.notify);
 			this.on(_message.MSG.Seeked, this.notify);
+			this.on('durationchange', this.notify);
 
 			this.load(this.options.src, this.options.m3u8 ? util.VideoType.M3U8 : '');
 		};
@@ -1349,6 +1350,9 @@ return /******/ (function(modules) { // webpackBootstrap
 					break;
 				case _message.MSG.Ended:
 					this.pause(); // IE9 不会自动改变播放状态，导致伪全屏的时候出现黑屏
+					break;
+				case 'durationchange':
+					if (this.videoHeight() != 0) msg.type = _message.MSG.Resize;
 					break;
 			}
 
@@ -1419,7 +1423,8 @@ return /******/ (function(modules) { // webpackBootstrap
 		H5Video.prototype.load = function load(src, type) {
 			this.pub({ type: _message.MSG.Load, src: this, ts: +new Date() - this.__timebase, detail: { src: src, type: type } });
 			var isM3u8 = src.indexOf('.m3u8') > -1 || type == util.VideoType.M3U8;
-			if (isM3u8) {
+			var canPlayHLS = isM3u8 && this.el.canPlayType('application/x-mpegurl') == 'maybe';
+			if (isM3u8 && !canPlayHLS) {
 				this.__type = util.VideoType.M3U8;
 				var self = this;
 				if (typeof window.Hls == 'undefined') dom.loadScript(util.CDNPath + 'libs/hls.js', function () {
@@ -1698,6 +1703,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				info = this.el.getState();
 			} catch (e) {
 				this.endPolling(); // 多次load会导致interval非正常结束，于是一直polling
+				return;
 			}
 			if (this.__m3u8) {
 				var tmp = this.currentTime() + info.bufferLength;

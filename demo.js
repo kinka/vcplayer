@@ -13,15 +13,33 @@ var domLive = $('#is_live'),
 	domControls = $('#use_controls'),
 	domAutoplay = $('#is_autoplay'),
 	domSrc = $('#play_src'),
+	domMp4 = $('#play_mp4'),
+	domM3u8 = $('#play_m3u8'),
+	domRtmp = $('#play_rtmp'),
+	domFlv = $('#play_flv'),
+	domCheckPoster = $('#c_poster'),
 	domPoster = $('#poster_src');
 var btnLoad = $('#btn_load');
 
-domSrc.value = 'http://2527.vod.myqcloud.com/2527_bffd50081d9911e6b0f4d93c5d81f265.f20.mp4';
-domSrc.value = 'http://2527.vod.myqcloud.com/2527_542d5a28222411e6aadec1104f4fc9b9.f220.av.m3u8';
+domMp4.value = 'http://2527.vod.myqcloud.com/2527_bffd50081d9911e6b0f4d93c5d81f265.f20.mp4';
+domM3u8.value = 'http://2527.vod.myqcloud.com/2527_542d5a28222411e6aadec1104f4fc9b9.f220.av.m3u8';
+domFlv.value = 'http://2000.liveplay.myqcloud.com/live/2000_f3d7cff5e69511e5b91fa4dcbef5e35a.flv';
+domRtmp.value = 'rtmp://2000.liveplay.myqcloud.com/live/2000_f3d7cff5e69511e5b91fa4dcbef5e35a_550';
+
 domPoster.value = 'http://www.imagesbuddy.com/images/130/2014/01/whatever-garfield-face-graphic.jpg';
 
-// domSrc.value = 'rtmp://163.177.90.221:1923/live/58428rMdwlRjuAnN';
 restore();
+
+var radios = $$('[name=play_group');
+for (var i=0; i<radios.length; i++) {
+	radios[i].onclick = function() {
+		if (this.checked) {
+			domSrc.value = this.nextSibling.nextSibling.value;
+			util.store('playtype', this.id);
+		}
+	}
+	if (radios[i].checked) domSrc.value = radios[i].nextSibling.nextSibling.value;
+}
 
 window.xxlog = window.xxlog || console.log;
 console.log = function(a,b,c,d,e,f) {
@@ -56,7 +74,7 @@ function newPlayer(ownerId) {
 		flash: domFlash.checked,
 		// poster: domPoster.value,
 		poster: {
-			src: domPoster.value
+			src: domCheckPoster.checked ? domPoster.value : ''
 			// src: 'http://www.imagesbuddy.com/images/130/2014/01/whatever-garfield-face-graphic.jpg',
 			// start: 'http://www.imagesbuddy.com/images/130/2014/01/whatever-im-late-anyway-clock-graphic.jpg',
 			// pause: 'http://www.imagesbuddy.com/images/130/2014/01/whatever-garfield-face-graphic.jpg',
@@ -69,6 +87,14 @@ function newPlayer(ownerId) {
 			log.innerHTML += Number(msg.ts/1000).toFixed(0) + ': p' + this.guid + ' <span class="em">[' + msg.type + ']</span>'
 				+ (msg.detail ? JSON.stringify(msg.detail) : '')+ '<br/><br/>';
 			log.scrollTop = log.scrollHeight;
+			switch (msg.type) {
+				case 'resize':
+					this.size(this.options.width, this.options.height);
+					break;
+				case 'error':
+					// alert(msg.detail.code + ', ' + msg.detail.reason)
+					break;
+			}
 		}
 	});
 }
@@ -86,6 +112,10 @@ function restore() {
 	domControls.checked = util.store('controls');
 	domFlash.checked = util.store('flash');
 	domAutoplay.checked = util.store('autoplay');
+	var id = util.store('playtype');
+	if (id) {
+		$('#' + id).checked = true;
+	}
 }
 
 btnLoad.onclick = function() {

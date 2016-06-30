@@ -84,6 +84,7 @@ export default class FlashVideo extends Component {
 			info = this.el.getState();
 		} catch (e) {
 			this.endPolling(); // 多次load会导致interval非正常结束，于是一直polling
+			return;
 		}
 		if (this.__m3u8) {
 			var tmp = this.currentTime() + info.bufferLength;

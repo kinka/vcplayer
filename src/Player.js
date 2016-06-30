@@ -150,7 +150,6 @@ export class Player {
 				self.panel.show();
 				this.__moveid = setTimeout(function() {
 					self.playing() && self.panel.hide();
-					console.log('not moving')
 				}, 3000);
 				break;
 		}
@@ -204,7 +203,7 @@ export class Player {
 				}, 0);
 				break;
 			case MSG.Error:
-				alert(msg.code + ' ' + msg.reason);
+
 				break;
 		}
 
