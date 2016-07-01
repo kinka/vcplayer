@@ -50,6 +50,7 @@ export default class Panel extends Component {
 		this.sub(PlayerMSG.MetaLoaded, this.player.video, handler);
 		this.sub(PlayerMSG.Pause, this.player.video, handler);
 		this.sub(PlayerMSG.Play, this.player.video, handler);
+		this.sub(PlayerMSG.Ended, this.player.video, handler);
 	}
 	handleMsg(msg) {
 		switch (msg.type) {
@@ -57,7 +58,7 @@ export default class Panel extends Component {
 				this.timeline.percent(this.player.percent());
 				this.timeline.buffered(this.player.buffered());
 				this.volume.percent(this.options.volume);
-				this.show();
+				!this.options.autoplay && this.show();
 				break;
 			case PlayerMSG.TimeUpdate:
 				if (!this.timeline.scrubbing)
@@ -76,6 +77,9 @@ export default class Panel extends Component {
 				if (msg.src === this.timeline.progress) {
 					this.player.percent(this.timeline.percent());
 				}
+				break;
+			case PlayerMSG.Ended:
+				this.show();
 				break;
 		}
 	}

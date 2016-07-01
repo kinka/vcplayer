@@ -139,7 +139,7 @@ export default class FlashVideo extends Component {
 				case 'ready':
 					this.el = getFlashMovieObject(this.__id);
 					this.setup();
-					this.el.setAutoPlay(this.options.autoplay);
+					// this.el.setAutoPlay();
 					this.__timebase = new Date() - info.time;
 					this.load(this.options.src);
 					return;
@@ -155,11 +155,11 @@ export default class FlashVideo extends Component {
 					this.__rtmp = info.type === util.VideoType.RTMP;
 					this.__type = info.type;
 					if (this.__m3u8) {
-						!this.options.autoplay && this.currentTime(0);
+						this.volume(0);
 						this.__metaloaded = (this.__videoWidth != 0);
-						if (!this.__metaloaded) return; // not yet
+						if (!this.__metaloaded) return; // m3u8 没有播放的话是拿不到视频宽高的
 					}
-
+					!this.options.autoplay && this.pause();
 					this.__metaloaded = true;
 
 					this.doPolling();
