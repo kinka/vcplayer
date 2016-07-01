@@ -219,6 +219,9 @@ export default class FlashVideo extends Component {
 					} else if (info.code == 'NetStream.Seek.Complete') { // 播放到结尾再点播放会自动停止,所以force play again
 						this.play();
 						break;
+					} else if (info.code == 'NetConnection.Connect.Closed') {
+						e.type = 'error';
+						info = {code: 1001, reason: info.code};
 					} else {
 						break; // 信息太多了。。。
 					}
@@ -229,7 +232,9 @@ export default class FlashVideo extends Component {
 					e.type = PlayerMSG.TimeUpdate;
 					break;
 				case 'error':
-					info = {code: info.code, reason: info.msg || ''};
+					var code = isNaN(parseInt(info.code)) ? 1001 : info.code;
+					var reason = isNaN(parseInt(info.code)) ? info.code : info.msg;
+					info = {code: code, reason: reason || ''};
 					break;
 			}
 

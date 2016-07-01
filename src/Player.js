@@ -10,6 +10,7 @@ import Panel from './controls/Panel'
 import BigPlay from './controls/BigPlay'
 import Poster from './controls/Poster'
 import Loading from './controls/Loading'
+import ErrorTips from './controls/ErrorTips'
 
 export var MSG = message.MSG;
 export var browser = __browser;
@@ -65,6 +66,10 @@ export class Player {
 		
 		this.bigplay = new BigPlay(this);
 		this.bigplay.render(this.el);
+
+		this.errortips = new ErrorTips(this);
+		this.errortips.render(this.el);
+		// this.errortips.hide();
 
 		this.panel = new Panel(this);
 		this.panel.render(this.el);
@@ -157,6 +162,8 @@ export class Player {
 	handleMsg(msg) {
 		switch (msg.type) {
 			case MSG.Play:
+				if (!this.playing()) break;
+
 				dom.addClass(this.el, 'vcp-playing');
 				if (this.video.type() == util.VideoType.RTMP) {
 					this.__wait = true;
@@ -203,7 +210,8 @@ export class Player {
 				}, 0);
 				break;
 			case MSG.Error:
-
+				this.loading.hide();
+				this.errortips.show(msg.detail);
 				break;
 		}
 
