@@ -185,7 +185,7 @@ export class Player {
 				break;
 			case MSG.Ended:
 				dom.off(this.el, 'mousemove', this.__handleEvent);
-				
+				this.panel.show();
 				dom.removeClass(this.el, 'vcp-playing');
 				break;
 			case MSG.MetaLoaded:
@@ -211,7 +211,7 @@ export class Player {
 				break;
 			case MSG.Error:
 				this.loading.hide();
-				this.errortips.show(msg.detail);
+				this.errortips.show(msg);
 				break;
 		}
 

@@ -270,6 +270,7 @@ body.vcp-full-window {
     color: orangered;
     margin-top: -5.25em;
     text-align: center;
+    display: none;
 }
 
 /* animations */
