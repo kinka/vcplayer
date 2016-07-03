@@ -202,7 +202,7 @@ body.vcp-full-window {
 .vcp-volume .vcp-slider-vertical {
     top: -8.4em;
     left: 1em;
-    /*display: none;*/
+    display: none;
 }
 .vcp-volume .vcp-slider-track {
     position: absolute;
