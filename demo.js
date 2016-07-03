@@ -63,12 +63,6 @@ function newPlayer(ownerId) {
 		controls: domControls.checked,
 		volume: 0.2,
 		debug: domDebug.checked,
-		// src: 'http://2527.vod.myqcloud.com/2527_bffd50081d9911e6b0f4d93c5d81f265.f20.mp4',
-		// src: 'http://2527.vod.myqcloud.com/2527_1bf8b2da449211e595f01db4637252be.f20.mp4',
-		// src: 'http://184.72.239.149/vod/smil:BigBuckBunny.smil/playlist.m3u8',
-		// src: 'http://2527.vod.myqcloud.com/2527_542d5a28222411e6aadec1104f4fc9b9.f220.av.m3u8',
-		// src: 'http://2000.liveplay.myqcloud.com/live/2000_f3d7cff5e69511e5b91fa4dcbef5e35a.flv', // live
-		// src: 'http://2000.liveplay.myqcloud.com/2000_f3d7cff5e69511e5b91fa4dcbef5e35a_550.m3u8', // live
 		src: domSrc.value,
 		live: domLive.checked,
 		flash: domFlash.checked,
