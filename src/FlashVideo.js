@@ -302,6 +302,7 @@ export default class FlashVideo extends Component {
 		if (typeof p === 'undefined') return this.el && this.el.getState().volume;
 		this.el && this.el.playerVolume(p);
 		p != 0 && (this.__lastVol = p);
+		this.pub({type: PlayerMSG.VolumeChange, src: this, ts: new Date() - this.__timebase});
 	}
 
 	fullscreen(enter) {

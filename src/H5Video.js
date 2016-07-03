@@ -41,6 +41,7 @@ export default class H5Video extends Component {
 		this.on(PlayerMSG.Ended, this.notify);
 		this.on(PlayerMSG.Seeking, this.notify);
 		this.on(PlayerMSG.Seeked, this.notify);
+		this.on(PlayerMSG.VolumeChange, this.notify);
 		this.on('durationchange', this.notify);
 
 		this.load(this.options.src, this.options.m3u8 ? util.VideoType.M3U8 : '');

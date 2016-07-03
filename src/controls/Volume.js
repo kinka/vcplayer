@@ -2,6 +2,7 @@ import Slider, {MSG as SliderMSG} from './Slider'
 import Component from '../Component'
 import * as dom from '../dom'
 import * as util from '../util'
+import {MSG as PlayerMSG} from '../message'
 
 /**
  * @method percent
@@ -30,38 +31,48 @@ export default class Volume extends Component {
 	setup() {
 		this.sub(SliderMSG.Changing, this.volume, util.bind(this, this.handleMsg));
 		this.sub(SliderMSG.Changed, this.volume, util.bind(this, this.handleMsg));
-		this.on(this.icon, 'click', this.muteClick);
+		this.sub(PlayerMSG.VolumeChange, this.player.video, util.bind(this, this.handleMsg));
+		this.on(this.icon, 'click', this.toggleMute);
 	}
 	handleMsg(msg) {
-		if (msg.type === SliderMSG.Changing) {
-			this.syncTrack(this.percent());
-		} else if (msg.type === SliderMSG.Changed) {
-
+		switch (msg.type) {
+			case SliderMSG.Changing:
+				this.syncTrack(this.percent());
+				break;
+			case SliderMSG.Changed:
+				this.percent(this.percent());
+				break;
+			case PlayerMSG.VolumeChange:
+				var p = this.player.volume();
+				this.syncTrack(p);
+				this.syncMute(this.player.mute());
+				break;
 		}
 	}
-	muteClick(e) {
-		var muted = typeof e === 'boolean' ? e : !(this.player.mute());
+	toggleMute(e) {
+		var muted = !(this.player.mute());
 		this.player.mute(muted);
-		this.__muted = muted;
-
+	}
+	syncMute(muted) {
 		if (muted)
 			dom.addClass(this.el, 'vcp-volume-muted');
 		else
 			dom.removeClass(this.el, 'vcp-volume-muted');
+		this.__muted = muted;
 	}
 	syncTrack(p) {
 		this.track.style.height = p*100 + '%';
-		this.player.volume(p);
+		this.volume.percent(1 - p);
 		if (p == 0) {
-			this.muteClick(true);
+			this.syncMute(true);
 		} else if (p > 0 && this.__muted) {
-			this.muteClick(false);
+			this.syncMute(false);
 		}
 	}
 	percent(p) {
 		if (typeof p === 'undefined') return 1 - this.volume.percent() || 0;
 
-		this.syncTrack(p);
-		return this.volume.percent(1 - p);
+		this.player.volume(p);
+		return p;
 	}
 }
