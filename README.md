@@ -27,18 +27,23 @@ Video标签的实现即是一种体现。播放容器可以是html video标签�
 
 播放器使用到的图标是SVG文件，同样的，为了支持IE8也需要做些兼容。使用ImageMagick可以把SVG转化成PNG图片，img目录下有convert.bat可用于转换。其实也就一句话：
 
-		convert.exe -background none icon.svg -resize 48x48 icon.png`
+		convert.exe -background none icon.svg -resize 48x48 icon.png
 
 而样式的自定义，直接覆盖vcplayer.css中对应的属性设置即可。
 
 ## 使用
 
 参考demo。
+页面中引入脚本文件
+
+    <script src="//imgcache.qq.com/open/qcloud/video/vcplayer/player.js"></script>
+
+创建播放器对象：
 
 		var player = new vcp.Player({
                 owner: 'player_container',
                 autoplay: true,
-                debug: true, // 调试模式会有直播把flash的各种事件发送出来
+                debug: true, // 调试模式会直接把flash的各种事件发送出来
                 src: url,
                 flash: true, // 强制使用flash
                 width: width,
