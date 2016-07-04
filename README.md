@@ -33,7 +33,8 @@ Video标签的实现即是一种体现。播放容器可以是html video标签�
 
 ## 使用
 
-参考demo。
+参考demo代码。附线上demo地址：http://imgcache.qq.com/open/qcloud/video/vcplayer/demo.html
+
 页面中引入脚本文件
 
     <script src="//imgcache.qq.com/open/qcloud/video/vcplayer/player.js"></script>
@@ -43,7 +44,7 @@ Video标签的实现即是一种体现。播放容器可以是html video标签�
 		var player = new vcp.Player({
                 owner: 'player_container',
                 autoplay: true,
-                debug: true, // 调试模式会直接把flash的各种事件发送出来
+                debug: true, // 调试模式会有直播把flash的各种事件发送出来
                 src: url,
                 flash: true, // 强制使用flash
                 width: width,
