@@ -101,7 +101,7 @@
 		};
 		if (radios[i].checked) domSrc.value = radios[i].nextSibling.nextSibling.value;
 	}
-	
+	domSrc.value = 'http://119.147.83.14:1863/106316801.flv?cdncode=%2f18907E7BE0798990%2f&time=1467682811&cdn=zijian&sdtfrom=v60221&platform=70202&butype=6&scheduleflag=1&buname=qqlive&vkey=D3F87AFF2F1C54C4E32D5AA9F2B2C629F7599B62FC00DC83F4FD0D3DDE1D47A868CF6056E369B1B915A438ED37AE6FB25DF51A812FC666D214339C375BFDB7F3E82CF9D21BDC7B9B8C2B047F276697DAB92A98A257F33285&guid=69B29EB621DD50CF0D361A11B62E6D121D6150DB&refer=http%3A%2F%2Fdaxue.qq.com%2Fcontent%2Fplugin_online%2Fid%2F2558%2Ffrom%2Ftqbs%3Fwidth%3D850%26height%3D582&apptype=live';
 	window.xxlog = window.xxlog || console.log;
 	console.log = function (a, b, c, d, e, f) {
 		try {
@@ -121,7 +121,7 @@
 			// width: 800,
 			// height: 400,
 			controls: domControls.checked,
-			volume: 0.2,
+			volume: 0.8,
 			debug: domDebug.checked,
 			src: domSrc.value,
 			live: domLive.checked,
@@ -464,7 +464,8 @@
 					break;
 				case MSG.Error:
 					this.loading.hide();
-					this.errortips.show(msg);
+					this.errortips.show(msg.detail);
+					this.panel.show();
 					break;
 			}
 	
@@ -1708,7 +1709,10 @@
 		};
 	
 		Component.prototype.pub = function pub(msg) {
-			message.pub(msg, this.player);
+			var self = this;
+			setTimeout(function () {
+				message.pub(msg, self.player);
+			}, 0);
 		};
 	
 		Component.prototype.sub = function sub(type, target, cb) {
@@ -1843,7 +1847,7 @@
 		FlashVideo.prototype.doPolling = function doPolling() {
 			if (this.options.live) return; // 直播没必要这个事件
 			clearInterval(this.__timer);
-			this.__timer = setInterval(this.interval.bind(this), 500);
+			this.__timer = setInterval(this.interval.bind(this), 1000);
 		};
 	
 		FlashVideo.prototype.endPolling = function endPolling() {
@@ -1983,22 +1987,25 @@
 						}
 						break;
 					case 'netStatus':
-						if (info.code == 'NetStream.Buffer.Full') {
-							if (this.__prevPlayState == State.Paused || this.__prevPlayState == State.Stop) {
-								this.pause();
+						if (!this.options.live) {
+							if (info.code == 'NetStream.Buffer.Full') {
+								if (this.__prevPlayState == State.Paused || this.__prevPlayState == State.Stop) {
+									this.pause();
+								}
+								this.__prevPlayState = null;
+								e.type = _message.MSG.Seeked;
+							} else if (info.code == 'NetStream.Seek.Complete') {
+								// 播放到结尾再点播放会自动停止,所以force play again
+								this.play();
+								break;
 							}
-							this.__prevPlayState = null;
-							e.type = _message.MSG.Seeked;
-						} else if (info.code == 'NetStream.Seek.Complete') {
-							// 播放到结尾再点播放会自动停止,所以force play again
-							this.play();
-							break;
-						} else if (info.code == 'NetConnection.Connect.Closed') {
+						}
+						// todo empty
+						if (info.code == 'NetConnection.Connect.Closed') {
 							e.type = 'error';
 							info = { code: 1001, reason: info.code };
-						} else {
-							break; // 信息太多了。。。
 						}
+	
 						break;
 					case 'mediaTime':
 						this.__videoWidth = info.videoWidth;

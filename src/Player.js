@@ -211,7 +211,8 @@ export class Player {
 				break;
 			case MSG.Error:
 				this.loading.hide();
-				this.errortips.show(msg);
+				this.errortips.show(msg.detail);
+				this.panel.show();
 				break;
 		}
 

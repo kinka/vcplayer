@@ -79,7 +79,10 @@ export default class Component {
 		delete this.cbs[fnHash(guid, type)];
 	}
 	pub(msg) {
-		message.pub(msg, this.player);
+		var self = this;
+		setTimeout(function() {
+			message.pub(msg, self.player);
+		}, 0);
 	}
 	sub(type, target, cb) {
 		message.sub(type, target, cb, this.player);

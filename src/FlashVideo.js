@@ -73,7 +73,7 @@ export default class FlashVideo extends Component {
 	doPolling() {
 		if (this.options.live) return; // 直播没必要这个事件
 		clearInterval(this.__timer);
-		this.__timer = setInterval(this.interval.bind(this), 500);
+		this.__timer = setInterval(this.interval.bind(this), 1000);
 	}
 	endPolling() {
 		clearInterval(this.__timer);
@@ -210,21 +210,24 @@ export default class FlashVideo extends Component {
 					}
 					break;
 				case 'netStatus':
-					if (info.code == 'NetStream.Buffer.Full') {
-						if (this.__prevPlayState == State.Paused || this.__prevPlayState == State.Stop) {
-							this.pause();
+					if (!this.options.live) {
+						if (info.code == 'NetStream.Buffer.Full') {
+							if (this.__prevPlayState == State.Paused || this.__prevPlayState == State.Stop) {
+								this.pause();
+							}
+							this.__prevPlayState = null;
+							e.type = PlayerMSG.Seeked;
+						} else if (info.code == 'NetStream.Seek.Complete') { // 播放到结尾再点播放会自动停止,所以force play again
+							this.play();
+							break;
 						}
-						this.__prevPlayState = null;
-						e.type = PlayerMSG.Seeked;
-					} else if (info.code == 'NetStream.Seek.Complete') { // 播放到结尾再点播放会自动停止,所以force play again
-						this.play();
-						break;
-					} else if (info.code == 'NetConnection.Connect.Closed') {
+					}
+					// todo empty
+					if (info.code == 'NetConnection.Connect.Closed') {
 						e.type = 'error';
 						info = {code: 1001, reason: info.code};
-					} else {
-						break; // 信息太多了。。。
 					}
+
 					break;
 				case 'mediaTime':
 					this.__videoWidth = info.videoWidth;

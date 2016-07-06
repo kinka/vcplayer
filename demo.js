@@ -40,7 +40,7 @@ for (var i=0; i<radios.length; i++) {
 	}
 	if (radios[i].checked) domSrc.value = radios[i].nextSibling.nextSibling.value;
 }
-
+domSrc.value = 'http://119.147.83.14:1863/106316801.flv?cdncode=%2f18907E7BE0798990%2f&time=1467682811&cdn=zijian&sdtfrom=v60221&platform=70202&butype=6&scheduleflag=1&buname=qqlive&vkey=D3F87AFF2F1C54C4E32D5AA9F2B2C629F7599B62FC00DC83F4FD0D3DDE1D47A868CF6056E369B1B915A438ED37AE6FB25DF51A812FC666D214339C375BFDB7F3E82CF9D21BDC7B9B8C2B047F276697DAB92A98A257F33285&guid=69B29EB621DD50CF0D361A11B62E6D121D6150DB&refer=http%3A%2F%2Fdaxue.qq.com%2Fcontent%2Fplugin_online%2Fid%2F2558%2Ffrom%2Ftqbs%3Fwidth%3D850%26height%3D582&apptype=live';
 window.xxlog = window.xxlog || console.log;
 console.log = function(a,b,c,d,e,f) {
 	try {if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].indexOf('INFO:') > -1) return;} catch (e) {}
@@ -61,7 +61,7 @@ function newPlayer(ownerId) {
 		// width: 800,
 		// height: 400,
 		controls: domControls.checked,
-		volume: 0.2,
+		volume: 0.8,
 		debug: domDebug.checked,
 		src: domSrc.value,
 		live: domLive.checked,
