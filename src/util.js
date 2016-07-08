@@ -110,7 +110,6 @@ for (let i = 0; i < apiMap.length; i++) {
 	// check for exitFullscreen function
 	if (apiMap[i][1] in document) {
 		browserApi = apiMap[i];
-		break;
 	}
 }
 

@@ -65,7 +65,7 @@ body.vcp-full-window {
 }
 .vcp-bigplay {
     width: 100%;
-    height: 100%;
+    height: 80%; /*会遮住原生控制栏*/
     position: absolute;
     background-color: white\0;
     filter: alpha(opacity=0); /*奇怪的IE8/9鼠标事件穿透*/

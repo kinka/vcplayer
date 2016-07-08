@@ -8,6 +8,7 @@ import Volume from './Volume'
 import {MSG as PlayerMSG} from '../message'
 import * as dom from '../dom'
 import * as util from '../util'
+import * as B from '../browser'
 
 /**
  *
@@ -32,11 +33,15 @@ export default class Panel extends Component {
 		this.timeline = new Timeline(this.player);
 		this.timeline.render(this.el);
 
-		this.fullscreen = new FullscreenToggle(this.player);
-		this.fullscreen.render(this.el);
-		
-		this.volume = new Volume(this.player);
-		this.volume.render(this.el);
+		if (!B.IS_X5TBS) {
+			this.fullscreen = new FullscreenToggle(this.player);
+			this.fullscreen.render(this.el);	
+		}
+
+		if (!B.IS_MOBILE) {
+			this.volume = new Volume(this.player);
+			this.volume.render(this.el);
+		}
 
 		return super.render(owner);
 	}
@@ -82,6 +87,10 @@ export default class Panel extends Component {
 				this.show();
 				break;
 		}
+	}
+	toggle() {
+		if (this.el.style.display === 'block') this.hide();
+		else this.show();
 	}
 	show() {
 		if (this.el.style.display === 'block') return;

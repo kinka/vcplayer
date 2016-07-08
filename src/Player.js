@@ -1,7 +1,7 @@
 import './css/vcplayer.css';
 
 import * as __browser from './browser'
-import * as dom from './dom'
+import * as __dom from './dom'
 import * as __util from './util'
 import * as message from './message'
 import H5Video from './H5Video'
@@ -15,6 +15,7 @@ import ErrorTips from './controls/ErrorTips'
 export var MSG = message.MSG;
 export var browser = __browser;
 export var util = __util;
+export var dom = __dom;
 /**
  * @param {options}
  * @param options.owner {String} container id
@@ -63,16 +64,17 @@ export class Player {
 
 		this.poster = new Poster(this);
 		this.poster.render(this.el);
-		
-		this.bigplay = new BigPlay(this);
-		this.bigplay.render(this.el);
+
+		if (!this.options.controls) {
+			this.bigplay = new BigPlay(this);
+			this.bigplay.render(this.el);
+			
+			this.panel = new Panel(this);
+			this.panel.render(this.el);
+		}
 
 		this.errortips = new ErrorTips(this);
 		this.errortips.render(this.el);
-		// this.errortips.hide();
-
-		this.panel = new Panel(this);
-		this.panel.render(this.el);
 
 		this.loading = new Loading(this);
 		this.loading.render(this.el);
@@ -152,9 +154,9 @@ export class Player {
 				this.__lastmove = +new Date();
 				clearTimeout(this.__moveid);
 
-				self.panel.show();
+				self.panel && self.panel.show();
 				this.__moveid = setTimeout(function() {
-					self.playing() && self.panel.hide();
+					self.playing() && self.panel && self.panel.hide();
 				}, 3000);
 				break;
 		}
@@ -185,7 +187,7 @@ export class Player {
 				break;
 			case MSG.Ended:
 				dom.off(this.el, 'mousemove', this.__handleEvent);
-				this.panel.show();
+				this.panel && this.panel.show();
 				dom.removeClass(this.el, 'vcp-playing');
 				break;
 			case MSG.MetaLoaded:
@@ -212,7 +214,7 @@ export class Player {
 			case MSG.Error:
 				this.loading.hide();
 				this.errortips.show(msg.detail);
-				this.panel.show();
+				this.panel && this.panel.show();
 				break;
 		}
 

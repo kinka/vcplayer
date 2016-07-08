@@ -1,7 +1,5 @@
 import Component from '../Component'
-import * as dom from '../dom'
-import * as message from '../message'
-import * as util from '../util'
+import * as B from '../browser'
 
 export default class BigPlay extends Component {
 	constructor(player) {
@@ -15,11 +13,13 @@ export default class BigPlay extends Component {
 	}
 	setup() {
 		this.on('click', this.onClick);
-		// this.sub('play', this.player.video, util.bind(this, this.handleMsg));
-		// this.sub('pause', this.player.video, util.bind(this, this.handleMsg));
 	}
 	onClick() {
 		var video = this.player.video;
+		if (B.IS_MOBILE && !video.paused()) {
+			return this.player.panel && this.player.panel.toggle();
+		}
+
 		if (video.paused())
 			video.play();
 		else

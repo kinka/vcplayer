@@ -62,3 +62,8 @@ export const IS_IE9 = (/MSIE\s9\.0/).test(USER_AGENT);
 export const TOUCH_ENABLED = !!(('ontouchstart' in window) || window.DocumentTouch && document instanceof window.DocumentTouch);
 export const BACKGROUND_SIZE_SUPPORTED = 'backgroundSize' in document.createElement('video').style;
 export const HASVIDEO = !!(document.createElement('video').canPlayType);
+
+export const IS_X5TBS = (/TBS\/\d+/i).test(USER_AGENT); // 仅X5内核
+export const IS_MQQB = !IS_X5TBS && (/MQQBrowser\/\d+/i).test(USER_AGENT); // QQ 浏览器
+
+export const IS_MOBILE = IS_ANDROID || IS_IOS;
