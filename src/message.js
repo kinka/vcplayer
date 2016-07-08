@@ -59,7 +59,7 @@ function doPub(type, msg, scope) {
 			}
 		}
 	} catch (e) {
-		window.console && console.error && console.error(e);
+		window.console && console.error && console.error(e.stack || e);
 	}
 }
 /**

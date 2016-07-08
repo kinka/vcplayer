@@ -54,7 +54,7 @@ body.vcp-full-window {
     background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/play_btn.png);
     background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/play_btn.svg), none;
 }
-.vcp-playtoggle:hover {
+.vcp-playtoggle:hover, .vcp-playtoggle:focus {
     background-color: slategray;
     opacity: 0.9;
     filter: alpha(opacity=90);
