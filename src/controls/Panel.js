@@ -62,7 +62,7 @@ export default class Panel extends Component {
 			case PlayerMSG.MetaLoaded:
 				this.timeline.percent(this.player.percent());
 				this.timeline.buffered(this.player.buffered());
-				this.volume.percent(this.options.volume);
+				this.player.volume(typeof this.options.volume === 'undefined' ? 0.5 : this.options.volume);
 				!this.options.autoplay && this.show();
 				break;
 			case PlayerMSG.TimeUpdate:

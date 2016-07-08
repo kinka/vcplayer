@@ -47,7 +47,9 @@ export class Player {
 		this.render(owner);
 	}
 	render(owner) {
-		this.el = dom.createEl('div', {'class': 'vcp-player'});
+		var clsName = 'vcp-player';
+		if (browser.TOUCH_ENABLED) clsName += ' touchable';
+		this.el = dom.createEl('div', {'class': clsName});
 
 		if (!this.options.flash && browser.HASVIDEO) {
 			var h5 = new H5Video(this);
@@ -68,7 +70,7 @@ export class Player {
 		if (!this.options.controls) {
 			this.bigplay = new BigPlay(this);
 			this.bigplay.render(this.el);
-			
+
 			this.panel = new Panel(this);
 			this.panel.render(this.el);
 		}

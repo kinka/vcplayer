@@ -59,6 +59,10 @@ body.vcp-full-window {
     opacity: 0.9;
     filter: alpha(opacity=90);
 }
+.touchable .vcp-playtoggle:hover {
+    background-color: transparent;
+    opacity: 1;
+}
 .vcp-playing .vcp-playtoggle {
     background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/stop_btn.png);
     background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/stop_btn.svg), none;
@@ -143,7 +147,7 @@ body.vcp-full-window {
     width: 100%;
 }
 .vcp-timeline .vcp-slider-thumb {
-    top: -3px;
+    top: -4px;
 }
 .vcp-timeline .vcp-slider {
     margin-top: 8px;

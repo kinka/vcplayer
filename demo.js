@@ -61,7 +61,7 @@ function newPlayer(ownerId) {
 		// width: 800,
 		// height: 400,
 		controls: domControls.checked,
-		volume: 0.8,
+		// volume: 0.8,
 		debug: domDebug.checked,
 		src: domSrc.value,
 		live: domLive.checked,
