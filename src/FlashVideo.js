@@ -31,7 +31,7 @@ export default class FlashVideo extends Component {
 	render(owner) {
 		this.__timebase = +new Date();
 
-		var swfurl = 'http://imgcache.qq.com/open/qcloud/video/player/release/QCPlayer.swf';
+		var swfurl = '//imgcache.qq.com/open/qcloud/video/player/release/QCPlayer.swf';
 		// swfurl = 'http://test.qzs.qq.com/iot/demo/player/QCPlayer.swf';
 		var options = this.player.options;
 		var wmode = 'opaque';
