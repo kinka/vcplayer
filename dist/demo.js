@@ -101,7 +101,7 @@
 		};
 		if (radios[i].checked) domSrc.value = radios[i].nextSibling.nextSibling.value;
 	}
-	
+	domSrc.value = 'rtmp://183.57.53.227/live/2184_dc158221532611e6a2cba4dcbef5e35a?txkey=qcloud';
 	window.xxlog = window.xxlog || console.log;
 	console.log = function (a, b, c, d, e, f) {
 		try {
@@ -1913,6 +1913,11 @@
 		FlashVideo.prototype.notify = function notify(eventName, info) {
 			var e = { type: eventName, ts: +new Date() - this.__timebase };
 			try {
+				if (eventName == 'playState' && !this.__metaloaded && this.playing()) {
+					// 一些rtmp推流客户端没有metaData事件，所以自己发
+					this.notify('metaData', {});
+				}
+	
 				if (this.options.debug) {
 					this.pub({ type: e.type, src: this, ts: e.ts, detail: util.extend({ debug: true }, info) });
 				}
@@ -1934,8 +1939,8 @@
 						break;
 					case 'metaData':
 						e.type = _message.MSG.MetaLoaded;
-						this.__videoWidth = info.videoWidth;
-						this.__videoHeight = info.videoHeight;
+						this.__videoWidth = info.videoWidth || 400;
+						this.__videoHeight = info.videoHeight || 400;
 						this.__duration = info.duration;
 						this.__bytesTotal = info.bytesTotal;
 						this.__prevPlayState = null;
@@ -1959,7 +1964,7 @@
 							self.cover = null;
 						}, 500);
 						break;
-					// todo PlayerMSG.Loaded
+	
 					case 'playState':
 						if (info.playState == State.Playing) {
 							this.__playing = true;
@@ -2116,7 +2121,7 @@
 		};
 	
 		FlashVideo.prototype.playing = function playing() {
-			return this.el && this.el.getState().playState === State.Playing;
+			return this.el && this.el.getState && this.el.getState().playState === State.Playing;
 		};
 	
 		FlashVideo.prototype.type = function type() {

@@ -40,7 +40,7 @@ for (var i=0; i<radios.length; i++) {
 	}
 	if (radios[i].checked) domSrc.value = radios[i].nextSibling.nextSibling.value;
 }
-
+domSrc.value = 'rtmp://183.57.53.227/live/2184_dc158221532611e6a2cba4dcbef5e35a?txkey=qcloud';
 window.xxlog = window.xxlog || console.log;
 console.log = function(a,b,c,d,e,f) {
 	try {if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].indexOf('INFO:') > -1) return;} catch (e) {}
