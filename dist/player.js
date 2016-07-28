@@ -1770,10 +1770,9 @@ return /******/ (function(modules) { // webpackBootstrap
 		FlashVideo.prototype.notify = function notify(eventName, info) {
 			var e = { type: eventName, ts: +new Date() - this.__timebase };
 			try {
-				if (eventName == 'playState' && !this.__metaloaded && this.playing()) {
-					// 一些rtmp推流客户端没有metaData事件，所以自己发
-					this.notify('metaData', {});
-				}
+				// if (eventName == 'playState' && !this.__metaloaded && this.playing()) { // 一些rtmp推流客户端没有metaData事件，所以自己发
+				// 	this.notify('metaData', {});
+				// }
 
 				if (this.options.debug) {
 					this.pub({ type: e.type, src: this, ts: e.ts, detail: util.extend({ debug: true }, info) });
@@ -1796,8 +1795,8 @@ return /******/ (function(modules) { // webpackBootstrap
 						break;
 					case 'metaData':
 						e.type = _message.MSG.MetaLoaded;
-						this.__videoWidth = info.videoWidth || 400;
-						this.__videoHeight = info.videoHeight || 400;
+						this.__videoWidth = info.videoWidth;
+						this.__videoHeight = info.videoHeight;
 						this.__duration = info.duration;
 						this.__bytesTotal = info.bytesTotal;
 						this.__prevPlayState = null;
