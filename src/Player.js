@@ -95,28 +95,38 @@ export class Player {
 	 * @param style [String] fit | cover
 	 */
 	size(mW, mH, style) {
-		style = style || 'fit';
-		var vW = this.video.videoWidth(),
-			vH = this.video.videoHeight();
-		var dW = mW, dH = mH;
-		if (vW && vH) {
-			var ratio = vW / vH;
-			// console.log(ratio, vW, vH, mW, mH)
-			if (style == 'fit') {
-				dW = mW;
-				dH = dW / ratio;
-				if (dH > mH) { // 高度超出容器
-					dW *= mH / dH;
-					dH = mH;
+		style = style || 'cover';
+		var percent = /^\d+\.?\d{0,2}%$/;
+		if(percent.test(mW) || percent.test(mH)){ //百分数
+			var dW = mW,
+				dH = mH;
+		}else{
+			var vW = this.video.videoWidth(),
+				vH = this.video.videoHeight();
+
+			var dW = mW, dH = mH;
+			if (vW && vH) {
+				var ratio = vW / vH;
+				// console.log(ratio, vW, vH, mW, mH)
+				if (style == 'fit') {
+					dW = mW;
+					dH = dW / ratio;
+					if (dH > mH) { // 高度超出容器
+						dW *= mH / dH;
+						dH = mH;
+					}
 				}
 			}
 		}
 
+		dW += (percent.test(dW)? '' : 'px');
+		dH += (percent.test(dH)? '' : 'px');
+		//console.log(dH);
+ 		this.el.style.width = dW;
+		this.el.style.height = dH;
+
 		this.video.width(dW);
 		this.video.height(dH);
-
-		this.el.style.width = dW + 'px';
-		this.el.style.height = dH + 'px';
 
 		this.width = dW;
 		this.height = dH;
@@ -200,6 +210,7 @@ export class Player {
 					this.loading.hide();
 				}
 				this.size(this.options.width, this.options.height);
+
 				break;
 			case MSG.Seeking:
 				this.loading.show();

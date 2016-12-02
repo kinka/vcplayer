@@ -14,7 +14,14 @@ export default class H5Video extends Component {
 		var options = this.player.options;
 		var controls = !options.controls ? null : options.controls;
 		var autoplay = options.autoplay ? true : null;
-		this.createEl('video', {controls: controls, preload: 'auto', autoplay: autoplay});
+		this.createEl('video', {
+			controls: controls,
+			preload: 'auto',
+			autoplay: autoplay,
+			'webkit-playsinline': true,
+			'playsinline': true,
+			'x-webkit-airplay': true
+		});
 		return super.render(owner);
 	}
 	__hlsLoaded(src) {
@@ -78,11 +85,11 @@ export default class H5Video extends Component {
 	}
 	width(w) {
 		if (!w) return this.el.width;
-		else this.el.width = w;
+		else this.el.style.width = w;
 	}
 	height(h) {
 		if (!h) return this.el.height;
-		else this.el.height = h;
+		else this.el.style.height = h;
 	}
 	play() {
 		this.el.play();

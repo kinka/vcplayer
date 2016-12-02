@@ -6,7 +6,7 @@ import {MSG as PlayerMsg} from '../message'
 export default class Poster extends Component {
 	constructor(player) {
 		super(player, 'Poster');
-		if (typeof this.options.poster == 'object') {
+		if (this.options.poster && typeof this.options.poster == 'object') {
 			this.poster = this.options.poster;
 		} else if (typeof this.options.poster == 'string') {
 			this.poster = {src: this.options.poster}

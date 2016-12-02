@@ -57,51 +57,100 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	exports.__esModule = true;
+	exports.TcPlayer = undefined;
+
+	var _Player = __webpack_require__(1);
+
+	var _Player2 = _interopRequireDefault(_Player);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	/**
+	 *
+	 */
+	var TcPlayer =
+	/**
+	 *
+	 * @param container
+	 * @param options
+	 *  m3u8 原画url
+	 *  m3u8_hd 高清url
+	 *  m3u8_sd 标清url
+	 *  flv
+	 *  flv_hd
+	 *  flv_sd
+	 *  mp4
+	 *  mp4_hd
+	 *  mp4_sd
+	 *  rtmp
+	 *  rtmp_hd
+	 *  rtmp_sd
+	 *  autoplay 是否自动播放
+	 *  coverpic 封面图片url
+	 *  is_live 是否是直播
+	 *  width auto px %
+	 *  height auto px %
+	 */
+	exports.TcPlayer = function TcPlayer(container, options) {
+	  _classCallCheck(this, TcPlayer);
+
+	  return new _Player2["default"](options);
+	};
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	exports.__esModule = true;
 	exports.Player = exports.dom = exports.util = exports.browser = exports.MSG = undefined;
 
-	__webpack_require__(1);
+	__webpack_require__(2);
 
-	var _browser = __webpack_require__(5);
+	var _browser = __webpack_require__(6);
 
 	var __browser = _interopRequireWildcard(_browser);
 
-	var _dom = __webpack_require__(6);
+	var _dom = __webpack_require__(7);
 
 	var __dom = _interopRequireWildcard(_dom);
 
-	var _util = __webpack_require__(7);
+	var _util = __webpack_require__(8);
 
 	var __util = _interopRequireWildcard(_util);
 
-	var _message = __webpack_require__(8);
+	var _message = __webpack_require__(9);
 
 	var message = _interopRequireWildcard(_message);
 
-	var _H5Video = __webpack_require__(9);
+	var _H5Video = __webpack_require__(10);
 
 	var _H5Video2 = _interopRequireDefault(_H5Video);
 
-	var _FlashVideo = __webpack_require__(11);
+	var _FlashVideo = __webpack_require__(12);
 
 	var _FlashVideo2 = _interopRequireDefault(_FlashVideo);
 
-	var _Panel = __webpack_require__(12);
+	var _Panel = __webpack_require__(13);
 
 	var _Panel2 = _interopRequireDefault(_Panel);
 
-	var _BigPlay = __webpack_require__(19);
+	var _BigPlay = __webpack_require__(20);
 
 	var _BigPlay2 = _interopRequireDefault(_BigPlay);
 
-	var _Poster = __webpack_require__(20);
+	var _Poster = __webpack_require__(21);
 
 	var _Poster2 = _interopRequireDefault(_Poster);
 
-	var _Loading = __webpack_require__(21);
+	var _Loading = __webpack_require__(22);
 
 	var _Loading2 = _interopRequireDefault(_Loading);
 
-	var _ErrorTips = __webpack_require__(22);
+	var _ErrorTips = __webpack_require__(23);
 
 	var _ErrorTips2 = _interopRequireDefault(_ErrorTips);
 
@@ -387,16 +436,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	}();
 
 /***/ },
-/* 1 */
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(2);
+	var content = __webpack_require__(3);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(4)(content, {});
+	var update = __webpack_require__(5)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -413,10 +462,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 2 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(3)();
+	exports = module.exports = __webpack_require__(4)();
 	// imports
 
 
@@ -427,7 +476,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports) {
 
 	/*
@@ -483,7 +532,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -735,7 +784,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -814,7 +863,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var IS_MOBILE = exports.IS_MOBILE = IS_ANDROID || IS_IOS;
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -842,9 +891,9 @@ return /******/ (function(modules) { // webpackBootstrap
 		if (elem.removeEventListener) elem.removeEventListener(type, cb, false);else if (elem.detachEvent) elem.detachEvent('on' + type, cb);
 	}
 	function createEl() {
-		var tag = arguments.length <= 0 || arguments[0] === undefined ? 'div' : arguments[0];
-		var attrs = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-		var props = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+		var tag = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'div';
+		var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+		var props = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
 		var el = document.createElement(tag);
 		for (var k in attrs) {
@@ -971,7 +1020,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -986,11 +1035,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.extend = extend;
 	exports.store = store;
 
-	var _dom = __webpack_require__(6);
+	var _dom = __webpack_require__(7);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _message = __webpack_require__(8);
+	var _message = __webpack_require__(9);
 
 	var message = _interopRequireWildcard(_message);
 
@@ -1136,7 +1185,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var VideoType = exports.VideoType = { RTMP: 'rtmp', M3U8: 'm3u8' };
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1147,7 +1196,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.sub = sub;
 	exports.unsub = unsub;
 
-	var _util = __webpack_require__(7);
+	var _util = __webpack_require__(8);
 
 	var util = _interopRequireWildcard(_util);
 
@@ -1281,26 +1330,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(10);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _dom = __webpack_require__(6);
+	var _dom = __webpack_require__(7);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _util = __webpack_require__(7);
+	var _util = __webpack_require__(8);
 
 	var util = _interopRequireWildcard(_util);
 
-	var _message = __webpack_require__(8);
+	var _message = __webpack_require__(9);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
 
@@ -1471,22 +1520,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports["default"] = H5Video;
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _dom = __webpack_require__(6);
+	var _dom = __webpack_require__(7);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _util = __webpack_require__(7);
+	var _util = __webpack_require__(8);
 
 	var util = _interopRequireWildcard(_util);
 
-	var _message = __webpack_require__(8);
+	var _message = __webpack_require__(9);
 
 	var message = _interopRequireWildcard(_message);
 
@@ -1509,7 +1558,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @method unsub
 	 * @class Component
 	 */
-
 	var Component = function () {
 		function Component(player, name) {
 			_classCallCheck(this, Component);
@@ -1628,24 +1676,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(10);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _message = __webpack_require__(8);
+	var _message = __webpack_require__(9);
 
-	var _dom = __webpack_require__(6);
+	var _dom = __webpack_require__(7);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _util = __webpack_require__(7);
+	var _util = __webpack_require__(8);
 
 	var util = _interopRequireWildcard(_util);
 
@@ -1846,7 +1894,7 @@ return /******/ (function(modules) { // webpackBootstrap
 							e.type = _message.MSG.Seeking;
 						} else if (info.seekState == State.Seeked) {
 							if (!this.__m3u8 // m3u8倒没有这个问题
-							 && info.playState == State.Paused || info.playState == State.Stop // 播放结束后seek状态不变更，所以强制play以恢复正常状态
+							&& info.playState == State.Paused || info.playState == State.Stop // 播放结束后seek状态不变更，所以强制play以恢复正常状态
 							) {
 									this.play();
 									this.__prevPlayState = info.playState;
@@ -2020,50 +2068,50 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(10);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _PlayToggle = __webpack_require__(13);
+	var _PlayToggle = __webpack_require__(14);
 
 	var _PlayToggle2 = _interopRequireDefault(_PlayToggle);
 
-	var _FullscreenToggle = __webpack_require__(14);
+	var _FullscreenToggle = __webpack_require__(15);
 
 	var _FullscreenToggle2 = _interopRequireDefault(_FullscreenToggle);
 
-	var _Slider = __webpack_require__(15);
+	var _Slider = __webpack_require__(16);
 
-	var _Timeline = __webpack_require__(16);
+	var _Timeline = __webpack_require__(17);
 
 	var _Timeline2 = _interopRequireDefault(_Timeline);
 
-	var _Timelabel = __webpack_require__(17);
+	var _Timelabel = __webpack_require__(18);
 
 	var _Timelabel2 = _interopRequireDefault(_Timelabel);
 
-	var _Volume = __webpack_require__(18);
+	var _Volume = __webpack_require__(19);
 
 	var _Volume2 = _interopRequireDefault(_Volume);
 
-	var _message = __webpack_require__(8);
+	var _message = __webpack_require__(9);
 
-	var _dom = __webpack_require__(6);
+	var _dom = __webpack_require__(7);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _util = __webpack_require__(7);
+	var _util = __webpack_require__(8);
 
 	var util = _interopRequireWildcard(_util);
 
-	var _browser = __webpack_require__(5);
+	var _browser = __webpack_require__(6);
 
 	var B = _interopRequireWildcard(_browser);
 
@@ -2084,7 +2132,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @property {FullscreenToggle} fullscreen
 	 * @property {Player} player
 	 */
-
 	var Panel = function (_Component) {
 		_inherits(Panel, _Component);
 
@@ -2194,26 +2241,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports["default"] = Panel;
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(10);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _dom = __webpack_require__(6);
+	var _dom = __webpack_require__(7);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _message = __webpack_require__(8);
+	var _message = __webpack_require__(9);
 
 	var message = _interopRequireWildcard(_message);
 
-	var _util = __webpack_require__(7);
+	var _util = __webpack_require__(8);
 
 	var util = _interopRequireWildcard(_util);
 
@@ -2263,26 +2310,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports["default"] = PlayToggle;
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(10);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _dom = __webpack_require__(6);
+	var _dom = __webpack_require__(7);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _message = __webpack_require__(8);
+	var _message = __webpack_require__(9);
 
 	var message = _interopRequireWildcard(_message);
 
-	var _util = __webpack_require__(7);
+	var _util = __webpack_require__(8);
 
 	var util = _interopRequireWildcard(_util);
 
@@ -2329,7 +2376,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports["default"] = FullscreenToggle;
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2337,19 +2384,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.__esModule = true;
 	exports.MSG = undefined;
 
-	var _Component2 = __webpack_require__(10);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _dom = __webpack_require__(6);
+	var _dom = __webpack_require__(7);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _message = __webpack_require__(8);
+	var _message = __webpack_require__(9);
 
 	var message = _interopRequireWildcard(_message);
 
-	var _util = __webpack_require__(7);
+	var _util = __webpack_require__(8);
 
 	var util = _interopRequireWildcard(_util);
 
@@ -2452,26 +2499,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports["default"] = Slider;
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Slider = __webpack_require__(15);
+	var _Slider = __webpack_require__(16);
 
 	var _Slider2 = _interopRequireDefault(_Slider);
 
-	var _Component2 = __webpack_require__(10);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _dom = __webpack_require__(6);
+	var _dom = __webpack_require__(7);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _util = __webpack_require__(7);
+	var _util = __webpack_require__(8);
 
 	var util = _interopRequireWildcard(_util);
 
@@ -2491,7 +2538,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @property {Boolean} scrubbing
 	 * @class Timeline
 	 */
-
 	var Timeline = function (_Component) {
 		_inherits(Timeline, _Component);
 
@@ -2563,26 +2609,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports["default"] = Timeline;
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Slider = __webpack_require__(15);
+	var _Slider = __webpack_require__(16);
 
 	var _Slider2 = _interopRequireDefault(_Slider);
 
-	var _Component2 = __webpack_require__(10);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _dom = __webpack_require__(6);
+	var _dom = __webpack_require__(7);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _util = __webpack_require__(7);
+	var _util = __webpack_require__(8);
 
 	var util = _interopRequireWildcard(_util);
 
@@ -2602,7 +2648,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @property {Boolean} scrubbing
 	 * @class Timeline
 	 */
-
 	var Timelabel = function (_Component) {
 		_inherits(Timelabel, _Component);
 
@@ -2632,30 +2677,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports["default"] = Timelabel;
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Slider = __webpack_require__(15);
+	var _Slider = __webpack_require__(16);
 
 	var _Slider2 = _interopRequireDefault(_Slider);
 
-	var _Component2 = __webpack_require__(10);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _dom = __webpack_require__(6);
+	var _dom = __webpack_require__(7);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _util = __webpack_require__(7);
+	var _util = __webpack_require__(8);
 
 	var util = _interopRequireWildcard(_util);
 
-	var _message = __webpack_require__(8);
+	var _message = __webpack_require__(9);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
 
@@ -2672,7 +2717,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @property {Slider} volume
 	 * @class Timeline
 	 */
-
 	var Volume = function (_Component) {
 		_inherits(Volume, _Component);
 
@@ -2753,18 +2797,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports["default"] = Volume;
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(10);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _browser = __webpack_require__(5);
+	var _browser = __webpack_require__(6);
 
 	var B = _interopRequireWildcard(_browser);
 
@@ -2816,28 +2860,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports["default"] = BigPlay;
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-	var _Component2 = __webpack_require__(10);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _dom = __webpack_require__(6);
+	var _dom = __webpack_require__(7);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _util = __webpack_require__(7);
+	var _util = __webpack_require__(8);
 
 	var util = _interopRequireWildcard(_util);
 
-	var _message = __webpack_require__(8);
+	var _message = __webpack_require__(9);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
 
@@ -2976,26 +3020,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports["default"] = Poster;
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(10);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _dom = __webpack_require__(6);
+	var _dom = __webpack_require__(7);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _message = __webpack_require__(8);
+	var _message = __webpack_require__(9);
 
 	var message = _interopRequireWildcard(_message);
 
-	var _util = __webpack_require__(7);
+	var _util = __webpack_require__(8);
 
 	var util = _interopRequireWildcard(_util);
 
@@ -3025,7 +3069,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				a.appendChild(arguments[b]);
 			}return a;
 		}function c(a, b, c, d) {
-			var e = ["opacity", b, ~ ~(100 * a), c, d].join("-"),
+			var e = ["opacity", b, ~~(100 * a), c, d].join("-"),
 			    f = .01 + c / d * 100,
 			    g = Math.max(1 - (1 - a) / b * (100 - f), a),
 			    h = j.substring(0, j.indexOf("Animation")).toLowerCase(),
@@ -3057,7 +3101,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				function f() {
 					return e(c("group", { coordsize: k + " " + k, coordorigin: -j + " " + -j }), { width: k, height: k });
 				}function h(a, h, i) {
-					b(m, b(e(f(), { rotation: 360 / d.lines * a + "deg", left: ~ ~h }), b(e(c("roundrect", { arcsize: d.corners }), { width: j, height: d.scale * d.width, left: d.scale * d.radius, top: -d.scale * d.width >> 1, filter: i }), c("fill", { color: g(d.color, a), opacity: d.opacity }), c("stroke", { opacity: 0 }))));
+					b(m, b(e(f(), { rotation: 360 / d.lines * a + "deg", left: ~~h }), b(e(c("roundrect", { arcsize: d.corners }), { width: j, height: d.scale * d.width, left: d.scale * d.radius, top: -d.scale * d.width >> 1, filter: i }), c("fill", { color: g(d.color, a), opacity: d.opacity }), c("stroke", { opacity: 0 }))));
 				}var i,
 				    j = d.scale * (d.length + d.width),
 				    k = 2 * d.scale * j,
@@ -3087,14 +3131,14 @@ return /******/ (function(modules) { // webpackBootstrap
 					    n = l / d.lines;!function o() {
 						h++;for (var a = 0; a < d.lines; a++) {
 							g = Math.max(1 - (h + (d.lines - a) * n) % l * m, d.opacity), c.opacity(f, a * d.direction + i, g, d);
-						}c.timeout = c.el && setTimeout(o, ~ ~(1e3 / k));
+						}c.timeout = c.el && setTimeout(o, ~~(1e3 / k));
 					}();
 				}return c;
 			}, stop: function stop() {
 				var a = this.el;return a && (clearTimeout(this.timeout), a.parentNode && a.parentNode.removeChild(a), this.el = void 0), this;
 			}, lines: function lines(d, f) {
 				function h(b, c) {
-					return e(a(), { position: "absolute", width: f.scale * (f.length + f.width) + "px", height: f.scale * f.width + "px", background: b, boxShadow: c, transformOrigin: "left", transform: "rotate(" + ~ ~(360 / f.lines * k + f.rotate) + "deg) translate(" + f.scale * f.radius + "px,0)", borderRadius: (f.corners * f.scale * f.width >> 1) + "px" });
+					return e(a(), { position: "absolute", width: f.scale * (f.length + f.width) + "px", height: f.scale * f.width + "px", background: b, boxShadow: c, transformOrigin: "left", transform: "rotate(" + ~~(360 / f.lines * k + f.rotate) + "deg) translate(" + f.scale * f.radius + "px,0)", borderRadius: (f.corners * f.scale * f.width >> 1) + "px" });
 				}for (var i, k = 0, l = (f.lines - 1) * (1 - f.direction) / 2; k < f.lines; k++) {
 					i = e(a(), { position: "absolute", top: 1 + ~(f.scale * f.width / 2) + "px", transform: f.hwaccel ? "translate3d(0,0,0)" : "", opacity: f.opacity, animation: j && c(f.opacity, f.trail, l + k * f.direction, f.lines) + " " + 1 / f.speed + "s linear infinite" }), f.shadow && b(i, e(h("#000", "0 0 4px #000"), { top: "2px" })), b(d, b(i, h(g(f.color, k), "0 0 1px rgba(0,0,0,.1)")));
 				}return d;
@@ -3164,26 +3208,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports["default"] = Loading;
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(10);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
-	var _dom = __webpack_require__(6);
+	var _dom = __webpack_require__(7);
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _message = __webpack_require__(8);
+	var _message = __webpack_require__(9);
 
 	var message = _interopRequireWildcard(_message);
 
-	var _util = __webpack_require__(7);
+	var _util = __webpack_require__(8);
 
 	var util = _interopRequireWildcard(_util);
 

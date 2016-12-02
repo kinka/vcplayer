@@ -985,9 +985,9 @@
 		if (elem.removeEventListener) elem.removeEventListener(type, cb, false);else if (elem.detachEvent) elem.detachEvent('on' + type, cb);
 	}
 	function createEl() {
-		var tag = arguments.length <= 0 || arguments[0] === undefined ? 'div' : arguments[0];
-		var attrs = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-		var props = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+		var tag = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'div';
+		var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+		var props = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 	
 		var el = document.createElement(tag);
 		for (var k in attrs) {
@@ -1652,7 +1652,6 @@
 	 * @method unsub
 	 * @class Component
 	 */
-	
 	var Component = function () {
 		function Component(player, name) {
 			_classCallCheck(this, Component);
@@ -1989,7 +1988,7 @@
 							e.type = _message.MSG.Seeking;
 						} else if (info.seekState == State.Seeked) {
 							if (!this.__m3u8 // m3u8倒没有这个问题
-							 && info.playState == State.Paused || info.playState == State.Stop // 播放结束后seek状态不变更，所以强制play以恢复正常状态
+							&& info.playState == State.Paused || info.playState == State.Stop // 播放结束后seek状态不变更，所以强制play以恢复正常状态
 							) {
 									this.play();
 									this.__prevPlayState = info.playState;
@@ -2227,7 +2226,6 @@
 	 * @property {FullscreenToggle} fullscreen
 	 * @property {Player} player
 	 */
-	
 	var Panel = function (_Component) {
 		_inherits(Panel, _Component);
 	
@@ -2634,7 +2632,6 @@
 	 * @property {Boolean} scrubbing
 	 * @class Timeline
 	 */
-	
 	var Timeline = function (_Component) {
 		_inherits(Timeline, _Component);
 	
@@ -2745,7 +2742,6 @@
 	 * @property {Boolean} scrubbing
 	 * @class Timeline
 	 */
-	
 	var Timelabel = function (_Component) {
 		_inherits(Timelabel, _Component);
 	
@@ -2815,7 +2811,6 @@
 	 * @property {Slider} volume
 	 * @class Timeline
 	 */
-	
 	var Volume = function (_Component) {
 		_inherits(Volume, _Component);
 	
@@ -2966,7 +2961,7 @@
 	
 	exports.__esModule = true;
 	
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 	
 	var _Component2 = __webpack_require__(12);
 	
@@ -3168,7 +3163,7 @@
 				a.appendChild(arguments[b]);
 			}return a;
 		}function c(a, b, c, d) {
-			var e = ["opacity", b, ~ ~(100 * a), c, d].join("-"),
+			var e = ["opacity", b, ~~(100 * a), c, d].join("-"),
 			    f = .01 + c / d * 100,
 			    g = Math.max(1 - (1 - a) / b * (100 - f), a),
 			    h = j.substring(0, j.indexOf("Animation")).toLowerCase(),
@@ -3200,7 +3195,7 @@
 				function f() {
 					return e(c("group", { coordsize: k + " " + k, coordorigin: -j + " " + -j }), { width: k, height: k });
 				}function h(a, h, i) {
-					b(m, b(e(f(), { rotation: 360 / d.lines * a + "deg", left: ~ ~h }), b(e(c("roundrect", { arcsize: d.corners }), { width: j, height: d.scale * d.width, left: d.scale * d.radius, top: -d.scale * d.width >> 1, filter: i }), c("fill", { color: g(d.color, a), opacity: d.opacity }), c("stroke", { opacity: 0 }))));
+					b(m, b(e(f(), { rotation: 360 / d.lines * a + "deg", left: ~~h }), b(e(c("roundrect", { arcsize: d.corners }), { width: j, height: d.scale * d.width, left: d.scale * d.radius, top: -d.scale * d.width >> 1, filter: i }), c("fill", { color: g(d.color, a), opacity: d.opacity }), c("stroke", { opacity: 0 }))));
 				}var i,
 				    j = d.scale * (d.length + d.width),
 				    k = 2 * d.scale * j,
@@ -3230,14 +3225,14 @@
 					    n = l / d.lines;!function o() {
 						h++;for (var a = 0; a < d.lines; a++) {
 							g = Math.max(1 - (h + (d.lines - a) * n) % l * m, d.opacity), c.opacity(f, a * d.direction + i, g, d);
-						}c.timeout = c.el && setTimeout(o, ~ ~(1e3 / k));
+						}c.timeout = c.el && setTimeout(o, ~~(1e3 / k));
 					}();
 				}return c;
 			}, stop: function stop() {
 				var a = this.el;return a && (clearTimeout(this.timeout), a.parentNode && a.parentNode.removeChild(a), this.el = void 0), this;
 			}, lines: function lines(d, f) {
 				function h(b, c) {
-					return e(a(), { position: "absolute", width: f.scale * (f.length + f.width) + "px", height: f.scale * f.width + "px", background: b, boxShadow: c, transformOrigin: "left", transform: "rotate(" + ~ ~(360 / f.lines * k + f.rotate) + "deg) translate(" + f.scale * f.radius + "px,0)", borderRadius: (f.corners * f.scale * f.width >> 1) + "px" });
+					return e(a(), { position: "absolute", width: f.scale * (f.length + f.width) + "px", height: f.scale * f.width + "px", background: b, boxShadow: c, transformOrigin: "left", transform: "rotate(" + ~~(360 / f.lines * k + f.rotate) + "deg) translate(" + f.scale * f.radius + "px,0)", borderRadius: (f.corners * f.scale * f.width >> 1) + "px" });
 				}for (var i, k = 0, l = (f.lines - 1) * (1 - f.direction) / 2; k < f.lines; k++) {
 					i = e(a(), { position: "absolute", top: 1 + ~(f.scale * f.width / 2) + "px", transform: f.hwaccel ? "translate3d(0,0,0)" : "", opacity: f.opacity, animation: j && c(f.opacity, f.trail, l + k * f.direction, f.lines) + " " + 1 / f.speed + "s linear infinite" }), f.shadow && b(i, e(h("#000", "0 0 4px #000"), { top: "2px" })), b(d, b(i, h(g(f.color, k), "0 0 1px rgba(0,0,0,.1)")));
 				}return d;

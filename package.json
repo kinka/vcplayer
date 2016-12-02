@@ -21,7 +21,10 @@
     "dev": "webpack-dev-server --inline --hot",
     "demo": "webpack-dev-server --inline --hot --config webpack.demo.config.js",
     "test": "webpack-dev-server --inline --hot --config webpack.test.config.js --port 8081",
-    "publish": "webpack && webpack --config webpack.demo.config.js && node publish.js"
+    "publish": "webpack && webpack --config webpack.demo.config.js && node publish.js",
+
+    "watch.tc": "webpack --watch --config webpack.tcplayer.config.js",
+    "publish.tc": "webpack --config webpack.tcplayer.config.js"
   },
   "author": "",
   "license": "ISC"

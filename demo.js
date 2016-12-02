@@ -1,4 +1,5 @@
 import {Player, browser, util, dom} from './src/player'
+import {TcPlayer} from './src/TcPlayer.js'
 // var Player = vcp.Player, browser = vcp.browser, util = vcp.util;
 import './src/css/vcplayer.css';
 
@@ -55,7 +56,10 @@ function newPlayer(ownerId) {
 	save();
 
 	$('#' + ownerId).innerHTML = '';
-	return new Player({
+	//TcPlayer
+	var options = {
+		flv : 'http://2157.liveplay.myqcloud.com/live/2157_358556a1088511e6b91fa4dcbef5e35a.flv',
+		mp4_sd:domSrc.value,
 		owner: ownerId,
 		autoplay: domAutoplay.checked,
 		// width: 800,
@@ -63,7 +67,7 @@ function newPlayer(ownerId) {
 		controls: domControls.checked,
 		// volume: 0.8,
 		debug: domDebug.checked,
-		src: domSrc.value,
+		//src: domSrc.value,
 		live: domLive.checked,
 		flash: domFlash.checked,
 		// poster: domPoster.value,
@@ -77,7 +81,7 @@ function newPlayer(ownerId) {
 		},
 		listener: function(msg) {
 			if (msg.type == 'timeupdate' || msg.type === 'printLog' || msg.type == 'mediaTime') return;
-			console.log(msg.ts, 'g' + this.guid, msg.type, msg.detail)
+			console.log(msg.ts, 'g' + this.guid, msg.type, msg.detail);
 			log.innerHTML += Number(msg.ts/1000).toFixed(0) + ': p' + this.guid + ' <span class="em">[' + msg.type + ']</span>'
 				+ (msg.detail ? JSON.stringify(msg.detail) : '')+ '<br/><br/>';
 			log.scrollTop = log.scrollHeight;
@@ -90,7 +94,19 @@ function newPlayer(ownerId) {
 					break;
 			}
 		}
-	});
+	};
+
+	/*var options = {
+		flv : 'http://2157.liveplay.myqcloud.com/live/2157_358556a1088511e6b91fa4dcbef5e35a.flv',
+		autoplay: true,
+		coverpic: 'http://www.imagesbuddy.com/images/130/2014/01/whatever-garfield-face-graphic.jpg'
+	};*/
+
+	var _player = new TcPlayer( ownerId ,options);
+
+	// var _player = new Player(options);
+	console.log(_player);
+	return _player;
 }
 dom.on(log, 'click', function() {
 	log.style.display = 'none';
