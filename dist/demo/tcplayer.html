@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <title>播放器例子</title>
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="msapplication-tap-highlight" content="no">
+    <style>
+        body{
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="video-container" style="margin: 0px auto;">
+
+</div>
+<script src="../TcPlayer.js"></script>
+<script>
+    (function(){
+        function getParams(name) {
+            var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) {
+                return decodeURIComponent(r[2]);
+            }
+            return null;
+        }
+        var rtmp = getParams('rtmp'),
+            flv  = getParams('flv'),
+            m3u8 = getParams('m3u8'),
+            mp4  = getParams('mp4'),
+            live = (getParams('live') == 'true' ? true : false),
+            coverpic = getParams('coverpic'),
+            width = getParams('width'),
+            height = getParams('height'),
+            autoplay = (getParams('autoplay') == 'true' ? true : false);
+        /**
+         * 视频类型播放优先级
+         * mobile ：m3u8>mp4
+         * PC ：RTMP>flv>m3u8>mp4
+         */
+        var options ={
+            rtmp: rtmp,
+            flv: flv,
+            m3u8: m3u8 || 'http://2527.vod.myqcloud.com/2527_d84eecd64fb011e6becac93ea7058338.f220.av.m3u8',
+            mp4 : mp4 || 'http://2527.vod.myqcloud.com/2527_5c080b9053d811e6b86f1d4c7b6c6eb7.f20.mp4',
+            coverpic: coverpic,
+            autoplay: autoplay ? true : false,
+            live: live,
+            width : width || '480',
+            height : height || '320'
+        };
+        var player = new TcPlayer('video-container', options);
+        console.log(player);
+    })();
+</script>
+</body>
+</html>
