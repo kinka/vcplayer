@@ -12,7 +12,7 @@ const tips={
 export class Tips{
     constructor(options){
         this.options = options;
-        this.customTips = options.wording;
+        this.customTips = options.wording || {};
     }
     getTips(key){
         return this.customTips[key] || tips[key];

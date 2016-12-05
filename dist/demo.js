@@ -118,8 +118,6 @@
 		$('#' + ownerId).innerHTML = '';
 		//TcPlayer
 		var options = {
-			flv: 'http://2157.liveplay.myqcloud.com/live/2157_358556a1088511e6b91fa4dcbef5e35a.flv',
-			mp4_sd: domSrc.value,
 			owner: ownerId,
 			autoplay: domAutoplay.checked,
 			// width: 800,
@@ -127,7 +125,7 @@
 			controls: domControls.checked,
 			// volume: 0.8,
 			debug: domDebug.checked,
-			//src: domSrc.value,
+			src: domSrc.value,
 			live: domLive.checked,
 			flash: domFlash.checked,
 			// poster: domPoster.value,

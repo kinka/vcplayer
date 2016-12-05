@@ -198,9 +198,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	function validation(options) {
 	    var vs = options.videoSource;
 	    if (!(vs.is_m3u8 || vs.is_flv || vs.is_m3u8 || vs.is_rtmp)) {
-	        //alert(Tips.ERROR.urlEmpty);
+	        alert(Tips);
 	        return false;
 	    }
+	    return true;
 	}
 	function getClarityUrl(urls, format, definition) {
 	    return urls[format][definition];
@@ -821,7 +822,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _classCallCheck(this, Tips);
 
 	        this.options = options;
-	        this.customTips = options.wording;
+	        this.customTips = options.wording || {};
 	    }
 
 	    Tips.prototype.getTips = function getTips(key) {

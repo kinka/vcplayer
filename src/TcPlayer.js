@@ -46,6 +46,7 @@ export class TcPlayer extends Player {
         let isFlash = browser.IS_MOBILE ? false : true;
         //根据平台和播放优先级获取播放地址
         let src = getUrl(videoSource);
+        let tips = new Tips(options);
         let _options = {
             owner: container ,
             videoSource : videoSource ,
@@ -109,9 +110,10 @@ function initVideoSource(options){
 function validation(options){
     let vs = options.videoSource;
     if(!(vs.is_m3u8 || vs.is_flv || vs.is_m3u8 || vs.is_rtmp)){
-        //alert(Tips.ERROR.urlEmpty);
+        alert(Tips);
         return false;
     }
+    return true;
 }
 function getClarityUrl(urls, format, definition){
     return urls[format][definition];
