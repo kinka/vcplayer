@@ -1,5 +1,5 @@
 import {Player, browser, util, dom} from './src/player'
-import {TcPlayer} from './src/TcPlayer.js'
+//import {TcPlayer} from './src/TcPlayer.js'
 // var Player = vcp.Player, browser = vcp.browser, util = vcp.util;
 import './src/css/vcplayer.css';
 
@@ -102,9 +102,9 @@ function newPlayer(ownerId) {
 		coverpic: 'http://www.imagesbuddy.com/images/130/2014/01/whatever-garfield-face-graphic.jpg'
 	};*/
 
-	var _player = new TcPlayer( ownerId ,options);
+	//var _player = new TcPlayer( ownerId ,options);
 
-	// var _player = new Player(options);
+	 var _player = new Player(options);
 	console.log(_player);
 	return _player;
 }

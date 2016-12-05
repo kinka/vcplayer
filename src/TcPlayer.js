@@ -1,6 +1,8 @@
 import * as browser from './browser'
 import * as dom from './dom'
 import * as util from './util'
+import * as Tips from './constant/Tips'
+
 import { Player }  from './Player'
 
 //export var browser = __browser;
@@ -46,7 +48,7 @@ export class TcPlayer extends Player {
         let src = getUrl(videoSource);
         let _options = {
             owner: container ,
-            urls : videoSource.urls ,
+            videoSource : videoSource ,
             src:  src ,
             autoplay: options.autoplay ,
             live : options.live ,
@@ -56,9 +58,10 @@ export class TcPlayer extends Player {
             width: options.width || '100%' ,
             height: options.height || '100%'
         };
-        super(_options);
+        if(validation(_options)){
+            super(_options);
+        }
         //console.log('constructor',this);
-        this.videoSource = videoSource;
         //return new Player(options);
     }
     /**
@@ -102,6 +105,13 @@ function initVideoSource(options){
         }
     };
     return videoSource;
+}
+function validation(options){
+    let vs = options.videoSource;
+    if(!(vs.is_m3u8 || vs.is_flv || vs.is_m3u8 || vs.is_rtmp)){
+        //alert(Tips.ERROR.urlEmpty);
+        return false;
+    }
 }
 function getClarityUrl(urls, format, definition){
     return urls[format][definition];

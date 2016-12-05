@@ -53,13 +53,14 @@
 
 	'use strict';
 	
-	var _player = __webpack_require__(2);
+	var _player2 = __webpack_require__(2);
 	
 	__webpack_require__(3);
 	
 	var $ = function $(selector) {
 		return document.querySelector(selector);
 	};
+	//import {TcPlayer} from './src/TcPlayer.js'
 	// var Player = vcp.Player, browser = vcp.browser, util = vcp.util;
 	
 	var $$ = function $$(selector) {
@@ -96,7 +97,7 @@
 		radios[i].onclick = function () {
 			if (this.checked) {
 				domSrc.value = this.nextSibling.nextSibling.value;
-				_player.util.store('playtype', this.id);
+				_player2.util.store('playtype', this.id);
 			}
 		};
 		if (radios[i].checked) domSrc.value = radios[i].nextSibling.nextSibling.value;
@@ -107,7 +108,7 @@
 		try {
 			if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].indexOf('INFO:') > -1) return;
 		} catch (e) {}
-		if (_player.browser.IS_IE8 || _player.browser.IS_IE9) window.xxlog(a || '', b || '', c || '', d || '', e || '', f || '');else xxlog.apply(this, arguments);
+		if (_player2.browser.IS_IE8 || _player2.browser.IS_IE9) window.xxlog(a || '', b || '', c || '', d || '', e || '', f || '');else xxlog.apply(this, arguments);
 	};
 	window.player = newPlayer('demo_video');
 	// newPlayer('demo_video2')
@@ -115,7 +116,10 @@
 		save();
 	
 		$('#' + ownerId).innerHTML = '';
-		return new _player.Player({
+		//TcPlayer
+		var options = {
+			flv: 'http://2157.liveplay.myqcloud.com/live/2157_358556a1088511e6b91fa4dcbef5e35a.flv',
+			mp4_sd: domSrc.value,
 			owner: ownerId,
 			autoplay: domAutoplay.checked,
 			// width: 800,
@@ -123,7 +127,7 @@
 			controls: domControls.checked,
 			// volume: 0.8,
 			debug: domDebug.checked,
-			src: domSrc.value,
+			//src: domSrc.value,
 			live: domLive.checked,
 			flash: domFlash.checked,
 			// poster: domPoster.value,
@@ -149,25 +153,37 @@
 						break;
 				}
 			}
-		});
+		};
+	
+		/*var options = {
+	 	flv : 'http://2157.liveplay.myqcloud.com/live/2157_358556a1088511e6b91fa4dcbef5e35a.flv',
+	 	autoplay: true,
+	 	coverpic: 'http://www.imagesbuddy.com/images/130/2014/01/whatever-garfield-face-graphic.jpg'
+	 };*/
+	
+		//var _player = new TcPlayer( ownerId ,options);
+	
+		var _player = new _player2.Player(options);
+		console.log(_player);
+		return _player;
 	}
-	_player.dom.on(log, 'click', function () {
+	_player2.dom.on(log, 'click', function () {
 		log.style.display = 'none';
 	});
 	function save() {
-		_player.util.store('live', domLive.checked);
-		_player.util.store('debug', domDebug.checked);
-		_player.util.store('controls', domControls.checked);
-		_player.util.store('flash', domFlash.checked);
-		_player.util.store('autoplay', domAutoplay.checked);
+		_player2.util.store('live', domLive.checked);
+		_player2.util.store('debug', domDebug.checked);
+		_player2.util.store('controls', domControls.checked);
+		_player2.util.store('flash', domFlash.checked);
+		_player2.util.store('autoplay', domAutoplay.checked);
 	}
 	function restore() {
-		domLive.checked = _player.util.store('live');
-		domDebug.checked = _player.util.store('debug');
-		domControls.checked = _player.util.store('controls');
-		domFlash.checked = _player.util.store('flash');
-		domAutoplay.checked = _player.util.store('autoplay');
-		var id = _player.util.store('playtype');
+		domLive.checked = _player2.util.store('live');
+		domDebug.checked = _player2.util.store('debug');
+		domControls.checked = _player2.util.store('controls');
+		domFlash.checked = _player2.util.store('flash');
+		domAutoplay.checked = _player2.util.store('autoplay');
+		var id = _player2.util.store('playtype');
 		if (id) {
 			$('#' + id).checked = true;
 		}
@@ -343,30 +359,41 @@
 	
 	
 		Player.prototype.size = function size(mW, mH, style) {
-			style = style || 'fit';
-			var vW = this.video.videoWidth(),
-			    vH = this.video.videoHeight();
-			var dW = mW,
-			    dH = mH;
-			if (vW && vH) {
-				var ratio = vW / vH;
-				// console.log(ratio, vW, vH, mW, mH)
-				if (style == 'fit') {
-					dW = mW;
-					dH = dW / ratio;
-					if (dH > mH) {
-						// 高度超出容器
-						dW *= mH / dH;
-						dH = mH;
+			style = style || 'cover';
+			var percent = /^\d+\.?\d{0,2}%$/;
+			if (percent.test(mW) || percent.test(mH)) {
+				//百分数
+				var dW = mW,
+				    dH = mH;
+			} else {
+				var vW = this.video.videoWidth(),
+				    vH = this.video.videoHeight();
+	
+				var dW = mW,
+				    dH = mH;
+				if (vW && vH) {
+					var ratio = vW / vH;
+					// console.log(ratio, vW, vH, mW, mH)
+					if (style == 'fit') {
+						dW = mW;
+						dH = dW / ratio;
+						if (dH > mH) {
+							// 高度超出容器
+							dW *= mH / dH;
+							dH = mH;
+						}
 					}
 				}
 			}
 	
+			dW += percent.test(dW) ? '' : 'px';
+			dH += percent.test(dH) ? '' : 'px';
+			//console.log(dH);
+			this.el.style.width = dW;
+			this.el.style.height = dH;
+	
 			this.video.width(dW);
 			this.video.height(dH);
-	
-			this.el.style.width = dW + 'px';
-			this.el.style.height = dH + 'px';
 	
 			this.width = dW;
 			this.height = dH;
@@ -454,6 +481,7 @@
 						this.loading.hide();
 					}
 					this.size(this.options.width, this.options.height);
+	
 					break;
 				case MSG.Seeking:
 					this.loading.show();
@@ -1470,7 +1498,14 @@
 			var options = this.player.options;
 			var controls = !options.controls ? null : options.controls;
 			var autoplay = options.autoplay ? true : null;
-			this.createEl('video', { controls: controls, preload: 'auto', autoplay: autoplay });
+			this.createEl('video', {
+				controls: controls,
+				preload: 'auto',
+				autoplay: autoplay,
+				'webkit-playsinline': true,
+				'playsinline': true,
+				'x-webkit-airplay': true
+			});
 			return _Component.prototype.render.call(this, owner);
 		};
 	
@@ -1532,11 +1567,11 @@
 		};
 	
 		H5Video.prototype.width = function width(w) {
-			if (!w) return this.el.width;else this.el.width = w;
+			if (!w) return this.el.width;else this.el.style.width = w;
 		};
 	
 		H5Video.prototype.height = function height(h) {
-			if (!h) return this.el.height;else this.el.height = h;
+			if (!h) return this.el.height;else this.el.style.height = h;
 		};
 	
 		H5Video.prototype.play = function play() {
@@ -2995,7 +3030,7 @@
 	
 			var _this = _possibleConstructorReturn(this, _Component.call(this, player, 'Poster'));
 	
-			if (_typeof(_this.options.poster) == 'object') {
+			if (_this.options.poster && _typeof(_this.options.poster) == 'object') {
 				_this.poster = _this.options.poster;
 			} else if (typeof _this.options.poster == 'string') {
 				_this.poster = { src: _this.options.poster };
