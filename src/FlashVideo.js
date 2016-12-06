@@ -12,30 +12,33 @@ export default class FlashVideo extends Component {
 	constructor(player) {
 		super(player, 'FlashVideo');
 
-		if (!window.flashCallback) {
+		let flashCBName = 'vcpFlashCB_' + this.guid;
+		this.__flashCB = flashCBName;
+		if (!window[flashCBName]) {
 			/**
 			 *
 			 * @param eventName
 			 * @param args
 			 * @param args.objectID 每个flash播放器的id
 			 */
-			window.flashCallback = function(eventName, args) {
+			window[flashCBName] = function(eventName, args) {
 				args = args && args[0];
-				var fn = window.flashCallback.fnObj && window.flashCallback.fnObj[args.objectID];
+				var fn = window[flashCBName].fnObj && window[flashCBName].fnObj[args.objectID];
 				fn && fn(eventName, args);
 			};
-			window.flashCallback.fnObj = {};
+			window[flashCBName].fnObj = {};
 		}
 	}
 	
 	render(owner) {
 		this.__timebase = +new Date();
 
-		var swfurl = '//imgcache.qq.com/open/qcloud/video/player/release/QCPlayer.swf';
+		let swfurl = '//imgcache.qq.com/open/qcloud/video/player/release/QCPlayer.swf';
 		// swfurl = 'http://test.qzs.qq.com/iot/demo/player/QCPlayer.swf';
-		var options = this.player.options;
-		var wmode = 'opaque';
-		var id = 'obj_vcplayer_' + this.player.guid;
+		let options = this.player.options;
+		let wmode = 'opaque';
+		let id = 'obj_vcplayer_' + this.player.guid;
+		let flashCBName = this.__flashCB;
 		this.__id = id;
 		owner.innerHTML = `
 		<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="" id="${id}" width="100%" height="100%">
@@ -44,7 +47,7 @@ export default class FlashVideo extends Component {
             <param name="swliveconnect" value="true" />
             <param name="allowScriptAccess" value="always" />
             <param name="bgcolor" value="#000" />
-            <param name="allowFullScreen" value="true" />
+            <param name="allowFullScreen" value="true" />c
             <param name="wmode" value="${wmode}" />
             <param name="FlashVars" value="url=" />
 
@@ -56,7 +59,7 @@ export default class FlashVideo extends Component {
                    type="application/x-shockwave-flash"
                    swliveconnect="true"
                    wmode="${wmode}"
-                   FlashVars="url="
+                   FlashVars="cbName=${flashCBName}"
                    pluginspage="http://www.macromedia.com/go/getflashplayer" >
             </embed>
         </object>
@@ -65,7 +68,7 @@ export default class FlashVideo extends Component {
 		this.cover = dom.createEl('div', {'class': 'vcp-pre-flash'});
 		this.owner.appendChild(this.cover);
 
-		window.flashCallback.fnObj[this.__id] = util.bind(this, this.notify);
+		window[this.__flashCB].fnObj[this.__id] = util.bind(this, this.notify);
 	}
 	setup() {
 		this.on('error', this.notify);
@@ -105,7 +108,7 @@ export default class FlashVideo extends Component {
 		}
 	}
 	destroy() {
-		delete window.flashCallback.fnObj[this.__id];
+		delete window[this.__flashCB].fnObj[this.__id];
 		this.endPolling();
 		super.destroy();
 	}
@@ -239,13 +242,17 @@ export default class FlashVideo extends Component {
 					e.type = PlayerMSG.TimeUpdate;
 					break;
 				case 'error':
-					var code = isNaN(parseInt(info.code)) ? 1001 : info.code;
-					var reason = isNaN(parseInt(info.code)) ? info.code : info.msg;
+					if (info.code == "NetStream.Seek.InvalidTime") break; // adobe's bug, ignore
+
+					let code = isNaN(parseInt(info.code)) ? 1002 : info.code;
+					let reason = isNaN(parseInt(info.code)) ? info.code : info.msg;
+					let realCode = reason.match(/#(\d+)/); // example: Cannot load M3U8: crossdomain access denied:Error #2048
+					if (realCode && realCode[1]) code = realCode[1];
 					info = {code: code, reason: reason || ''};
 					break;
 			}
 
-			var keepPrivate = (eventName == 'printLog' || eventName == 'canPlay');
+			let keepPrivate = (eventName == 'printLog' || eventName == 'canPlay');
 			!keepPrivate && this.pub({type: e.type, src: this, ts: e.ts, detail: info});
 		} catch (err) {
 			console.error(eventName + ' ' + e.type, err);

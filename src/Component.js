@@ -1,6 +1,7 @@
 import * as dom from './dom'
 import * as util from './util'
 import * as message from './message'
+import * as browser from './browser'
 
 /**
  * @param {Player} player
@@ -44,6 +45,7 @@ export default class Component {
 			type = el;
 			el = this.el;
 		}
+		if (browser.IS_MOBILE && type == 'click') type = 'touchend';
 		this.cbs = this.cbs || {};
 
 		// 同个类的成员方法在不同实例中，guid仍然相同, 所以再加个对象guid加以区分
@@ -70,6 +72,7 @@ export default class Component {
 			type = el;
 			el = this.el;
 		}
+		if (browser.IS_MOBILE && type == 'click') type = 'touchend';
 		var guid = getFnGuid(this.guid, fn);
 
 		if (this.fnCache[guid])
