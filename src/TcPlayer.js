@@ -1,14 +1,14 @@
 import * as browser from './browser'
 import * as dom from './dom'
 import * as util from './util'
-import * as Tips from './constant/Tips'
+import { Tips }from './constant/Tips'
 
 import { Player }  from './Player'
 
 //export var browser = __browser;
 //export var util = __util;
 //export var dom = __dom;
-
+let tips = new Tips();
 /**
  *
  */
@@ -35,6 +35,7 @@ export class TcPlayer extends Player {
      *  clarity 默认清晰度
      *  width auto px %
      *  height auto px %
+     *  wording 自定义文案
      */
     constructor(container, options) {
         //this.player = new Player(options);
@@ -46,7 +47,6 @@ export class TcPlayer extends Player {
         let isFlash = browser.IS_MOBILE ? false : true;
         //根据平台和播放优先级获取播放地址
         let src = getUrl(videoSource);
-        let tips = new Tips(options);
         let _options = {
             owner: container ,
             videoSource : videoSource ,
@@ -59,9 +59,14 @@ export class TcPlayer extends Player {
             width: options.width || '100%' ,
             height: options.height || '100%'
         };
-        if(validation(_options)){
-            super(_options);
-        }
+        tips.init(options.wording);
+        validation(_options);
+        //if(validation(_options)){
+        super(_options);
+        //}else{
+        //    return false;
+        //}
+
         //console.log('constructor',this);
         //return new Player(options);
     }
@@ -109,10 +114,14 @@ function initVideoSource(options){
 }
 function validation(options){
     let vs = options.videoSource;
+    //没有传url
     if(!(vs.is_m3u8 || vs.is_flv || vs.is_m3u8 || vs.is_rtmp)){
-        alert(Tips);
+        alert(tips.getTips('UrlEmpty'));
         return false;
     }
+    //url 不合法
+    //没有flash不支持播放 rtmp 和 flv
+
     return true;
 }
 function getClarityUrl(urls, format, definition){
