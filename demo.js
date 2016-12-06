@@ -24,7 +24,8 @@ var btnLoad = $('#btn_load');
 
 domMp4.value = 'http://2527.vod.myqcloud.com/2527_bffd50081d9911e6b0f4d93c5d81f265.f20.mp4';
 domM3u8.value = 'http://2527.vod.myqcloud.com/2527_542d5a28222411e6aadec1104f4fc9b9.f220.av.m3u8';
-domFlv.value = 'http://2000.liveplay.myqcloud.com/live/2000_f3d7cff5e69511e5b91fa4dcbef5e35a.flv';
+// domFlv.value = 'http://2000.liveplay.myqcloud.com/live/2000_f3d7cff5e69511e5b91fa4dcbef5e35a.flv';
+domFlv.value = 'http://2527.vod.myqcloud.com/2527_370afa50f89911e48c365fad2406f3b7.f110.flv';
 domRtmp.value = 'rtmp://2000.liveplay.myqcloud.com/live/2000_f3d7cff5e69511e5b91fa4dcbef5e35a_550';
 
 domPoster.value = 'http://www.imagesbuddy.com/images/130/2014/01/whatever-garfield-face-graphic.jpg';
