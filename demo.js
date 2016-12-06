@@ -68,7 +68,7 @@ function newPlayer(ownerId) {
 	$('#' + ownerId).innerHTML = '';
 	//TcPlayer
 	var options = {
-		customTips: CustomTips,
+		wording: CustomTips,
 		owner: ownerId,
 		autoplay: domAutoplay.checked,
 		// width: 800,

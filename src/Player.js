@@ -27,6 +27,7 @@ export var dom = __dom;
  * @param options.live {Boolean} 是否直播
  * @param options.debug {Boolean} 是否调试状态
  * @param options.flash {Boolean} 优先使用flash
+ * @param options.wording {Object} 自定义提示语
  * @method currentTime
  * @method duration
  * @method buffered

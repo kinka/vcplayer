@@ -8,13 +8,13 @@ let ErrorMap = {
 	VideoSourceError: '视频源错误，请检查播放链接是否有效',
 	NetworkError: '网络错误，请检查网络配置或者播放链接是否正确',
 	VideoDecodeError: '视频解码错误',
-	ArgumentError: '使用参数有误，请检查播放器调用代码'
+	ArgumentError: '使用参数有误，请检查播放器调用代码',
 }
 
 export default class ErrorTips extends Component {
 	constructor(player) {
 		super(player, 'ErrorTips');
-		this.customTips = Object.assign({}, ErrorMap, this.options.customTips)
+		this.customTips = Object.assign({}, ErrorMap, this.options.wording)
 		for (let e in ErrorCat) {
 			for (let i=0; i<ErrorCat[e].length; i++) {
 				let code = ErrorCat[e][i]
