@@ -244,7 +244,8 @@ export class Player {
 	percent(p) {
 		if (!this.video.duration()) return 0;
 		if (!p) return this.video.currentTime() / this.video.duration();
-		this.video.currentTime(this.video.duration() * p);
+		console.log(parseInt(this.video.duration() * p), p);
+		this.video.currentTime(parseInt(this.video.duration() * p));
 	}
 	buffered() {
 		if (!this.video.duration()) return 0;

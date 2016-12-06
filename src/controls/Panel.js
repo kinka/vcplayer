@@ -5,6 +5,7 @@ import {MSG as SliderMSG} from './Slider'
 import Timeline from './Timeline'
 import Timelabel from './Timelabel'
 import Volume from './Volume'
+import ClaritySwitcher from './ClaritySwitcher'
 import {MSG as PlayerMSG} from '../message'
 import * as dom from '../dom'
 import * as util from '../util'
@@ -41,6 +42,11 @@ export default class Panel extends Component {
 		if (!B.IS_MOBILE) {
 			this.volume = new Volume(this.player);
 			this.volume.render(this.el);
+		}
+
+		if(this.options.videoSource.definitions.length > 1){
+			this.claritySwitcher = new ClaritySwitcher(this.player);
+			this.claritySwitcher.render(this.el);
 		}
 
 		return super.render(owner);

@@ -277,6 +277,16 @@ body.vcp-full-window {
     display: none;
 }
 
+.vcp-clarityswitcher{
+    height: 3em;
+    width: 3em;
+    cursor: pointer;
+    position: relative;
+    z-index: 1001;
+    float: right;
+    background-color: transparent;
+    opacity: 0.9;
+}
 /* animations */
 @-webkit-keyframes fadeOut {
     from {
