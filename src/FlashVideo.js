@@ -239,13 +239,15 @@ export default class FlashVideo extends Component {
 					e.type = PlayerMSG.TimeUpdate;
 					break;
 				case 'error':
-					var code = isNaN(parseInt(info.code)) ? 1001 : info.code;
-					var reason = isNaN(parseInt(info.code)) ? info.code : info.msg;
+					let code = isNaN(parseInt(info.code)) ? 1002 : info.code;
+					let reason = isNaN(parseInt(info.code)) ? info.code : info.msg;
+					let realCode = reason.match(/#(\d+)/); // example: Cannot load M3U8: crossdomain access denied:Error #2048
+					if (realCode && realCode[1]) code = realCode[1];
 					info = {code: code, reason: reason || ''};
 					break;
 			}
 
-			var keepPrivate = (eventName == 'printLog' || eventName == 'canPlay');
+			let keepPrivate = (eventName == 'printLog' || eventName == 'canPlay');
 			!keepPrivate && this.pub({type: e.type, src: this, ts: e.ts, detail: info});
 		} catch (err) {
 			console.error(eventName + ' ' + e.type, err);

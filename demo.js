@@ -50,14 +50,25 @@ console.log = function(a,b,c,d,e,f) {
 	else
 		xxlog.apply(this, arguments);
 };
+// 自定义提示语示例
+const CustomTips = {
+	// VideoSourceError: '',
+	NetworkError: '网络有问题。。。',
+	// VideoDecodeError: '',
+	// ArgumentError: '',
+	2048: 'M3U8跨域限制'
+}
+
 window.player = newPlayer('demo_video');
 // newPlayer('demo_video2')
+
 function newPlayer(ownerId) {
 	save();
 
 	$('#' + ownerId).innerHTML = '';
 	//TcPlayer
 	var options = {
+		customTips: CustomTips,
 		owner: ownerId,
 		autoplay: domAutoplay.checked,
 		// width: 800,
@@ -85,7 +96,7 @@ function newPlayer(ownerId) {
 			log.scrollTop = log.scrollHeight;
 			switch (msg.type) {
 				case 'resize':
-					this.size(this.options.width, this.options.height);
+					this.size(this.options.width, this.options.height, 'fit');
 					break;
 				case 'error':
 					// alert(msg.detail.code + ', ' + msg.detail.reason)
