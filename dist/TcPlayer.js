@@ -73,8 +73,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _Tips = __webpack_require__(5);
 
-	var Tips = _interopRequireWildcard(_Tips);
-
 	var _Player2 = __webpack_require__(6);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
@@ -88,10 +86,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	//export var browser = __browser;
 	//export var util = __util;
 	//export var dom = __dom;
-
+	var tips = new _Tips.Tips();
 	/**
 	 *
 	 */
+
 	var TcPlayer = exports.TcPlayer = function (_Player) {
 	    _inherits(TcPlayer, _Player);
 
@@ -117,6 +116,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *  clarity 默认清晰度
 	     *  width auto px %
 	     *  height auto px %
+	     *  wording 自定义文案
 	     */
 	    function TcPlayer(container, options) {
 	        _classCallCheck(this, TcPlayer);
@@ -142,12 +142,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	            width: options.width || '100%',
 	            height: options.height || '100%'
 	        };
-	        if (validation(_options)) {
-	            var _this = _possibleConstructorReturn(this, _Player.call(this, _options));
-	        }
+	        tips.init(options.wording);
+	        validation(_options);
+	        //if(validation(_options)){
+	        return _possibleConstructorReturn(this, _Player.call(this, _options));
+	        //}else{
+	        //    return false;
+	        //}
+
 	        //console.log('constructor',this);
 	        //return new Player(options);
-	        return _possibleConstructorReturn(_this);
 	    }
 	    /**
 	     * 切换清晰度
@@ -198,7 +202,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function validation(options) {
 	    var vs = options.videoSource;
 	    if (!(vs.is_m3u8 || vs.is_flv || vs.is_m3u8 || vs.is_rtmp)) {
-	        alert(Tips);
+	        alert(tips.getTips('UrlEmpty'));
 	        return false;
 	    }
 	    return true;
@@ -812,6 +816,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Time: 16:08
 	 */
 
+	var __instance = function () {
+	    var instance = void 0;
+	    return function (newInstance) {
+	        if (newInstance) instance = newInstance;
+	        return instance;
+	    };
+	}();
+
 	var tips = {
 	    UrlEmpty: '请至少设置一种视频播放地址'
 
@@ -821,9 +833,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function Tips(options) {
 	        _classCallCheck(this, Tips);
 
-	        this.options = options;
-	        this.customTips = options.wording || {};
+	        //this.options = options;
+	        //this.customTips = options.wording || {};
+	        if (__instance()) return __instance();
+	        __instance(this);
 	    }
+
+	    Tips.prototype.init = function init(customTips) {
+	        this.customTips = customTips || {};
+	    };
 
 	    Tips.prototype.getTips = function getTips(key) {
 	        return this.customTips[key] || tips[key];
