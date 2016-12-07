@@ -747,10 +747,18 @@ return /******/ (function(modules) { // webpackBootstrap
 		}
 	}
 
-	function extend(newObj, oldObj) {
-		for (var p in oldObj) {
-			if (oldObj.hasOwnProperty(p)) newObj[p] = newObj[p] || oldObj[p];
+	function extend(newObj) {
+		for (var _len = arguments.length, oldObjs = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+			oldObjs[_key - 1] = arguments[_key];
 		}
+
+		for (var _i2 = 0; _i2 < oldObjs.length; _i2++) {
+			var oldObj = oldObjs[_i2];
+			for (var p in oldObj) {
+				if (oldObj.hasOwnProperty(p)) newObj[p] = newObj[p] || oldObj[p];
+			}
+		}
+
 		return newObj;
 	}
 
@@ -1111,16 +1119,18 @@ return /******/ (function(modules) { // webpackBootstrap
 		Player.prototype.size = function size(mW, mH, style) {
 			style = style || 'cover';
 			var percent = /^\d+\.?\d{0,2}%$/;
+			var dW = void 0,
+			    dH = void 0;
 			if (percent.test(mW) || percent.test(mH)) {
 				//百分数
-				var dW = mW,
-				    dH = mH;
+				dW = mW;
+				dH = mH;
 			} else {
 				var vW = this.video.videoWidth(),
 				    vH = this.video.videoHeight();
 
-				var dW = mW,
-				    dH = mH;
+				dW = mW;
+				dH = mH;
 				if (vW && vH) {
 					var ratio = vW / vH;
 					// console.log(ratio, vW, vH, mW, mH)
@@ -2090,7 +2100,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			var id = 'obj_vcplayer_' + this.player.guid;
 			var flashCBName = this.__flashCB;
 			this.__id = id;
-			owner.innerHTML = '\n\t\t<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="" id="' + id + '" width="100%" height="100%">\n            <param name="movie"  value="' + swfurl + '" />\n            <param name="quality" value="autohigh" />\n            <param name="swliveconnect" value="true" />\n            <param name="allowScriptAccess" value="always" />\n            <param name="bgcolor" value="#000" />\n            <param name="allowFullScreen" value="true" />\n            <param name="wmode" value="' + wmode + '" />\n            <param name="FlashVars" value="url=" />\n\n            <embed src="' + swfurl + '" width="100%" height="100%" name="' + id + '"\n                   quality="autohigh"\n                   bgcolor="#000"\n                   align="middle" allowFullScreen="true"\n                   allowScriptAccess="always"\n                   type="application/x-shockwave-flash"\n                   swliveconnect="true"\n                   wmode="' + wmode + '"\n                   FlashVars="cbName=' + flashCBName + '"\n                   pluginspage="http://www.macromedia.com/go/getflashplayer" >\n            </embed>\n        </object>\n\t\t';
+			owner.innerHTML = '\n\t\t<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="" id="' + id + '" width="100%" height="100%">\n            <param name="movie"  value="' + swfurl + '" />\n            <param name="quality" value="autohigh" />\n            <param name="swliveconnect" value="true" />\n            <param name="allowScriptAccess" value="always" />\n            <param name="bgcolor" value="#000" />\n            <param name="allowFullScreen" value="true" />\n            <param name="wmode" value="' + wmode + '" />\n            <param name="FlashVars" value="cbName=' + flashCBName + '" />\n\n            <embed src="' + swfurl + '" width="100%" height="100%" name="' + id + '"\n                   quality="autohigh"\n                   bgcolor="#000"\n                   align="middle" allowFullScreen="true"\n                   allowScriptAccess="always"\n                   type="application/x-shockwave-flash"\n                   swliveconnect="true"\n                   wmode="' + wmode + '"\n                   FlashVars="cbName=' + flashCBName + '"\n                   pluginspage="http://www.macromedia.com/go/getflashplayer" >\n            </embed>\n        </object>\n\t\t';
 			this.owner = owner;
 			this.cover = dom.createEl('div', { 'class': 'vcp-pre-flash' });
 			this.owner.appendChild(this.cover);
@@ -2274,7 +2284,7 @@ return /******/ (function(modules) { // webpackBootstrap
 						e.type = _message.MSG.TimeUpdate;
 						break;
 					case 'error':
-						console.log('error', info, info.code == "NetStream.Seek.InvalidTime");
+						//console.log('error', info, info.code == "NetStream.Seek.InvalidTime");
 						if (info.code == "NetStream.Seek.InvalidTime") {
 							this.currentTime(info.details);
 							return false; // adobe's bug, ignore
@@ -3714,7 +3724,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var ErrorCat = { 'VideoSourceError': [1001, 1002, 4], 'NetworkError': [2048, 1, 3], 'VideoDecodeError': [2], 'ArgumentError': [] };
+	var ErrorCat = { 'VideoSourceError': [1001, 1002, 4, 2032], 'NetworkError': [2048, 1, 3], 'VideoDecodeError': [2], 'ArgumentError': [] };
 	var ErrorMap = {
 		VideoSourceError: '视频源错误，请检查播放链接是否有效',
 		NetworkError: '网络错误，请检查网络配置或者播放链接是否正确',
@@ -3730,7 +3740,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 			var _this = _possibleConstructorReturn(this, _Component.call(this, player, 'ErrorTips'));
 
-			_this.customTips = Object.assign({}, ErrorMap, _this.options.wording);
+			_this.customTips = util.extend({}, ErrorMap, _this.options.wording);
 			for (var e in ErrorCat) {
 				for (var i = 0; i < ErrorCat[e].length; i++) {
 					var code = ErrorCat[e][i];

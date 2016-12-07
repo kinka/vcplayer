@@ -49,7 +49,7 @@ export default class FlashVideo extends Component {
             <param name="bgcolor" value="#000" />
             <param name="allowFullScreen" value="true" />
             <param name="wmode" value="${wmode}" />
-            <param name="FlashVars" value="url=" />
+            <param name="FlashVars" value="cbName=${flashCBName}" />
 
             <embed src="${swfurl}" width="100%" height="100%" name="${id}"
                    quality="autohigh"
@@ -241,7 +241,7 @@ export default class FlashVideo extends Component {
 					e.type = PlayerMSG.TimeUpdate;
 					break;
 				case 'error':
-					console.log('error', info, info.code == "NetStream.Seek.InvalidTime");
+					//console.log('error', info, info.code == "NetStream.Seek.InvalidTime");
 					if (info.code == "NetStream.Seek.InvalidTime") {
 						this.currentTime(info.details);
 						return false; // adobe's bug, ignore

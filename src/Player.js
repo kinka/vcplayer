@@ -97,17 +97,19 @@ export class Player {
 	 */
 	size(mW, mH, style) {
 		style = style || 'cover';
-		var percent = /^\d+\.?\d{0,2}%$/;
+		let percent = /^\d+\.?\d{0,2}%$/;
+		let dW, dH;
 		if(percent.test(mW) || percent.test(mH)){ //百分数
-			var dW = mW,
-				dH = mH;
+			dW = mW;
+			dH = mH;
 		}else{
-			var vW = this.video.videoWidth(),
+			let vW = this.video.videoWidth(),
 				vH = this.video.videoHeight();
 
-			var dW = mW, dH = mH;
+			dW = mW;
+			dH = mH;
 			if (vW && vH) {
-				var ratio = vW / vH;
+				let ratio = vW / vH;
 				// console.log(ratio, vW, vH, mW, mH)
 				if (style == 'fit') {
 					dW = mW;
