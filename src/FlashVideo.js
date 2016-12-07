@@ -47,9 +47,9 @@ export default class FlashVideo extends Component {
             <param name="swliveconnect" value="true" />
             <param name="allowScriptAccess" value="always" />
             <param name="bgcolor" value="#000" />
-            <param name="allowFullScreen" value="true" />c
+            <param name="allowFullScreen" value="true" />
             <param name="wmode" value="${wmode}" />
-            <param name="FlashVars" value="url=" />
+            <param name="FlashVars" value="cbName=${flashCBName}" />
 
             <embed src="${swfurl}" width="100%" height="100%" name="${id}"
                    quality="autohigh"
@@ -242,7 +242,7 @@ export default class FlashVideo extends Component {
 					e.type = PlayerMSG.TimeUpdate;
 					break;
 				case 'error':
-					if (info.code == "NetStream.Seek.InvalidTime") break; // adobe's bug, ignore
+					if (info.code == "NetStream.Seek.InvalidTime") return; // adobe's bug, ignore
 
 					let code = isNaN(parseInt(info.code)) ? 1002 : info.code;
 					let reason = isNaN(parseInt(info.code)) ? info.code : info.msg;

@@ -3,7 +3,7 @@ import * as dom from '../dom'
 import * as message from '../message'
 import * as util from '../util'
 
-let ErrorCat = {'VideoSourceError': [1001, 1002, 4], 'NetworkError': [2048, 1, 3], 'VideoDecodeError': [2], 'ArgumentError': []}
+let ErrorCat = {'VideoSourceError': [1001, 1002, 4, 2032], 'NetworkError': [2048, 1, 3], 'VideoDecodeError': [2], 'ArgumentError': []}
 let ErrorMap = {
 	VideoSourceError: '视频源错误，请检查播放链接是否有效',
 	NetworkError: '网络错误，请检查网络配置或者播放链接是否正确',
@@ -14,7 +14,7 @@ let ErrorMap = {
 export default class ErrorTips extends Component {
 	constructor(player) {
 		super(player, 'ErrorTips');
-		this.customTips = Object.assign({}, ErrorMap, this.options.wording)
+		this.customTips = util.extend({}, ErrorMap, this.options.wording)
 		for (let e in ErrorCat) {
 			for (let i=0; i<ErrorCat[e].length; i++) {
 				let code = ErrorCat[e][i]

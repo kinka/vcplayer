@@ -126,6 +126,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param options.live {Boolean} 是否直播
 	 * @param options.debug {Boolean} 是否调试状态
 	 * @param options.flash {Boolean} 优先使用flash
+	 * @param options.wording {Object} 自定义提示语
 	 * @method currentTime
 	 * @method duration
 	 * @method buffered
@@ -202,16 +203,18 @@ return /******/ (function(modules) { // webpackBootstrap
 		Player.prototype.size = function size(mW, mH, style) {
 			style = style || 'cover';
 			var percent = /^\d+\.?\d{0,2}%$/;
+			var dW = void 0,
+			    dH = void 0;
 			if (percent.test(mW) || percent.test(mH)) {
 				//百分数
-				var dW = mW,
-				    dH = mH;
+				dW = mW;
+				dH = mH;
 			} else {
 				var vW = this.video.videoWidth(),
 				    vH = this.video.videoHeight();
 
-				var dW = mW,
-				    dH = mH;
+				dW = mW;
+				dH = mH;
 				if (vW && vH) {
 					var ratio = vW / vH;
 					// console.log(ratio, vW, vH, mW, mH)
@@ -320,7 +323,7 @@ return /******/ (function(modules) { // webpackBootstrap
 						this.loading.show();
 					} else {
 						this.loading.hide();
-					}
+					}alert(123);
 					this.size(this.options.width, this.options.height);
 
 					break;
@@ -854,9 +857,9 @@ return /******/ (function(modules) { // webpackBootstrap
 		if (elem.removeEventListener) elem.removeEventListener(type, cb, false);else if (elem.detachEvent) elem.detachEvent('on' + type, cb);
 	}
 	function createEl() {
-		var tag = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'div';
-		var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-		var props = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+		var tag = arguments.length <= 0 || arguments[0] === undefined ? 'div' : arguments[0];
+		var attrs = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+		var props = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
 		var el = document.createElement(tag);
 		for (var k in attrs) {
@@ -1131,10 +1134,18 @@ return /******/ (function(modules) { // webpackBootstrap
 		}
 	}
 
-	function extend(newObj, oldObj) {
-		for (var p in oldObj) {
-			if (oldObj.hasOwnProperty(p)) newObj[p] = newObj[p] || oldObj[p];
+	function extend(newObj) {
+		for (var _len = arguments.length, oldObjs = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+			oldObjs[_key - 1] = arguments[_key];
 		}
+
+		for (var _i2 = 0; _i2 < oldObjs.length; _i2++) {
+			var oldObj = oldObjs[_i2];
+			for (var p in oldObj) {
+				if (oldObj.hasOwnProperty(p)) newObj[p] = newObj[p] || oldObj[p];
+			}
+		}
+
 		return newObj;
 	}
 
@@ -1509,6 +1520,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var message = _interopRequireWildcard(_message);
 
+	var _browser = __webpack_require__(5);
+
+	var browser = _interopRequireWildcard(_browser);
+
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1528,6 +1543,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @method unsub
 	 * @class Component
 	 */
+
 	var Component = function () {
 		function Component(player, name) {
 			_classCallCheck(this, Component);
@@ -1559,6 +1575,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				type = el;
 				el = this.el;
 			}
+			if (browser.IS_MOBILE && type == 'click') type = 'touchend';
 			this.cbs = this.cbs || {};
 
 			// 同个类的成员方法在不同实例中，guid仍然相同, 所以再加个对象guid加以区分
@@ -1585,6 +1602,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				type = el;
 				el = this.el;
 			}
+			if (browser.IS_MOBILE && type == 'click') type = 'touchend';
 			var guid = getFnGuid(this.guid, fn);
 
 			if (this.fnCache[guid]) fn = this.fnCache[guid];
@@ -1691,19 +1709,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
 			var _this = _possibleConstructorReturn(this, _Component.call(this, player, 'FlashVideo'));
 
-			if (!window.flashCallback) {
+			var flashCBName = 'vcpFlashCB_' + _this.guid;
+			_this.__flashCB = flashCBName;
+			if (!window[flashCBName]) {
 				/**
 	    *
 	    * @param eventName
 	    * @param args
 	    * @param args.objectID 每个flash播放器的id
 	    */
-				window.flashCallback = function (eventName, args) {
+				window[flashCBName] = function (eventName, args) {
 					args = args && args[0];
-					var fn = window.flashCallback.fnObj && window.flashCallback.fnObj[args.objectID];
+					var fn = window[flashCBName].fnObj && window[flashCBName].fnObj[args.objectID];
 					fn && fn(eventName, args);
 				};
-				window.flashCallback.fnObj = {};
+				window[flashCBName].fnObj = {};
 			}
 			return _this;
 		}
@@ -1716,13 +1736,14 @@ return /******/ (function(modules) { // webpackBootstrap
 			var options = this.player.options;
 			var wmode = 'opaque';
 			var id = 'obj_vcplayer_' + this.player.guid;
+			var flashCBName = this.__flashCB;
 			this.__id = id;
-			owner.innerHTML = '\n\t\t<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="" id="' + id + '" width="100%" height="100%">\n            <param name="movie"  value="' + swfurl + '" />\n            <param name="quality" value="autohigh" />\n            <param name="swliveconnect" value="true" />\n            <param name="allowScriptAccess" value="always" />\n            <param name="bgcolor" value="#000" />\n            <param name="allowFullScreen" value="true" />\n            <param name="wmode" value="' + wmode + '" />\n            <param name="FlashVars" value="url=" />\n\n            <embed src="' + swfurl + '" width="100%" height="100%" name="' + id + '"\n                   quality="autohigh"\n                   bgcolor="#000"\n                   align="middle" allowFullScreen="true"\n                   allowScriptAccess="always"\n                   type="application/x-shockwave-flash"\n                   swliveconnect="true"\n                   wmode="' + wmode + '"\n                   FlashVars="url="\n                   pluginspage="http://www.macromedia.com/go/getflashplayer" >\n            </embed>\n        </object>\n\t\t';
+			owner.innerHTML = '\n\t\t<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="" id="' + id + '" width="100%" height="100%">\n            <param name="movie"  value="' + swfurl + '" />\n            <param name="quality" value="autohigh" />\n            <param name="swliveconnect" value="true" />\n            <param name="allowScriptAccess" value="always" />\n            <param name="bgcolor" value="#000" />\n            <param name="allowFullScreen" value="true" />\n            <param name="wmode" value="' + wmode + '" />\n            <param name="FlashVars" value="url=" />\n\n            <embed src="' + swfurl + '" width="100%" height="100%" name="' + id + '"\n                   quality="autohigh"\n                   bgcolor="#000"\n                   align="middle" allowFullScreen="true"\n                   allowScriptAccess="always"\n                   type="application/x-shockwave-flash"\n                   swliveconnect="true"\n                   wmode="' + wmode + '"\n                   FlashVars="cbName=' + flashCBName + '"\n                   pluginspage="http://www.macromedia.com/go/getflashplayer" >\n            </embed>\n        </object>\n\t\t';
 			this.owner = owner;
 			this.cover = dom.createEl('div', { 'class': 'vcp-pre-flash' });
 			this.owner.appendChild(this.cover);
 
-			window.flashCallback.fnObj[this.__id] = util.bind(this, this.notify);
+			window[this.__flashCB].fnObj[this.__id] = util.bind(this, this.notify);
 		};
 
 		FlashVideo.prototype.setup = function setup() {
@@ -1766,7 +1787,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		};
 
 		FlashVideo.prototype.destroy = function destroy() {
-			delete window.flashCallback.fnObj[this.__id];
+			delete window[this.__flashCB].fnObj[this.__id];
 			this.endPolling();
 			_Component.prototype.destroy.call(this);
 		};
@@ -1864,7 +1885,7 @@ return /******/ (function(modules) { // webpackBootstrap
 							e.type = _message.MSG.Seeking;
 						} else if (info.seekState == State.Seeked) {
 							if (!this.__m3u8 // m3u8倒没有这个问题
-							&& info.playState == State.Paused || info.playState == State.Stop // 播放结束后seek状态不变更，所以强制play以恢复正常状态
+							 && info.playState == State.Paused || info.playState == State.Stop // 播放结束后seek状态不变更，所以强制play以恢复正常状态
 							) {
 									this.play();
 									this.__prevPlayState = info.playState;
@@ -1902,8 +1923,12 @@ return /******/ (function(modules) { // webpackBootstrap
 						e.type = _message.MSG.TimeUpdate;
 						break;
 					case 'error':
-						var code = isNaN(parseInt(info.code)) ? 1001 : info.code;
+						if (info.code == "NetStream.Seek.InvalidTime") break; // adobe's bug, ignore
+
+						var code = isNaN(parseInt(info.code)) ? 1002 : info.code;
 						var reason = isNaN(parseInt(info.code)) ? info.code : info.msg;
+						var realCode = reason.match(/#(\d+)/); // example: Cannot load M3U8: crossdomain access denied:Error #2048
+						if (realCode && realCode[1]) code = realCode[1];
 						info = { code: code, reason: reason || '' };
 						break;
 				}
@@ -2102,6 +2127,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @property {FullscreenToggle} fullscreen
 	 * @property {Player} player
 	 */
+
 	var Panel = function (_Component) {
 		_inherits(Panel, _Component);
 
@@ -2508,6 +2534,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @property {Boolean} scrubbing
 	 * @class Timeline
 	 */
+
 	var Timeline = function (_Component) {
 		_inherits(Timeline, _Component);
 
@@ -2618,6 +2645,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @property {Boolean} scrubbing
 	 * @class Timeline
 	 */
+
 	var Timelabel = function (_Component) {
 		_inherits(Timelabel, _Component);
 
@@ -2687,6 +2715,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @property {Slider} volume
 	 * @class Timeline
 	 */
+
 	var Volume = function (_Component) {
 		_inherits(Volume, _Component);
 
@@ -2837,7 +2866,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.__esModule = true;
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 	var _Component2 = __webpack_require__(10);
 
@@ -3039,7 +3068,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				a.appendChild(arguments[b]);
 			}return a;
 		}function c(a, b, c, d) {
-			var e = ["opacity", b, ~~(100 * a), c, d].join("-"),
+			var e = ["opacity", b, ~ ~(100 * a), c, d].join("-"),
 			    f = .01 + c / d * 100,
 			    g = Math.max(1 - (1 - a) / b * (100 - f), a),
 			    h = j.substring(0, j.indexOf("Animation")).toLowerCase(),
@@ -3071,7 +3100,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				function f() {
 					return e(c("group", { coordsize: k + " " + k, coordorigin: -j + " " + -j }), { width: k, height: k });
 				}function h(a, h, i) {
-					b(m, b(e(f(), { rotation: 360 / d.lines * a + "deg", left: ~~h }), b(e(c("roundrect", { arcsize: d.corners }), { width: j, height: d.scale * d.width, left: d.scale * d.radius, top: -d.scale * d.width >> 1, filter: i }), c("fill", { color: g(d.color, a), opacity: d.opacity }), c("stroke", { opacity: 0 }))));
+					b(m, b(e(f(), { rotation: 360 / d.lines * a + "deg", left: ~ ~h }), b(e(c("roundrect", { arcsize: d.corners }), { width: j, height: d.scale * d.width, left: d.scale * d.radius, top: -d.scale * d.width >> 1, filter: i }), c("fill", { color: g(d.color, a), opacity: d.opacity }), c("stroke", { opacity: 0 }))));
 				}var i,
 				    j = d.scale * (d.length + d.width),
 				    k = 2 * d.scale * j,
@@ -3101,14 +3130,14 @@ return /******/ (function(modules) { // webpackBootstrap
 					    n = l / d.lines;!function o() {
 						h++;for (var a = 0; a < d.lines; a++) {
 							g = Math.max(1 - (h + (d.lines - a) * n) % l * m, d.opacity), c.opacity(f, a * d.direction + i, g, d);
-						}c.timeout = c.el && setTimeout(o, ~~(1e3 / k));
+						}c.timeout = c.el && setTimeout(o, ~ ~(1e3 / k));
 					}();
 				}return c;
 			}, stop: function stop() {
 				var a = this.el;return a && (clearTimeout(this.timeout), a.parentNode && a.parentNode.removeChild(a), this.el = void 0), this;
 			}, lines: function lines(d, f) {
 				function h(b, c) {
-					return e(a(), { position: "absolute", width: f.scale * (f.length + f.width) + "px", height: f.scale * f.width + "px", background: b, boxShadow: c, transformOrigin: "left", transform: "rotate(" + ~~(360 / f.lines * k + f.rotate) + "deg) translate(" + f.scale * f.radius + "px,0)", borderRadius: (f.corners * f.scale * f.width >> 1) + "px" });
+					return e(a(), { position: "absolute", width: f.scale * (f.length + f.width) + "px", height: f.scale * f.width + "px", background: b, boxShadow: c, transformOrigin: "left", transform: "rotate(" + ~ ~(360 / f.lines * k + f.rotate) + "deg) translate(" + f.scale * f.radius + "px,0)", borderRadius: (f.corners * f.scale * f.width >> 1) + "px" });
 				}for (var i, k = 0, l = (f.lines - 1) * (1 - f.direction) / 2; k < f.lines; k++) {
 					i = e(a(), { position: "absolute", top: 1 + ~(f.scale * f.width / 2) + "px", transform: f.hwaccel ? "translate3d(0,0,0)" : "", opacity: f.opacity, animation: j && c(f.opacity, f.trail, l + k * f.direction, f.lines) + " " + 1 / f.speed + "s linear infinite" }), f.shadow && b(i, e(h("#000", "0 0 4px #000"), { top: "2px" })), b(d, b(i, h(g(f.color, k), "0 0 1px rgba(0,0,0,.1)")));
 				}return d;
@@ -3211,13 +3240,30 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	var ErrorCat = { 'VideoSourceError': [1001, 1002, 4], 'NetworkError': [2048, 1, 3], 'VideoDecodeError': [2], 'ArgumentError': [] };
+	var ErrorMap = {
+		VideoSourceError: '视频源错误，请检查播放链接是否有效',
+		NetworkError: '网络错误，请检查网络配置或者播放链接是否正确',
+		VideoDecodeError: '视频解码错误',
+		ArgumentError: '使用参数有误，请检查播放器调用代码'
+	};
+
 	var ErrorTips = function (_Component) {
 		_inherits(ErrorTips, _Component);
 
 		function ErrorTips(player) {
 			_classCallCheck(this, ErrorTips);
 
-			return _possibleConstructorReturn(this, _Component.call(this, player, 'ErrorTips'));
+			var _this = _possibleConstructorReturn(this, _Component.call(this, player, 'ErrorTips'));
+
+			_this.customTips = util.extend({}, ErrorMap, _this.options.wording);
+			for (var e in ErrorCat) {
+				for (var i = 0; i < ErrorCat[e].length; i++) {
+					var code = ErrorCat[e][i];
+					_this.customTips[code] = _this.customTips[code] || _this.customTips[e];
+				}
+			}
+			return _this;
 		}
 
 		ErrorTips.prototype.render = function render(owner) {
@@ -3230,10 +3276,24 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		ErrorTips.prototype.handleMsg = function handleMsg(msg) {};
 
+		/**
+	  *
+	  * @param {Number|String|Object} detail
+	  * @param {Number} detail.code 错误代码
+	  * @param {String} detail.reason 错误原因
+	  */
+
+
 		ErrorTips.prototype.show = function show(detail) {
 			this.el.style.display = "block";
-			// todo xss 防护
-			var errstr = typeof detail === 'string' ? detail : '[' + detail.code + ']' + detail.reason;
+			var errstr = void 0;
+			if (typeof detail === 'string') {
+				errstr = detail;
+			} else {
+				var reason = this.customTips[detail.code] || detail.reason;
+				errstr = '[' + detail.code + ']' + reason;
+			}
+
 			this.el.innerHTML = errstr;
 		};
 

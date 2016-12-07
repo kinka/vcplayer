@@ -159,11 +159,15 @@ export function doFullscreen(player, enter, owner) {
 	}
 }
 
-export function extend(newObj, oldObj) {
-	for (var p in oldObj) {
-		if (oldObj.hasOwnProperty(p))
-			newObj[p] = newObj[p] || oldObj[p];
+export function extend(newObj, ...oldObjs) {
+	for (let i=0; i<oldObjs.length; i++) {
+		let oldObj = oldObjs[i]
+		for (let p in oldObj) {
+			if (oldObj.hasOwnProperty(p))
+				newObj[p] = newObj[p] || oldObj[p]
+		}
 	}
+
 	return newObj;
 }
 
