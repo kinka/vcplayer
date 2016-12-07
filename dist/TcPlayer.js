@@ -143,7 +143,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            //controls: true,
 	            width: options.width || '100%',
 	            height: options.height || '100%',
-	            listener: options.listener
+	            listener: options.listener,
+	            wording: options.wording
 	        };
 	        tips.init(options.wording);
 
