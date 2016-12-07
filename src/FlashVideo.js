@@ -47,7 +47,7 @@ export default class FlashVideo extends Component {
             <param name="swliveconnect" value="true" />
             <param name="allowScriptAccess" value="always" />
             <param name="bgcolor" value="#000" />
-            <param name="allowFullScreen" value="true" />c
+            <param name="allowFullScreen" value="true" />
             <param name="wmode" value="${wmode}" />
             <param name="FlashVars" value="url=" />
 
@@ -234,7 +234,6 @@ export default class FlashVideo extends Component {
 						e.type = 'error';
 						info = {code: 1001, reason: info.code};
 					}
-
 					break;
 				case 'mediaTime':
 					this.__videoWidth = info.videoWidth;
@@ -242,7 +241,11 @@ export default class FlashVideo extends Component {
 					e.type = PlayerMSG.TimeUpdate;
 					break;
 				case 'error':
-					if (info.code == "NetStream.Seek.InvalidTime") break; // adobe's bug, ignore
+					console.log('error', info, info.code == "NetStream.Seek.InvalidTime");
+					if (info.code == "NetStream.Seek.InvalidTime") {
+						this.currentTime(info.details);
+						return false; // adobe's bug, ignore
+					}
 
 					let code = isNaN(parseInt(info.code)) ? 1002 : info.code;
 					let reason = isNaN(parseInt(info.code)) ? info.code : info.msg;

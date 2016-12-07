@@ -77,7 +77,7 @@ export class TcPlayer extends Player {
      * 切换清晰度
      */
     switchClarity(definition){
-        definition = definition || 'sd';
+        definition = definition || 'od';
         let prevTime = this.currentTime(),
             vs = this.options.videoSource,
             result = getDefinitionUrl(vs.urls, definition);
@@ -88,9 +88,9 @@ export class TcPlayer extends Player {
         vs.curFormat = result.format;
         //console.log('switchClarity', prevTime);
         let fun = util.bind(this, function(){
-            console.log('switchClarity', this.duration());
+            console.log('switchClarity', prevTime, this.duration());
             //console.log('switchClarity', this, prevTime);
-            if(parseInt(this.duration() - prevTime) > 0 ){
+            if(parseInt(this.duration() - prevTime) > 0 && !this.options.live){
                 this.currentTime(prevTime);
             }
             message.unsub(MSG.MetaLoaded, '*', fun, this);

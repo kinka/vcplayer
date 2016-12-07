@@ -287,6 +287,29 @@ body.vcp-full-window {
     background-color: transparent;
     opacity: 0.9;
 }
+.vcp-vertical-switcher-container{
+    width: 3em;
+    position: absolute;
+    left: 0em;
+    bottom: 2.4em;
+    background: rgb(36,36,36);
+    display: none;
+}
+.vcp-vertical-switcher-current{
+    display: block;
+    color: #fff;
+    text-align: center;
+    line-height:3em;
+}
+.vcp-vertical-switcher-item{
+    display: block;
+    color: #fff;
+    text-align: center;
+    line-height:2em;
+}
+.vcp-vertical-switcher-item.current{
+    color: #888;
+}
 /* animations */
 @-webkit-keyframes fadeOut {
     from {
