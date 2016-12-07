@@ -19,7 +19,7 @@
 <div id="video-container" style="margin: 0px auto;">
 
 </div>
-<script src="//imgcache.qq.com/open/qcloud/video/vcplayer/TcPlayer.js"></script>
+<script src="http://imgcache.qq.com/open/qcloud/video/vcplayer/TcPlayer.js"></script>
 <script>
     (function(){
         function getParams(name) {
@@ -46,9 +46,14 @@
          */
         var options = {
             rtmp: rtmp,
-            flv: flv ,
+            flv: flv || 'http://2527.vod.myqcloud.com/2527_370afa50f89911e48c365fad2406f3b7.f110.flv',
+//            m3u8: m3u8 || 'http://2527.vod.myqcloud.com/2527_b3907044441c11e6a46d294f954f93eb.f230.av.m3u8',
             m3u8: m3u8 || 'http://2527.vod.myqcloud.com/2527_b3907044441c11e6a46d294f954f93eb.f230.av.m3u8',
+            m3u8_hd: m3u8 || 'http://2527.vod.myqcloud.com/2527_b3907044441c11e6a46d294f954f93eb.f230.av.m3u8',
+            m3u8_sd: m3u8 || 'http://2527.vod.myqcloud.com/2527_b3907044441c11e6a46d294f954f93eb.f230.av.m3u8',
             mp4 : mp4 || 'http://2527.vod.myqcloud.com/2527_b3907044441c11e6a46d294f954f93eb.f30.mp4',
+            mp4_hd :  'http://2527.vod.myqcloud.com/2527_b3907044441c11e6a46d294f954f93eb.f20.mp4',
+            mp4_sd :  'http://2527.vod.myqcloud.com/2527_b3907044441c11e6a46d294f954f93eb.f20.mp4',
             coverpic: coverpic ,
             autoplay: autoplay ? true : false,
             live: live,

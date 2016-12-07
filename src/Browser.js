@@ -67,3 +67,5 @@ export const IS_X5TBS = (/TBS\/\d+/i).test(USER_AGENT); // 仅X5内核
 export const IS_MQQB = !IS_X5TBS && (/MQQBrowser\/\d+/i).test(USER_AGENT); // QQ 浏览器
 
 export const IS_MOBILE = IS_ANDROID || IS_IOS;
+
+export const IS_FILE_PROTOCOL = (/file:/).test(location.protocol);

@@ -50,7 +50,7 @@ export default class ClaritySwitcher extends Component {
         // this.sub('pause', this.player.video, util.bind(this, this.handleMsg));
     }
     onClick(event) {
-        console.log(this, event.target.getAttribute('data-def'));
+        //console.log(this, event.target.getAttribute('data-def'));
         let def = event.target.getAttribute('data-def');
         if(def){
             this.current.innerHTML = wording[def];

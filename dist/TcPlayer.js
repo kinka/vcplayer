@@ -127,8 +127,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _classCallCheck(this, TcPlayer);
 
 	        //this.player = new Player(options);
-	        //options.width = '640';
-	        //options.height = '480';
 	        //整理播放地址
 	        var videoSource = initVideoSource(options);
 	        //是否启用flash
@@ -148,15 +146,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            listener: options.listener
 	        };
 	        tips.init(options.wording);
-	        validation(_options);
-	        //if(validation(_options)){
-	        return _possibleConstructorReturn(this, _Player.call(this, _options));
-	        //}else{
-	        //    return false;
-	        //}
 
+	        var _this = _possibleConstructorReturn(this, _Player.call(this, _options));
+
+	        validation.call(_this, _options);
 	        //console.log('constructor',this);
 	        //return new Player(options);
+	        return _this;
 	    }
 	    /**
 	     * 切换清晰度
@@ -175,7 +171,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        vs.curFormat = result.format;
 	        //console.log('switchClarity', prevTime);
 	        var fun = util.bind(this, function () {
-	            console.log('switchClarity', prevTime, this.duration());
+	            //console.log('switchClarity', prevTime, this.duration());
 	            //console.log('switchClarity', this, prevTime);
 	            if (parseInt(this.duration() - prevTime) > 0 && !this.options.live) {
 	                this.currentTime(prevTime);
@@ -239,6 +235,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    videoSource.definitions = [];
 	    //根据播放环境筛选出可以播放的清晰度
 	    var definitions = ['od', 'hd', 'sd'];
+
 	    for (var i = 0; i < definitions.length; i++) {
 	        if (videoSource.isClarity(definitions[i])) {
 	            videoSource.definitions.push(definitions[i]);
@@ -246,17 +243,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    var res = getUrlByFormat(videoSource);
 	    //let res = getUrlByDefinition(videoSource);
-	    videoSource.curUrl = res.url;
-	    videoSource.curDef = res.definition;
-	    videoSource.curFormat = res.format;
-
+	    if (res) {
+	        videoSource.curUrl = res.url;
+	        videoSource.curDef = res.definition;
+	        videoSource.curFormat = res.format;
+	    }
 	    return videoSource;
 	}
 	function validation(options) {
 	    var vs = options.videoSource;
+	    //file协议
+	    if (browser.IS_FILE_PROTOCOL) {
+	        this.errortips.show({ code: 'FileProtocol' });
+	    }
 	    //没有传url
 	    if (!(vs.isFormat('rtmp') || vs.isFormat('flv') || vs.isFormat('m3u8') || vs.isFormat('mp4'))) {
-	        alert(tips.getTips('UrlEmpty'));
+	        //alert(tips.getTips('UrlEmpty'));
+	        this.errortips.show({ code: 'UrlEmpty' });
 	        return false;
 	    }
 	    //url 不合法
@@ -440,6 +443,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var IS_MQQB = exports.IS_MQQB = !IS_X5TBS && /MQQBrowser\/\d+/i.test(USER_AGENT); // QQ 浏览器
 
 	var IS_MOBILE = exports.IS_MOBILE = IS_ANDROID || IS_IOS;
+
+	var IS_FILE_PROTOCOL = exports.IS_FILE_PROTOCOL = /file:/.test(location.protocol);
 
 /***/ },
 /* 2 */
@@ -1278,7 +1283,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			if (!this.video.duration()) return 0;
 			if (!p) return this.video.currentTime() / this.video.duration();
 			//console.log(parseInt(this.video.duration() * p), p);
-			this.video.currentTime(parseInt(this.video.duration() * p));
+			this.video.currentTime(this.video.duration() * p);
 		};
 
 		Player.prototype.buffered = function buffered() {
@@ -3251,7 +3256,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    ClaritySwitcher.prototype.onClick = function onClick(event) {
-	        console.log(this, event.target.getAttribute('data-def'));
+	        //console.log(this, event.target.getAttribute('data-def'));
 	        var def = event.target.getAttribute('data-def');
 	        if (def) {
 	            this.current.innerHTML = wording[def];
@@ -3724,12 +3729,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var ErrorCat = { 'VideoSourceError': [1001, 1002, 4, 2032], 'NetworkError': [2048, 1, 3], 'VideoDecodeError': [2], 'ArgumentError': [] };
+	var ErrorCat = { 'VideoSourceError': [1002, 4, 2032], 'NetworkError': [1001, 2048, 1, 3], 'VideoDecodeError': [2], 'ArgumentError': [] };
 	var ErrorMap = {
 		VideoSourceError: '视频源错误，请检查播放链接是否有效',
 		NetworkError: '网络错误，请检查网络配置或者播放链接是否正确',
 		VideoDecodeError: '视频解码错误',
-		ArgumentError: '使用参数有误，请检查播放器调用代码'
+		ArgumentError: '使用参数有误，请检查播放器调用代码',
+		UrlEmpty: '请填写视频播放地址',
+		FileProtocol: '请勿在file协议下使用播放器，可能会导致视频无法播放'
 	};
 
 	var ErrorTips = function (_Component) {

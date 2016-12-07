@@ -42,8 +42,6 @@ export class TcPlayer extends Player {
      */
     constructor(container, options) {
         //this.player = new Player(options);
-        //options.width = '640';
-        //options.height = '480';
         //整理播放地址
         let videoSource = initVideoSource(options);
         //是否启用flash
@@ -63,13 +61,8 @@ export class TcPlayer extends Player {
             listener: options.listener
         };
         tips.init(options.wording);
-        validation(_options);
-        //if(validation(_options)){
         super(_options);
-        //}else{
-        //    return false;
-        //}
-
+        validation.call(this, _options);
         //console.log('constructor',this);
         //return new Player(options);
     }
@@ -88,7 +81,7 @@ export class TcPlayer extends Player {
         vs.curFormat = result.format;
         //console.log('switchClarity', prevTime);
         let fun = util.bind(this, function(){
-            console.log('switchClarity', prevTime, this.duration());
+            //console.log('switchClarity', prevTime, this.duration());
             //console.log('switchClarity', this, prevTime);
             if(parseInt(this.duration() - prevTime) > 0 && !this.options.live){
                 this.currentTime(prevTime);
@@ -147,6 +140,7 @@ function initVideoSource(options){
     videoSource.definitions = [];
     //根据播放环境筛选出可以播放的清晰度
     let definitions = ['od','hd','sd'];
+
     for (let i=0; i<definitions.length; i++){
         if(videoSource.isClarity(definitions[i])){
             videoSource.definitions.push(definitions[i]);
@@ -154,17 +148,23 @@ function initVideoSource(options){
     }
     let res = getUrlByFormat(videoSource);
     //let res = getUrlByDefinition(videoSource);
-    videoSource.curUrl = res.url;
-    videoSource.curDef = res.definition;
-    videoSource.curFormat = res.format;
-
+    if(res){
+        videoSource.curUrl = res.url;
+        videoSource.curDef = res.definition;
+        videoSource.curFormat = res.format;
+    }
     return videoSource;
 }
 function validation(options){
     let vs = options.videoSource;
+    //file协议
+    if(browser.IS_FILE_PROTOCOL){
+        this.errortips.show({code:'FileProtocol'});
+    }
     //没有传url
     if(!(vs.isFormat('rtmp') || vs.isFormat('flv') || vs.isFormat('m3u8') || vs.isFormat('mp4'))){
-        alert(tips.getTips('UrlEmpty'));
+        //alert(tips.getTips('UrlEmpty'));
+        this.errortips.show({code:'UrlEmpty'});
         return false;
     }
     //url 不合法

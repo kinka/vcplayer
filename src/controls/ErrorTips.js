@@ -3,13 +3,15 @@ import * as dom from '../dom'
 import * as message from '../message'
 import * as util from '../util'
 
-let ErrorCat = {'VideoSourceError': [1001, 1002, 4, 2032], 'NetworkError': [2048, 1, 3], 'VideoDecodeError': [2], 'ArgumentError': []}
+let ErrorCat = {'VideoSourceError': [1002, 4, 2032], 'NetworkError': [1001,2048, 1, 3], 'VideoDecodeError': [2], 'ArgumentError': []};
 let ErrorMap = {
 	VideoSourceError: '视频源错误，请检查播放链接是否有效',
 	NetworkError: '网络错误，请检查网络配置或者播放链接是否正确',
 	VideoDecodeError: '视频解码错误',
 	ArgumentError: '使用参数有误，请检查播放器调用代码',
-}
+	UrlEmpty: '请填写视频播放地址',
+	FileProtocol: '请勿在file协议下使用播放器，可能会导致视频无法播放'
+};
 
 export default class ErrorTips extends Component {
 	constructor(player) {
