@@ -44,7 +44,7 @@ export default class Panel extends Component {
 			this.volume.render(this.el);
 		}
 
-		if(this.options.videoSource.definitions.length > 1 && !B.IS_MOBILE){
+		if(this.options.videoSource && this.options.videoSource.definitions.length > 1 && !B.IS_MOBILE){
 			this.claritySwitcher = new ClaritySwitcher(this.player);
 			this.claritySwitcher.render(this.el);
 		}
