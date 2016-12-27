@@ -78,6 +78,10 @@
         <script src="/dist/libs/es5-sham.js"></script>
         <![endif]-->
         <!--<script src="/dist/player.js"></script>-->
+        <script>
+            if (!window.console) window.console = {log: function() {}, error: function() {}, debug: function() {}, info: function() {}}
+            window.onerror = function(e) {alert(e)}
+        </script>
         <script type="text/javascript" src="/dist/demo.js"></script>
     </body>
 </html>

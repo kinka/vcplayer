@@ -1,5 +1,7 @@
 import './css/vcplayer.css';
 
+if (!window.console) window.console = {log: function() {}, error: function() {}, debug: function() {}, info: function() {}}
+
 import * as __browser from './browser'
 import * as __dom from './dom'
 import * as __util from './util'
@@ -54,12 +56,13 @@ export class Player {
 		if (browser.TOUCH_ENABLED) clsName += ' touchable';
 		this.el = dom.createEl('div', {'class': clsName});
 		//这里的判断需要更多的场景，例如PC没有flash插件的情况.
+		this.options.flash = this.options.flash || browser.IS_IE; // IE 不支持MSE, 强制使用flash吧
 		if (!this.options.flash && browser.HASVIDEO) {
-			var h5 = new H5Video(this);
+			let h5 = new H5Video(this);
 			h5.render(this.el);
 			this.video = h5;
 		} else {
-			var flash = new FlashVideo(this);
+			let flash = new FlashVideo(this);
 			flash.render(this.el);
 			this.video = flash;
 		}

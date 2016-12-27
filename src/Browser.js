@@ -58,6 +58,7 @@ export const IS_EDGE = (/Edge/i).test(USER_AGENT);
 export const IS_CHROME = !IS_EDGE && (/Chrome/i).test(USER_AGENT);
 export const IS_IE8 = (/MSIE\s8\.0/).test(USER_AGENT);
 export const IS_IE9 = (/MSIE\s9\.0/).test(USER_AGENT);
+export const IS_IE = (/MSIE\s([\d.]+)/).test(USER_AGENT);
 
 export const TOUCH_ENABLED = !!(('ontouchstart' in window) || window.DocumentTouch && document instanceof window.DocumentTouch);
 export const BACKGROUND_SIZE_SUPPORTED = 'backgroundSize' in document.createElement('video').style;

@@ -437,6 +437,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var IS_CHROME = exports.IS_CHROME = !IS_EDGE && /Chrome/i.test(USER_AGENT);
 	var IS_IE8 = exports.IS_IE8 = /MSIE\s8\.0/.test(USER_AGENT);
 	var IS_IE9 = exports.IS_IE9 = /MSIE\s9\.0/.test(USER_AGENT);
+	var IS_IE = exports.IS_IE = /MSIE\s([\d.]+)/.test(USER_AGENT);
 
 	var TOUCH_ENABLED = exports.TOUCH_ENABLED = !!('ontouchstart' in window || window.DocumentTouch && document instanceof window.DocumentTouch);
 	var BACKGROUND_SIZE_SUPPORTED = exports.BACKGROUND_SIZE_SUPPORTED = 'backgroundSize' in document.createElement('video').style;
@@ -1014,6 +1015,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+	if (!window.console) window.console = { log: function log() {}, error: function error() {}, debug: function debug() {}, info: function info() {} };
+
 	var MSG = exports.MSG = message.MSG;
 	var browser = exports.browser = __browser;
 	var util = exports.util = __util;
@@ -1060,6 +1063,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			if (browser.TOUCH_ENABLED) clsName += ' touchable';
 			this.el = dom.createEl('div', { 'class': clsName });
 			//这里的判断需要更多的场景，例如PC没有flash插件的情况.
+			this.options.flash = this.options.flash || browser.IS_IE; // IE 不支持MSE, 强制使用flash吧
 			if (!this.options.flash && browser.HASVIDEO) {
 				var h5 = new _H5Video2["default"](this);
 				h5.render(this.el);
