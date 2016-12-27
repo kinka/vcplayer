@@ -47,8 +47,8 @@
          */
         var options = {
             rtmp: rtmp ,
-            flv: flv ,
-            m3u8: m3u8 ,
+            flv: flv || 'http://2157.liveplay.myqcloud.com/live/2157_358556a1088511e6b91fa4dcbef5e34a.flv',
+            m3u8: m3u8 || 'http://2157.liveplay.myqcloud.com/live/2157_358556a1088511e6b91fa4dcbef5e34a.m3u8',
             mp4 : mp4 ,
             coverpic: coverpic || 'http://imgcache.qq.com/open/qcloud/video/share/img/back-img.png',
             autoplay: autoplay ? true : false,
