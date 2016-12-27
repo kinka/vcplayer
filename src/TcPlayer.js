@@ -3,7 +3,7 @@ import * as dom from './dom'
 import * as util from './util'
 import * as message from './message'
 
-import { Tips }from './constant/Tips'
+//import { Tips }from './constant/Tips'
 
 import { Player }  from './Player'
 
@@ -11,7 +11,7 @@ import { Player }  from './Player'
 //export var util = __util;
 //export var dom = __dom;
 let MSG = message.MSG;
-let tips = new Tips();
+//let tips = new Tips();
 /**
  *
  */
@@ -56,12 +56,13 @@ export class TcPlayer extends Player {
             flash: isFlash,
             poster: options.coverpic,
             //controls: true,
-            width: options.width || '100%' ,
-            height: options.height || '100%',
+            width: options.width ,
+            height: options.height ,
             listener: options.listener,
-            wording: options.wording
+            wording: options.wording,
+            controls: options.controls
         };
-        tips.init(options.wording);
+        //tips.init(options.wording);
         super(_options);
         validation.call(this, _options);
         //console.log('constructor',this);
@@ -86,6 +87,7 @@ export class TcPlayer extends Player {
             //console.log('switchClarity', this, prevTime);
             if(parseInt(this.duration() - prevTime) > 0 && !this.options.live){
                 this.currentTime(prevTime);
+                this.play();
             }
             message.unsub(MSG.MetaLoaded, '*', fun, this);
         });

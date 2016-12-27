@@ -179,3 +179,22 @@ export function store(key, value) {
 export const CDNPath = "//imgcache.qq.com/open/qcloud/video/vcplayer/";
 
 export const VideoType = {RTMP: 'rtmp', M3U8: 'm3u8'};
+
+
+export let console = {
+	log: function log(){
+		if(window.console){
+			window.console.log.apply(window.console, arguments);
+		}
+	},
+	warn: function(){
+		if(window.console){
+			window.console.warn.apply(window.console, arguments);
+		}
+	},
+	error: function(){
+		if(window.console){
+			window.console.error.apply(window.console, arguments);
+		}
+	}
+};

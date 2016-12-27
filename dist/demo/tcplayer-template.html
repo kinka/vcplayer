@@ -19,6 +19,7 @@
 <div id="video-container" style="margin: 0px auto;">
 
 </div>
+<div id="log"></div>
 <script src="//imgcache.qq.com/open/qcloud/video/vcplayer/TcPlayer.js"></script>
 <script>
     (function(){
@@ -45,26 +46,34 @@
          * PC ：RTMP>flv>m3u8>mp4
          */
         var options = {
-            rtmp: rtmp,
-            flv: flv ,
-            m3u8: m3u8 || 'http://2527.vod.myqcloud.com/2527_b3907044441c11e6a46d294f954f93eb.f230.av.m3u8',
-            mp4 : mp4 || 'http://2527.vod.myqcloud.com/2527_b3907044441c11e6a46d294f954f93eb.f30.mp4', //
-            coverpic: coverpic ,
+            rtmp: rtmp ,
+            flv: flv || 'http://2157.liveplay.myqcloud.com/live/2157_358556a1088511e6b91fa4dcbef5e35a.flv',
+            m3u8: m3u8 || 'http://2157.liveplay.myqcloud.com/2157_358556a1088511e6b91fa4dcbef5e35a.m3u8',
+            mp4 : mp4 ,
+            coverpic: coverpic || 'http://vodplayerinfo-10005041.file.myqcloud.com/3035579109/vod_paster_pause/paster_pause1469013308.jpg',
             autoplay: autoplay ? true : false,
-            live: live,
+            live: true,
             width : width || '480',
             height : height || '320',
             wording: {
+//                1: '请求视频失败，请检查网络',
+                1002: '即将直播，请稍等',
                 2032: '请求视频失败，请检查网络',
                 2048: '请求m3u8文件失败，可能是网络错误或者跨域问题'
             },
             listener: function (msg) {
-                //console.log(msg.type);
-            }
+                // console.log('listener',msg);
+            },
+            controls: false
         };
         var player = new TcPlayer('video-container', options);
-        console.log(player);
+        window.qcplayer  = player;
     })();
+    var lt = function(str){
+        var p = document.createElement('p');
+        p.innerText = str;
+        document.querySelector("#log").appendChild(p);
+    };
 </script>
 </body>
 </html>

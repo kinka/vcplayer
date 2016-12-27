@@ -2,7 +2,7 @@ import * as util from './util'
 
 
 export var MSG = {Error: 'error', TimeUpdate: 'timeupdate', Load: 'load', MetaLoaded: 'loadedmetadata', Loaded: 'loadeddata', Progress: 'progress', FullScreen: 'fullscreen',
-	Play: 'play', Pause: 'pause', Ended: 'ended', Seeking: 'seeking', Seeked: 'seeked', Resize: 'resize', VolumeChange: 'volumechange'};
+	Play: 'play', Playing: 'playing', Pause: 'pause', Ended: 'ended', Seeking: 'seeking', Seeked: 'seeked', Resize: 'resize', VolumeChange: 'volumechange'};
 
 var Players = {};
 var fnCaches = {};

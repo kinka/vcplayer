@@ -19,11 +19,12 @@ export var dom = __dom;
 /**
  * @param {options}
  * @param options.owner {String} container id
- * @param options.controls {Boolean} 是否显示原生控件
+ * @param options.controls {Boolean} 是否显示原生控件。default||'' 显示默认控件，none 不显示控件，system 显示系统控件
  * @param options.volume {Number} 音量初始化，传0则静音
  * @param options.listener {Function}
- * @param options.poster {Object|String}
- * @param options.m3u8 {Boolean}
+ * @param options.poster {Object|String} src:图片地址，style：default 居中1:1显示 stretch 拉伸铺满，图片可能会变形 cover 等比横向铺满，图片某些部分可能无法显示在区域内
+ * @param options.posterType {String} default 使用默认封面功能，systerm 使用video poster属性封面功能
+ * @param options.m3u8 {Boolean} 使用是M3u8格式
  * @param options.live {Boolean} 是否直播
  * @param options.debug {Boolean} 是否调试状态
  * @param options.flash {Boolean} 优先使用flash
@@ -36,6 +37,7 @@ export var dom = __dom;
 export class Player {
 	constructor(options) {
 		this.options = options;
+		this.ready = false;
 		var owner = options.owner;
 		if (!owner) return console.error('Player need a container');
 
@@ -51,7 +53,7 @@ export class Player {
 		var clsName = 'vcp-player';
 		if (browser.TOUCH_ENABLED) clsName += ' touchable';
 		this.el = dom.createEl('div', {'class': clsName});
-
+		//这里的判断需要更多的场景，例如PC没有flash插件的情况.
 		if (!this.options.flash && browser.HASVIDEO) {
 			var h5 = new H5Video(this);
 			h5.render(this.el);
@@ -65,10 +67,10 @@ export class Player {
 
 		owner.appendChild(this.el);
 
-		this.poster = new Poster(this);
-		this.poster.render(this.el);
-
 		if (!this.options.controls) {
+			this.poster = new Poster(this);
+			this.poster.render(this.el);
+
 			this.bigplay = new BigPlay(this);
 			this.bigplay.render(this.el);
 
@@ -87,6 +89,21 @@ export class Player {
 		this.size(this.options.width, this.options.height);
 
 		this.setup();
+
+		if(browser.IS_MOBILE){
+			if(this.options.autoplay || browser.IOS_VERSION != 10){//ios 10 非 autoplay 不调用loading.show()
+				this.loading.show();
+				if(this.options.autoplay){
+					var self = this;
+					document.addEventListener("WeixinJSBridgeReady", function () {
+						self.play();
+					}, !1);
+				}
+			}
+		}else{
+			this.loading.show();
+		}
+
 	}
 
 	/**
@@ -105,10 +122,10 @@ export class Player {
 		}else{
 			let vW = this.video.videoWidth(),
 				vH = this.video.videoHeight();
-
 			dW = mW;
 			dH = mH;
-			if (vW && vH) {
+
+			if (vW && vH) {//获取到视频的宽高，设定播放器宽高比等于视频宽高比
 				let ratio = vW / vH;
 				// console.log(ratio, vW, vH, mW, mH)
 				if (style == 'fit') {
@@ -120,17 +137,20 @@ export class Player {
 					}
 				}
 			}
+
+			//如果传入的宽度大于viewport的宽度
+			let viewWH = dom.getViewportSize();
+			if(dW > viewWH.width){
+				dW = viewWH.width;
+			}
 		}
 
 		dW += (percent.test(dW)? '' : 'px');
 		dH += (percent.test(dH)? '' : 'px');
-		//console.log(dH);
  		this.el.style.width = dW;
 		this.el.style.height = dH;
-
 		this.video.width(dW);
 		this.video.height(dH);
-
 		this.width = dW;
 		this.height = dH;
 	}
@@ -168,7 +188,7 @@ export class Player {
 
 				this.__lastmove = +new Date();
 				clearTimeout(this.__moveid);
-
+				//util.console.log('mousemove');
 				self.panel && self.panel.show();
 				this.__moveid = setTimeout(function() {
 					self.playing() && self.panel && self.panel.hide();
@@ -186,7 +206,7 @@ export class Player {
 					this.__wait = true;
 					this.loading.show();
 				}
-
+				//util.console.log('MSG.Play mousemove', this.playing());
 				dom.on(this.el, 'mousemove', this.__handleEvent);
 				break;
 			case MSG.TimeUpdate:
@@ -196,16 +216,17 @@ export class Player {
 				}
 				break;
 			case MSG.Pause:
+				//util.console.log('MSG.Pause mousemove');
 				dom.off(this.el, 'mousemove', this.__handleEvent);
-				
 				dom.removeClass(this.el, 'vcp-playing');
 				break;
 			case MSG.Ended:
+				//util.console.log('MSG.Ended mousemove');
 				dom.off(this.el, 'mousemove', this.__handleEvent);
 				this.panel && this.panel.show();
 				dom.removeClass(this.el, 'vcp-playing');
 				break;
-			case MSG.MetaLoaded:
+			case MSG.MetaLoaded://ios 10 可能无法触发metaloaded
 				if (this.options.autoplay && this.video.type() == util.VideoType.RTMP) {
 					this.__wait = true;
 					this.loading.show();
@@ -258,7 +279,12 @@ export class Player {
 		this.video.pause();
 	}
 	play() {
+		this.errortips.clear();
 		this.video.play();
+	}
+	togglePlay(){
+		this.errortips.clear();
+		this.video.togglePlay();
 	}
 	mute(muted) {
 		return this.video.mute(muted);
@@ -270,8 +296,9 @@ export class Player {
 		return this.video.fullscreen(enter);
 	}
 	load(src, type) {
+		this.errortips.clear();
 		this.loading.show();
-		this.video.load(src, type);
+		this.video.load(src || this.options.src, type);
 	}
 	playing() {
 		return this.video.playing();

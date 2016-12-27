@@ -2,6 +2,7 @@ import Component from './Component'
 import {MSG as PlayerMSG} from './message'
 import * as dom from './dom'
 import * as util from './util'
+import * as States from './constant/States.js'
 
 var State = {Playing: 'PLAYING', Paused: 'PAUSED', Stop: 'STOP', Seeking: 'SEEKING', Seeked: 'SEEKED'};
 /**
@@ -72,6 +73,9 @@ export default class FlashVideo extends Component {
 	}
 	setup() {
 		this.on('error', this.notify);
+		this.playState = States.PlayStates.IDLE;
+		this.seekState = States.SeekStates.IDLE;
+		this.metaDataLoaded = false;
 	}
 	doPolling() {
 		if (this.options.live) return; // 直播没必要这个事件
@@ -136,17 +140,18 @@ export default class FlashVideo extends Component {
 				this.pub({type: e.type, src: this, ts: e.ts, detail: util.extend({debug: true}, info)});
 			}
 
-			if (this.__m3u8 && !this.__metaloaded && eventName == 'mediaTime' && info.videoWidth != 0) {
-				// 修正flash m3u8的metaData时机
-				e.type = 'metaData';
-				this.__metaloaded = true;
-			}
+			//if (this.__m3u8 && !this.__metaloaded && eventName == 'mediaTime' && info.videoWidth != 0) {
+			//	// 修正flash m3u8的metaData时机
+			//	e.type = 'metaData';
+			//	this.__metaloaded = true;
+			//}
 
 			switch (e.type) {
 				case 'ready':
 					this.el = getFlashMovieObject(this.__id);
 					this.setup();
-					// this.el.setAutoPlay();
+					//util.console.log('autoplay', this.options.autoplay? true : false);
+					this.el.setAutoPlay(this.options.autoplay? true : false);
 					this.__timebase = new Date() - info.time;
 					this.load(this.options.src);
 					return;
@@ -161,14 +166,14 @@ export default class FlashVideo extends Component {
 					this.__m3u8 = info.type === util.VideoType.M3U8;
 					this.__rtmp = info.type === util.VideoType.RTMP;
 					this.__type = info.type;
-					if (this.__m3u8) {
-						this.volume(0);
-						this.__metaloaded = (this.__videoWidth != 0);
-						if (!this.__metaloaded) return; // m3u8 没有播放的话是拿不到视频宽高的
-					}
-					!this.options.autoplay && this.pause();
+					//if (this.__m3u8) {
+					//	this.volume(0);
+					//	this.__metaloaded = (this.__videoWidth != 0);
+					//	if (!this.__metaloaded) return; // m3u8 没有播放的话是拿不到视频宽高的
+					//}
+					//!this.options.autoplay && this.pause();//这一步已经在flash中实现，只需要初始化的时候给flash传递 autoplay参数
 					this.__metaloaded = true;
-
+					this.metaDataLoaded = true;
 					this.doPolling();
 
 					var self = this;
@@ -177,40 +182,49 @@ export default class FlashVideo extends Component {
 						self.owner.removeChild(self.cover);// faded out?
 						self.cover = null;
 					}, 500);
+
 					break;
 
 				case 'playState':
-					if (info.playState == State.Playing) {
+					this.playState = info.playState;
+					if (info.playState == States.PlayStates.PLAYING) {
 						this.__playing = true;
 						this.__stopped = false;
 						e.type = PlayerMSG.Play;
-					} else if (info.playState == State.Paused) {
+					} else if (info.playState == States.PlayStates.PAUSED) {
 						this.__playing = false;
 						this.__stopped = false;
 						e.type = PlayerMSG.Pause;
-					} else if (info.playState == State.Stop) {
+					} else if (info.playState == States.PlayStates.STOP) {
 						this.__playing = false;
 						this.__stopped = true;
 						e.type = PlayerMSG.Ended;
 						this.__prevPlayState = null;
-					} else {
-						return;
+						if(this.options.live){ //直播断流或者正常结束，要把状态重置，便于判断是否需要重连，点播为了重播则不需要
+							this.metaDataLoaded = false;
+						}
+					} else if (info.playState == States.PlayStates.IDLE) {//flashls 在断流时会进入idle状态
+						this.__playing = false;
+						this.__stopped = true;
+						e.type = PlayerMSG.Ended;
+						//return;
 					}
 					break;
 				case 'seekState':
+					this.seekState = info.seekState;
 					if (!this.__metaloaded) return;
 
-					if (info.seekState == State.Seeking) {
+					if (info.seekState == States.SeekStates.SEEKING) {
 						e.type = PlayerMSG.Seeking;
-					} else if (info.seekState == State.Seeked) {
+					} else if (info.seekState == States.SeekStates.SEEKED) {
 						if (!this.__m3u8 // m3u8倒没有这个问题
-							&& info.playState == State.Paused
-							|| info.playState == State.Stop // 播放结束后seek状态不变更，所以强制play以恢复正常状态
+							&& !this.options.live //点播
+							//&& info.playState == States.PlayStates.PAUSED
+							&& info.playState == States.PlayStates.STOP // 点播播放结束后且seek 会自动播放，但是播放状态不变更，所以强制play以恢复正常状态, 另外seek也会触发 onmetadata
 						) {
 							this.play();
 							this.__prevPlayState = info.playState;
 						}
-
 						e.type = PlayerMSG.Seeked;
 					} else {
 						return;
@@ -219,20 +233,23 @@ export default class FlashVideo extends Component {
 				case 'netStatus':
 					if (!this.options.live) {
 						if (info.code == 'NetStream.Buffer.Full') {
-							if (this.__prevPlayState == State.Paused || this.__prevPlayState == State.Stop) {
-								this.pause();
+							if (this.__prevPlayState == tates.PlayStates.PAUSED || this.__prevPlayState == States.PlayStates.STOP) {
+								//this.pause();
 							}
 							this.__prevPlayState = null;
 							e.type = PlayerMSG.Seeked;
 						} else if (info.code == 'NetStream.Seek.Complete') { // 播放到结尾再点播放会自动停止,所以force play again
-							this.play();
+							//this.play();
 							break;
 						}
 					}
-					// todo empty
+
 					if (info.code == 'NetConnection.Connect.Closed') {
-						e.type = 'error';
-						info = {code: 1001, reason: info.code};
+						//e.type = 'error';
+						//info = {code: 1001, reason: info.code};
+					}
+					if (info.code == 'NetStream.Play.Stop') {//播放结束, flash从server获取到结束标记。
+
 					}
 					break;
 				case 'mediaTime':
@@ -246,19 +263,27 @@ export default class FlashVideo extends Component {
 						this.currentTime(info.details);
 						return false; // adobe's bug, ignore
 					}
+					if (info.code == "NetStream.Play.StreamNotFound") {
 
+					}
 					let code = isNaN(parseInt(info.code)) ? 1002 : info.code;
 					let reason = isNaN(parseInt(info.code)) ? info.code : info.msg;
-					let realCode = reason.match(/#(\d+)/); // example: Cannot load M3U8: crossdomain access denied:Error #2048
+					let realCode = reason.match(/#(\d+)/); // example: Cannot load M3U8: crossdomain access denied:Error #2048  Cannot load M3U8: Error #2032
 					if (realCode && realCode[1]) code = realCode[1];
 					info = {code: code, reason: reason || ''};
+					this.metaDataLoaded = false;
 					break;
 			}
 
 			let keepPrivate = (eventName == 'printLog' || eventName == 'canPlay');
+
 			!keepPrivate && this.pub({type: e.type, src: this, ts: e.ts, detail: info});
 		} catch (err) {
-			console.error(eventName + ' ' + e.type, err);
+			//console.error(eventName + ' ' + e.type, err);
+		}
+
+		if(eventName != 'mediaTime'){
+			//util.console.log('Flash notify', eventName , info , this.playState, this.seekState);
 		}
 	}
 
@@ -282,8 +307,25 @@ export default class FlashVideo extends Component {
 		return this.el && (this.el.height = h);
 	}
 	play() {
-		if (this.__stopped) this.currentTime(0);
+		//if (this.__stopped) this.currentTime(0);
 		this.el.playerResume();
+	}
+	togglePlay(){
+		//util.console.log('togglePlay', this);
+		if(!this.metaDataLoaded){
+			this.player.load();
+		}else{
+			if(this.playState == States.PlayStates.PAUSED){
+				this.el.playerResume();
+			}else if(this.playState == States.PlayStates.PLAYING){
+				this.el.playerPause();
+			}else if(this.playState == States.PlayStates.STOP){
+				this.currentTime(0);// 点播播放结束后处于STOP状态 seek触发seeked事件，在seekState特殊处理了这种情况
+				this.el.playerResume();
+			}else{
+				this.el.playerPlay();
+			}
+		}
 	}
 	pause() {
 		this.el.playerPause();
@@ -328,10 +370,10 @@ export default class FlashVideo extends Component {
 
 	load(src, type) {
 		this.pub({type: PlayerMSG.Load, src: this, ts: (new Date() - this.__timebase), detail: {src: src, type: type}});
-		this.el && this.el.playerLoad(src);
+		this.el && this.el.playerLoad(src);// firefox flash启动时机不准确，会报错
 	}
 	playing() {
-		return this.el && this.el.getState && this.el.getState().playState === State.Playing;
+		return this.el && this.el.getState && this.el.getState().playState === States.PlayStates.PLAYING;
 	}
 	type() {
 		return this.__type;

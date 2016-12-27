@@ -75,9 +75,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var message = _interopRequireWildcard(_message);
 
-	var _Tips = __webpack_require__(5);
-
-	var _Player2 = __webpack_require__(6);
+	var _Player2 = __webpack_require__(5);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
 
@@ -87,11 +85,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	//import { Tips }from './constant/Tips'
+
 	//export var browser = __browser;
 	//export var util = __util;
 	//export var dom = __dom;
 	var MSG = message.MSG;
-	var tips = new _Tips.Tips();
+	//let tips = new Tips();
 	/**
 	 *
 	 */
@@ -141,12 +141,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            flash: isFlash,
 	            poster: options.coverpic,
 	            //controls: true,
-	            width: options.width || '100%',
-	            height: options.height || '100%',
+	            width: options.width,
+	            height: options.height,
 	            listener: options.listener,
-	            wording: options.wording
+	            wording: options.wording,
+	            controls: options.controls
 	        };
-	        tips.init(options.wording);
+	        //tips.init(options.wording);
 
 	        var _this = _possibleConstructorReturn(this, _Player.call(this, _options));
 
@@ -176,6 +177,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            //console.log('switchClarity', this, prevTime);
 	            if (parseInt(this.duration() - prevTime) > 0 && !this.options.live) {
 	                this.currentTime(prevTime);
+	                this.play();
 	            }
 	            message.unsub(MSG.MetaLoaded, '*', fun, this);
 	        });
@@ -465,6 +467,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.findElPosition = findElPosition;
 	exports.getPointerPosition = getPointerPosition;
 	exports.loadScript = loadScript;
+	exports.getViewportSize = getViewportSize;
 	function on(elem, type, cb) {
 		if (!elem) return console.warn('element not exists');
 		if (elem.addEventListener) elem.addEventListener(type, cb, false);else if (elem.attachEvent) elem.attachEvent('on' + type, cb);
@@ -604,6 +607,16 @@ return /******/ (function(modules) { // webpackBootstrap
 		document.getElementsByTagName("head")[0].appendChild(tag);
 	}
 
+	function getViewportSize() {
+		var doc = document;
+		var docE = doc.documentElement;
+		var body = doc.body;
+		return {
+			'width': docE && docE.clientWidth || body && body.offsetWidth || window.innerWidth || 0,
+			'height': docE && docE.clientHeight || body && body.offsetHeight || window.innerHeight || 0
+		};
+	}
+
 /***/ },
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
@@ -611,7 +624,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	exports.__esModule = true;
-	exports.VideoType = exports.CDNPath = exports.FullscreenApi = undefined;
+	exports.console = exports.VideoType = exports.CDNPath = exports.FullscreenApi = undefined;
 	exports.guid = guid;
 	exports.bind = bind;
 	exports.isEmpty = isEmpty;
@@ -777,6 +790,24 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var VideoType = exports.VideoType = { RTMP: 'rtmp', M3U8: 'm3u8' };
 
+	var console = exports.console = {
+		log: function log() {
+			if (window.console) {
+				window.console.log.apply(window.console, arguments);
+			}
+		},
+		warn: function warn() {
+			if (window.console) {
+				window.console.warn.apply(window.console, arguments);
+			}
+		},
+		error: function error() {
+			if (window.console) {
+				window.console.error.apply(window.console, arguments);
+			}
+		}
+	};
+
 /***/ },
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
@@ -796,7 +827,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
 
 	var MSG = exports.MSG = { Error: 'error', TimeUpdate: 'timeupdate', Load: 'load', MetaLoaded: 'loadedmetadata', Loaded: 'loadeddata', Progress: 'progress', FullScreen: 'fullscreen',
-		Play: 'play', Pause: 'pause', Ended: 'ended', Seeking: 'seeking', Seeked: 'seeked', Resize: 'resize', VolumeChange: 'volumechange' };
+		Play: 'play', Playing: 'playing', Pause: 'pause', Ended: 'ended', Seeking: 'seeking', Seeked: 'seeked', Resize: 'resize', VolumeChange: 'volumechange' };
 
 	var Players = {};
 	var fnCaches = {};
@@ -924,56 +955,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 5 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	exports.__esModule = true;
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	/**
-	 * User: anderlu
-	 * Date: 2016/12/5
-	 * Time: 16:08
-	 */
-
-	var __instance = function () {
-	    var instance = void 0;
-	    return function (newInstance) {
-	        if (newInstance) instance = newInstance;
-	        return instance;
-	    };
-	}();
-
-	var tips = {
-	    UrlEmpty: '请至少设置一种视频播放地址'
-
-	};
-
-	var Tips = exports.Tips = function () {
-	    function Tips(options) {
-	        _classCallCheck(this, Tips);
-
-	        //this.options = options;
-	        //this.customTips = options.wording || {};
-	        if (__instance()) return __instance();
-	        __instance(this);
-	    }
-
-	    Tips.prototype.init = function init(customTips) {
-	        this.customTips = customTips || {};
-	    };
-
-	    Tips.prototype.getTips = function getTips(key) {
-	        return this.customTips[key] || tips[key];
-	    };
-
-	    return Tips;
-	}();
-
-/***/ },
-/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -981,7 +962,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.__esModule = true;
 	exports.Player = exports.dom = exports.util = exports.browser = exports.MSG = undefined;
 
-	__webpack_require__(7);
+	__webpack_require__(6);
 
 	var _browser = __webpack_require__(1);
 
@@ -999,7 +980,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var message = _interopRequireWildcard(_message);
 
-	var _H5Video = __webpack_require__(11);
+	var _H5Video = __webpack_require__(10);
 
 	var _H5Video2 = _interopRequireDefault(_H5Video);
 
@@ -1040,11 +1021,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * @param {options}
 	 * @param options.owner {String} container id
-	 * @param options.controls {Boolean} 是否显示原生控件
+	 * @param options.controls {Boolean} 是否显示原生控件。default||'' 显示默认控件，none 不显示控件，system 显示系统控件
 	 * @param options.volume {Number} 音量初始化，传0则静音
 	 * @param options.listener {Function}
-	 * @param options.poster {Object|String}
-	 * @param options.m3u8 {Boolean}
+	 * @param options.poster {Object|String} src:图片地址，style：default 居中1:1显示 stretch 拉伸铺满，图片可能会变形 cover 等比横向铺满，图片某些部分可能无法显示在区域内
+	 * @param options.posterType {String} default 使用默认封面功能，systerm 使用video poster属性封面功能
+	 * @param options.m3u8 {Boolean} 使用是M3u8格式
 	 * @param options.live {Boolean} 是否直播
 	 * @param options.debug {Boolean} 是否调试状态
 	 * @param options.flash {Boolean} 优先使用flash
@@ -1060,6 +1042,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			_classCallCheck(this, Player);
 
 			this.options = options;
+			this.ready = false;
 			var owner = options.owner;
 			if (!owner) return console.error('Player need a container');
 
@@ -1076,7 +1059,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			var clsName = 'vcp-player';
 			if (browser.TOUCH_ENABLED) clsName += ' touchable';
 			this.el = dom.createEl('div', { 'class': clsName });
-
+			//这里的判断需要更多的场景，例如PC没有flash插件的情况.
 			if (!this.options.flash && browser.HASVIDEO) {
 				var h5 = new _H5Video2["default"](this);
 				h5.render(this.el);
@@ -1090,10 +1073,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 			owner.appendChild(this.el);
 
-			this.poster = new _Poster2["default"](this);
-			this.poster.render(this.el);
-
 			if (!this.options.controls) {
+				this.poster = new _Poster2["default"](this);
+				this.poster.render(this.el);
+
 				this.bigplay = new _BigPlay2["default"](this);
 				this.bigplay.render(this.el);
 
@@ -1112,6 +1095,21 @@ return /******/ (function(modules) { // webpackBootstrap
 			this.size(this.options.width, this.options.height);
 
 			this.setup();
+
+			if (browser.IS_MOBILE) {
+				if (this.options.autoplay || browser.IOS_VERSION != 10) {
+					//ios 10 非 autoplay 不调用loading.show()
+					this.loading.show();
+					if (this.options.autoplay) {
+						var self = this;
+						document.addEventListener("WeixinJSBridgeReady", function () {
+							self.play();
+						}, !1);
+					}
+				}
+			} else {
+				this.loading.show();
+			}
 		};
 
 		/**
@@ -1134,10 +1132,11 @@ return /******/ (function(modules) { // webpackBootstrap
 			} else {
 				var vW = this.video.videoWidth(),
 				    vH = this.video.videoHeight();
-
 				dW = mW;
 				dH = mH;
+
 				if (vW && vH) {
+					//获取到视频的宽高，设定播放器宽高比等于视频宽高比
 					var ratio = vW / vH;
 					// console.log(ratio, vW, vH, mW, mH)
 					if (style == 'fit') {
@@ -1150,17 +1149,20 @@ return /******/ (function(modules) { // webpackBootstrap
 						}
 					}
 				}
+
+				//如果传入的宽度大于viewport的宽度
+				var viewWH = dom.getViewportSize();
+				if (dW > viewWH.width) {
+					dW = viewWH.width;
+				}
 			}
 
 			dW += percent.test(dW) ? '' : 'px';
 			dH += percent.test(dH) ? '' : 'px';
-			//console.log(dH);
 			this.el.style.width = dW;
 			this.el.style.height = dH;
-
 			this.video.width(dW);
 			this.video.height(dH);
-
 			this.width = dW;
 			this.height = dH;
 		};
@@ -1201,7 +1203,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 					this.__lastmove = +new Date();
 					clearTimeout(this.__moveid);
-
+					//util.console.log('mousemove');
 					self.panel && self.panel.show();
 					this.__moveid = setTimeout(function () {
 						self.playing() && self.panel && self.panel.hide();
@@ -1220,7 +1222,7 @@ return /******/ (function(modules) { // webpackBootstrap
 						this.__wait = true;
 						this.loading.show();
 					}
-
+					//util.console.log('MSG.Play mousemove', this.playing());
 					dom.on(this.el, 'mousemove', this.__handleEvent);
 					break;
 				case MSG.TimeUpdate:
@@ -1230,16 +1232,18 @@ return /******/ (function(modules) { // webpackBootstrap
 					}
 					break;
 				case MSG.Pause:
+					//util.console.log('MSG.Pause mousemove');
 					dom.off(this.el, 'mousemove', this.__handleEvent);
-
 					dom.removeClass(this.el, 'vcp-playing');
 					break;
 				case MSG.Ended:
+					//util.console.log('MSG.Ended mousemove');
 					dom.off(this.el, 'mousemove', this.__handleEvent);
 					this.panel && this.panel.show();
 					dom.removeClass(this.el, 'vcp-playing');
 					break;
 				case MSG.MetaLoaded:
+					//ios 10 可能无法触发metaloaded
 					if (this.options.autoplay && this.video.type() == util.VideoType.RTMP) {
 						this.__wait = true;
 						this.loading.show();
@@ -1297,7 +1301,13 @@ return /******/ (function(modules) { // webpackBootstrap
 		};
 
 		Player.prototype.play = function play() {
+			this.errortips.clear();
 			this.video.play();
+		};
+
+		Player.prototype.togglePlay = function togglePlay() {
+			this.errortips.clear();
+			this.video.togglePlay();
 		};
 
 		Player.prototype.mute = function mute(muted) {
@@ -1313,8 +1323,9 @@ return /******/ (function(modules) { // webpackBootstrap
 		};
 
 		Player.prototype.load = function load(src, type) {
+			this.errortips.clear();
 			this.loading.show();
-			this.video.load(src, type);
+			this.video.load(src || this.options.src, type);
 		};
 
 		Player.prototype.playing = function playing() {
@@ -1325,16 +1336,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	}();
 
 /***/ },
-/* 7 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(8);
+	var content = __webpack_require__(7);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(10)(content, {});
+	var update = __webpack_require__(9)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -1351,21 +1362,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 8 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(9)();
+	exports = module.exports = __webpack_require__(8)();
 	// imports
 
 
 	// module
-	exports.push([module.id, ".vcp-player {\r\n    position: relative;\r\n    z-index: 0;\r\n    font-family: Tahoma, '\\5FAE\\8F6F\\96C5\\9ED1', \\u5b8b\\u4f53,Verdana,Arial,sans-serif;\r\n    background-color: black;\r\n}\r\n.vcp-fullscreen.vcp-player, .vcp-fullscreen video {\r\n    width: 100%!important;\r\n    height: 100%!important;\r\n}\r\n/* 伪全屏 */\r\nbody.vcp-full-window {\r\n    width: 100%!important;\r\n    height: 100%!important;\r\n    overflow-y: auto;\r\n}\r\n.vcp-full-window .vcp-player {\r\n    position: fixed;\r\n    left: 0;\r\n    top: 0;\r\n}\r\n\r\n/* chrome flash 成功加载到DOM之前会闪白屏，所以加个黑屏遮一遮 */\r\n.vcp-pre-flash {\r\n    z-index: 1000; background: black; width: 100%; height: 100%; position: absolute; top: 0; left: 0;\r\n}\r\n.vcp-controls-panel {\r\n    position: absolute;\r\n    bottom: 0;\r\n    width: 100%;\r\n    font-size: 16px;\r\n    height: 3em;\r\n    z-index: 1000;\r\n}\r\n.vcp-panel-bg {\r\n    width: 100%;\r\n    height: 100%;\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n    background-color: rgb(36, 36, 36);\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n    z-index: 1000;\r\n}\r\n\r\n.vcp-playtoggle {\r\n    cursor: pointer;\r\n    position: relative;\r\n    z-index: 1001;\r\n    width: 3em;\r\n    height: 100%;\r\n    float: left;\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/play_btn.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/play_btn.svg), none;\r\n}\r\n.vcp-playtoggle:hover, .vcp-playtoggle:focus {\r\n    background-color: slategray;\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n}\r\n.touchable .vcp-playtoggle:hover {\r\n    background-color: transparent;\r\n    opacity: 1;\r\n}\r\n.vcp-playing .vcp-playtoggle {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/stop_btn.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/stop_btn.svg), none;\r\n}\r\n.vcp-bigplay {\r\n    width: 100%;\r\n    height: 80%; /*会遮住原生控制栏*/\r\n    position: absolute;\r\n    background-color: white\\0;\r\n    filter: alpha(opacity=0); /*奇怪的IE8/9鼠标事件穿透*/\r\n    z-index: 1000;\r\n    top: 0;\r\n    left: 0;\r\n}\r\n\r\n.vcp-slider {\r\n    position: relative;\r\n    z-index: 1001;\r\n    float: left;\r\n    background: rgb(196, 196, 196);\r\n    height: 10px;\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n    cursor: pointer;\r\n}\r\n.vcp-slider .vcp-slider-track {\r\n    width: 0;\r\n    height: 100%;\r\n    margin-top: 0;\r\n    opacity: 1;\r\n    filter: alpha(opacity=100);\r\n    background-color: dodgerblue; /*beautiful blue*/\r\n}\r\n.vcp-slider .vcp-slider-thumb {\r\n    cursor: pointer;\r\n    background-color: white;\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    border-radius: 1em!important;\r\n    height: 10px;\r\n    margin-left: -5px;\r\n    width: 10px;\r\n}\r\n\r\n.vcp-slider-vertical {\r\n    position: relative;\r\n    width: 0.5em;\r\n    height: 8em;\r\n    top: -5.6em;\r\n    z-index: 1001;\r\n    background-color: rgb(28, 28, 28);\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n    cursor: pointer;\r\n}\r\n.vcp-slider-vertical .vcp-slider-track {\r\n    background-color: rgb(18, 117, 207);\r\n    width: 0.5em;\r\n    height: 100%;\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n}\r\n.vcp-slider-vertical .vcp-slider-thumb {\r\n    cursor: pointer;\r\n    position: absolute;\r\n    background-color: aliceblue;\r\n    width: 0.8em;\r\n    height: 0.8em;\r\n    border-radius: 0.8em!important;\r\n    margin-top: -0.4em;\r\n    top: 0;\r\n    left: -0.15em;\r\n}\r\n/* 时间线/进度条 */\r\n.vcp-timeline {\r\n    top: -10px;\r\n    left: 0;\r\n    height: 10px;\r\n    position: absolute;\r\n    z-index: 1001;\r\n    width: 100%;\r\n}\r\n.vcp-timeline .vcp-slider-thumb {\r\n    top: -4px;\r\n}\r\n.vcp-timeline .vcp-slider {\r\n    margin-top: 8px;\r\n    height: 2px;\r\n    width: 100%;\r\n}\r\n.vcp-timeline:hover .vcp-slider {\r\n    margin-top: 0;\r\n    height: 10px;\r\n}\r\n.vcp-timeline:hover .vcp-slider-thumb {\r\n    display: block;\r\n    width: 16px;\r\n    height: 16px;\r\n    top: -3px;\r\n    margin-left: -8px;\r\n}\r\n/* 时间展示 */\r\n.vcp-timelabel {\r\n    display: inline-block;\r\n    line-height: 3em;\r\n    height: 3em;\r\n    width: 3em;\r\n    float: left;\r\n    color: white;\r\n    padding: 0 9px;\r\n    z-index: 1001;\r\n    position: relative;\r\n}\r\n/* 音量控制 */\r\n.vcp-volume {\r\n    height: 3em;\r\n    width: 3em;\r\n    cursor: pointer;\r\n    position: relative;\r\n    z-index: 1001;\r\n    float: right;\r\n    background-color: transparent;\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n}\r\n.vcp-volume-icon {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/volume.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/volume.svg), none;\r\n    display: inline-block;\r\n    width: 3em;\r\n    height: 3em;\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n}\r\n.vcp-volume-muted .vcp-volume-icon {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/muted.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/muted.svg), none;\r\n}\r\n.vcp-volume .vcp-slider-vertical {\r\n    top: -8.4em;\r\n    left: 1em;\r\n    display: none;\r\n}\r\n.vcp-volume .vcp-slider-track {\r\n    position: absolute;\r\n    bottom: 0;\r\n}\r\n.vcp-volume:hover .vcp-slider-vertical {\r\n    display: block;\r\n}\r\n.vcp-volume .vcp-volume-bg {\r\n    height: 8.8em;\r\n    width: 2em;\r\n    position: absolute;\r\n    left: 0.25em;\r\n    top: -8.8em;\r\n    background: rgb(36,36,36);\r\n    display: none;\r\n}\r\n.vcp-volume:hover .vcp-volume-bg, .vcp-volume:hover .vcp-slider-vertical {\r\n    display: block;\r\n}\r\n/* 全屏控件 */\r\n.vcp-fullscreen-toggle {\r\n    position: relative;\r\n    width: 3em;\r\n    height: 3em;\r\n    float: right;\r\n    cursor: pointer;\r\n    z-index: 1001;\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen.svg), none;\r\n}\r\n.vcp-fullscreen .vcp-fullscreen-toggle {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen_exit.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen_exit.svg), none;\r\n}\r\n\r\n.vcp-loading {\r\n    position: absolute;\r\n    left: 50%;\r\n    top: 50%;\r\n    margin-top: -3em;\r\n}\r\n\r\n.vcp-poster {\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n    overflow: hidden;\r\n    z-index: 1000;\r\n    width: 100%;\r\n    height: 100%;\r\n    display: none;\r\n}\r\n.vcp-poster-pic {\r\n    position: relative;\r\n}\r\n\r\n.vcp-error-tips {\r\n    position: absolute;\r\n    z-index: 1001;\r\n    width: 100%;\r\n    height: 4.5em;\r\n    left: 0;\r\n    top: 50%;\r\n    color: orangered;\r\n    margin-top: -5.25em;\r\n    text-align: center;\r\n    display: none;\r\n}\r\n\r\n.vcp-clarityswitcher{\r\n    height: 3em;\r\n    width: 3em;\r\n    cursor: pointer;\r\n    position: relative;\r\n    z-index: 1001;\r\n    float: right;\r\n    background-color: transparent;\r\n    opacity: 0.9;\r\n}\r\n.vcp-vertical-switcher-container{\r\n    width: 3em;\r\n    position: absolute;\r\n    left: 0em;\r\n    bottom: 2.4em;\r\n    background: rgb(36,36,36);\r\n    display: none;\r\n}\r\n.vcp-vertical-switcher-current{\r\n    display: block;\r\n    color: #fff;\r\n    text-align: center;\r\n    line-height:3em;\r\n}\r\n.vcp-vertical-switcher-item{\r\n    display: block;\r\n    color: #fff;\r\n    text-align: center;\r\n    line-height:2em;\r\n}\r\n.vcp-vertical-switcher-item.current{\r\n    color: #888;\r\n}\r\n/* animations */\r\n@-webkit-keyframes fadeOut {\r\n    from {\r\n        opacity: 1;\r\n    }\r\n\r\n    to {\r\n        opacity: 0;\r\n    }\r\n}\r\n\r\n@keyframes fadeOut {\r\n    from {\r\n        opacity: 1;\r\n    }\r\n\r\n    to {\r\n        opacity: 0;\r\n    }\r\n}\r\n\r\n.fadeOut {\r\n    -webkit-animation: fadeOut ease 0.8s;\r\n    animation: fadeOut ease 0.8s;\r\n}\r\n\r\n@-webkit-keyframes fadeIn {\r\n    from {\r\n        opacity: 0;\r\n    }\r\n\r\n    to {\r\n        opacity: 1;\r\n    }\r\n}\r\n\r\n@keyframes fadeIn {\r\n    from {\r\n        opacity: 0;\r\n    }\r\n\r\n    to {\r\n        opacity: 1;\r\n    }\r\n}\r\n\r\n.fadeIn {\r\n    -webkit-animation: fadeIn ease 0.8s;\r\n    animation: fadeIn ease 0.8s;\r\n    animation-fill-mode: both;\r\n}", ""]);
+	exports.push([module.id, ".vcp-player {\r\n    position: relative;\r\n    z-index: 0;\r\n    font-family: Tahoma, '\\5FAE\\8F6F\\96C5\\9ED1', \\u5b8b\\u4f53,Verdana,Arial,sans-serif;\r\n    background-color: black;\r\n}\r\n.vcp-fullscreen.vcp-player, .vcp-fullscreen video {\r\n    width: 100%!important;\r\n    height: 100%!important;\r\n}\r\n/* 伪全屏 */\r\nbody.vcp-full-window {\r\n    width: 100%!important;\r\n    height: 100%!important;\r\n    overflow-y: auto;\r\n}\r\n.vcp-full-window .vcp-player {\r\n    position: fixed;\r\n    left: 0;\r\n    top: 0;\r\n}\r\n\r\n/* chrome flash 成功加载到DOM之前会闪白屏，所以加个黑屏遮一遮 */\r\n.vcp-pre-flash {\r\n    z-index: 1000; background: black; width: 100%; height: 100%; position: absolute; top: 0; left: 0;\r\n}\r\n.vcp-controls-panel {\r\n    position: absolute;\r\n    bottom: 0;\r\n    width: 100%;\r\n    font-size: 16px;\r\n    height: 3em;\r\n    z-index: 1000;\r\n}\r\n.vcp-controls-panel.show{\r\n    -webkit-animation: fadeIn ease 0.8s;\r\n    animation: fadeIn ease 0.8s;\r\n    animation-fill-mode: forwards;\r\n    -webkit-animation-fill-mode: forwards;\r\n}\r\n.vcp-controls-panel.hide{\r\n    -webkit-animation: fadeOut ease 0.8s;\r\n    animation: fadeOut ease 0.8s;\r\n    animation-fill-mode: forwards;\r\n    -webkit-animation-fill-mode: forwards;\r\n}\r\n.vcp-panel-bg {\r\n    width: 100%;\r\n    height: 100%;\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n    background-color: rgb(36, 36, 36);\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n    z-index: 1000;\r\n}\r\n\r\n.vcp-playtoggle {\r\n    cursor: pointer;\r\n    position: relative;\r\n    z-index: 1001;\r\n    width: 3em;\r\n    height: 100%;\r\n    float: left;\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/play_btn.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/play_btn.svg), none;\r\n}\r\n.vcp-playtoggle:hover, .vcp-playtoggle:focus {\r\n    background-color: slategray;\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n}\r\n.touchable .vcp-playtoggle:hover {\r\n    background-color: transparent;\r\n    opacity: 1;\r\n}\r\n.vcp-playing .vcp-playtoggle {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/stop_btn.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/stop_btn.svg), none;\r\n}\r\n.vcp-bigplay {\r\n    width: 100%;\r\n    height: 80%; /*会遮住原生控制栏*/\r\n    position: absolute;\r\n    background-color: white\\0;\r\n    filter: alpha(opacity=0); /*奇怪的IE8/9鼠标事件穿透*/\r\n    opacity: 0;\r\n    z-index: 1000;\r\n    top: 0;\r\n    left: 0;\r\n}\r\n\r\n.vcp-slider {\r\n    position: relative;\r\n    z-index: 1001;\r\n    float: left;\r\n    background: rgb(196, 196, 196);\r\n    height: 10px;\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n    cursor: pointer;\r\n}\r\n.vcp-slider .vcp-slider-track {\r\n    width: 0;\r\n    height: 100%;\r\n    margin-top: 0;\r\n    opacity: 1;\r\n    filter: alpha(opacity=100);\r\n    background-color: dodgerblue; /*beautiful blue*/\r\n}\r\n.vcp-slider .vcp-slider-thumb {\r\n    cursor: pointer;\r\n    background-color: white;\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    border-radius: 1em!important;\r\n    height: 10px;\r\n    margin-left: -5px;\r\n    width: 10px;\r\n}\r\n\r\n.vcp-slider-vertical {\r\n    position: relative;\r\n    width: 0.5em;\r\n    height: 8em;\r\n    top: -5.6em;\r\n    z-index: 1001;\r\n    background-color: rgb(28, 28, 28);\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n    cursor: pointer;\r\n}\r\n.vcp-slider-vertical .vcp-slider-track {\r\n    background-color: rgb(18, 117, 207);\r\n    width: 0.5em;\r\n    height: 100%;\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n}\r\n.vcp-slider-vertical .vcp-slider-thumb {\r\n    cursor: pointer;\r\n    position: absolute;\r\n    background-color: aliceblue;\r\n    width: 0.8em;\r\n    height: 0.8em;\r\n    border-radius: 0.8em!important;\r\n    margin-top: -0.4em;\r\n    top: 0;\r\n    left: -0.15em;\r\n}\r\n/* 时间线/进度条 */\r\n.vcp-timeline {\r\n    top: -10px;\r\n    left: 0;\r\n    height: 10px;\r\n    position: absolute;\r\n    z-index: 1001;\r\n    width: 100%;\r\n}\r\n.vcp-timeline .vcp-slider-thumb {\r\n    top: -4px;\r\n}\r\n.vcp-timeline .vcp-slider {\r\n    margin-top: 8px;\r\n    height: 2px;\r\n    width: 100%;\r\n}\r\n.vcp-timeline:hover .vcp-slider {\r\n    margin-top: 0;\r\n    height: 10px;\r\n}\r\n.vcp-timeline:hover .vcp-slider-thumb {\r\n    display: block;\r\n    width: 16px;\r\n    height: 16px;\r\n    top: -3px;\r\n    margin-left: -8px;\r\n}\r\n/* 时间展示 */\r\n.vcp-timelabel {\r\n    display: inline-block;\r\n    line-height: 3em;\r\n    height: 3em;\r\n    width: 3em;\r\n    float: left;\r\n    color: white;\r\n    padding: 0 9px;\r\n    z-index: 1001;\r\n    position: relative;\r\n}\r\n/* 音量控制 */\r\n.vcp-volume {\r\n    height: 3em;\r\n    width: 3em;\r\n    cursor: pointer;\r\n    position: relative;\r\n    z-index: 1001;\r\n    float: right;\r\n    background-color: transparent;\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n}\r\n.vcp-volume-icon {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/volume.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/volume.svg), none;\r\n    display: inline-block;\r\n    width: 3em;\r\n    height: 3em;\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n}\r\n.vcp-volume-muted .vcp-volume-icon {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/muted.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/muted.svg), none;\r\n}\r\n.vcp-volume .vcp-slider-vertical {\r\n    top: -8.4em;\r\n    left: 1em;\r\n    display: none;\r\n}\r\n.vcp-volume .vcp-slider-track {\r\n    position: absolute;\r\n    bottom: 0;\r\n}\r\n.vcp-volume:hover .vcp-slider-vertical {\r\n    display: block;\r\n}\r\n.vcp-volume .vcp-volume-bg {\r\n    height: 8.8em;\r\n    width: 2em;\r\n    position: absolute;\r\n    left: 0.25em;\r\n    top: -8.8em;\r\n    background: rgb(36,36,36);\r\n    display: none;\r\n}\r\n.vcp-volume:hover .vcp-volume-bg, .vcp-volume:hover .vcp-slider-vertical {\r\n    display: block;\r\n}\r\n/* 全屏控件 */\r\n.vcp-fullscreen-toggle {\r\n    position: relative;\r\n    width: 3em;\r\n    height: 3em;\r\n    float: right;\r\n    cursor: pointer;\r\n    z-index: 1001;\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen.svg), none;\r\n}\r\n.vcp-fullscreen .vcp-fullscreen-toggle {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen_exit.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen_exit.svg), none;\r\n}\r\n\r\n.vcp-loading {\r\n    position: absolute;\r\n    left: 50%;\r\n    top: 50%;\r\n    margin-top: -3em;\r\n    display: none;\r\n}\r\n\r\n.vcp-poster {\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n    overflow: hidden;\r\n    z-index: 1000;\r\n    width: 100%;\r\n    height: 100%;\r\n    display: none;\r\n}\r\n.vcp-poster-pic {\r\n    position: relative;\r\n}\r\n\r\n.vcp-error-tips {\r\n    position: absolute;\r\n    z-index: 1001;\r\n    width: 100%;\r\n    height: 4.5em;\r\n    left: 0;\r\n    top: 50%;\r\n    color: orangered;\r\n    margin-top: -5.25em;\r\n    text-align: center;\r\n    display: none;\r\n}\r\n\r\n.vcp-clarityswitcher{\r\n    height: 3em;\r\n    width: 3em;\r\n    cursor: pointer;\r\n    position: relative;\r\n    z-index: 1001;\r\n    float: right;\r\n    background-color: transparent;\r\n    opacity: 0.9;\r\n}\r\n.vcp-vertical-switcher-container{\r\n    width: 3em;\r\n    position: absolute;\r\n    left: 0em;\r\n    bottom: 2.4em;\r\n    background: rgb(36,36,36);\r\n    display: none;\r\n}\r\n.vcp-vertical-switcher-current{\r\n    display: block;\r\n    color: #fff;\r\n    text-align: center;\r\n    line-height:3em;\r\n}\r\n.vcp-vertical-switcher-item{\r\n    display: block;\r\n    color: #fff;\r\n    text-align: center;\r\n    line-height:2em;\r\n}\r\n.vcp-vertical-switcher-item.current{\r\n    color: #888;\r\n}\r\n/* animations */\r\n@-webkit-keyframes fadeOut {\r\n    from {\r\n        opacity: 1;\r\n    }\r\n    to {\r\n        opacity: 0;\r\n    }\r\n}\r\n\r\n@keyframes fadeOut {\r\n    from {\r\n        opacity: 1;\r\n    }\r\n    to {\r\n        opacity: 0;\r\n    }\r\n}\r\n\r\n.fadeOut {\r\n    -webkit-animation: fadeOut ease 0.8s;\r\n    animation: fadeOut ease 0.8s;\r\n    animation-fill-mode: forwards;\r\n    -webkit-animation-fill-mode: forwards;\r\n}\r\n\r\n@-webkit-keyframes fadeIn {\r\n    from {\r\n        opacity: 0;\r\n    }\r\n    to {\r\n        opacity: 1;\r\n    }\r\n}\r\n\r\n@keyframes fadeIn {\r\n    from {\r\n        opacity: 0;\r\n    }\r\n    to {\r\n        opacity: 1;\r\n    }\r\n}\r\n\r\n.fadeIn {\r\n    -webkit-animation: fadeIn ease 0.8s;\r\n    animation: fadeIn ease 0.8s;\r\n    animation-fill-mode: forwards;\r\n    -webkit-animation-fill-mode: forwards;\r\n}", ""]);
 
 	// exports
 
 
 /***/ },
-/* 9 */
+/* 8 */
 /***/ function(module, exports) {
 
 	/*
@@ -1421,7 +1432,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -1673,14 +1684,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(12);
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
@@ -1693,6 +1706,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var util = _interopRequireWildcard(_util);
 
 	var _message = __webpack_require__(4);
+
+	var _States = __webpack_require__(12);
+
+	var States = _interopRequireWildcard(_States);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
 
@@ -1719,6 +1736,16 @@ return /******/ (function(modules) { // webpackBootstrap
 			var options = this.player.options;
 			var controls = !options.controls ? null : options.controls;
 			var autoplay = options.autoplay ? true : null;
+			//使用video poster属性，不用自定义
+			var poster = {};
+			if (options.poster && _typeof(options.poster) == 'object') {
+				poster = options.poster.src;
+			} else if (typeof options.poster == 'string') {
+				poster = options.poster;
+			} else {
+				poster = null;
+			}
+
 			this.createEl('video', {
 				controls: controls,
 				preload: 'auto',
@@ -1731,19 +1758,67 @@ return /******/ (function(modules) { // webpackBootstrap
 		};
 
 		H5Video.prototype.__hlsLoaded = function __hlsLoaded(src) {
-			if (!Hls.isSupported()) return this.notify({ type: 'error', code: 4 });
+			if (!Hls.isSupported()) return this.notify({ type: 'error', code: 5 });
 			var hls = new Hls();
 			hls.loadSource(src);
 			hls.attachMedia(this.el);
+			//hls.on(Hls.Events.MANIFEST_PARSED, util.bind(this, this.__hlsOnManifestParsed));
+			hls.on(Hls.Events.ERROR, util.bind(this, this.__hlsOnError));
+			this.hls = hls;
+		};
+
+		H5Video.prototype.__hlsOnManifestParsed = function __hlsOnManifestParsed(event, data) {
+			util.console.log('__hlsOnManifestParsed', event, data);
+			this.metaDataLoaded = true;
+		};
+
+		H5Video.prototype.__hlsOnError = function __hlsOnError(event, data) {
+			var errorType = data.type;
+			var errorDetails = data.details;
+			var errorFatal = data.fatal;
+			var hls = this.hls;
+			util.console.log('hlsOnError', event, data);
+			if (errorFatal) {
+				//无法播放且无法恢复播放的错误
+				switch (errorType) {
+					case Hls.ErrorTypes.NETWORK_ERROR:
+						if (errorDetails.indexOf('TimeOut') > 0) {
+							util.console.error("加载视频文件超时");
+						} else {
+							util.console.error("无法加载视频文件，请检查网络，以及视频文件是否允许跨域请求访问，m3u8文件是否存在 " + (data.response && data.response.status ? 'netstatus:' + data.response.status : ''));
+						}
+						this.notify({ type: 'error', code: 4 });
+						hls.startLoad();
+						break;
+					case Hls.ErrorTypes.MEDIA_ERROR:
+						//if(errorDetails == Hls.ErrorDetails.BUFFER_APPEND_ERROR){
+						//	break;
+						//}
+						//util.console.error("视频媒体文件解析失败，请检查视频源文件是否可以播放。");
+						//this.notify({type: 'error', code: 2});
+						hls.recoverMediaError();
+						break;
+					default:
+						// cannot recover
+						hls.destroy();
+						break;
+				}
+			} else {//无法播放且有可能恢复播放的错误，hls自动尝试恢复
+				//播放中断流会触发 NETWORK_ERROR "levelLoadError"，并且不断重试
+			}
 		};
 
 		H5Video.prototype.setup = function setup() {
 			var events = ['abort', 'canplay', 'canplaythrough', 'durationchange', 'emptied', 'ended', 'error', 'loadedmetadata', 'loadeddata', 'loadstart', 'pause', 'play', 'playing', 'timeline', 'ratechange', 'seeked', 'seeking', 'stalled', 'suspend', 'timeupdate', 'volumechange', 'waiting'];
+			this.playState = States.PlayStates.IDLE;
+			this.seekState = States.SeekStates.IDLE;
+			this.metaDataLoaded = false;
 			this.__timebase = +new Date();
 			this.on(_message.MSG.MetaLoaded, this.notify);
 			this.on(_message.MSG.Loaded, this.notify);
 			this.on(_message.MSG.Progress, this.notify);
 			this.on(_message.MSG.Play, this.notify);
+			this.on(_message.MSG.Playing, this.notify);
 			this.on(_message.MSG.Pause, this.notify);
 			this.on(_message.MSG.Error, this.notify);
 			this.on(_message.MSG.TimeUpdate, this.notify);
@@ -1762,20 +1837,36 @@ return /******/ (function(modules) { // webpackBootstrap
 			switch (e.type) {
 				case _message.MSG.MetaLoaded:
 					this.__timebase = +new Date() - msg.ts;
+					this.metaDataLoaded = true;
 					break;
 				case _message.MSG.Error:
 					var Props = { 1: 'MEDIA_ERR_ABORTED', 2: 'MEDIA_ERR_DECODE', 3: 'MEDIA_ERR_NETWORK', 4: 'MEDIA_ERR_SRC_NOT_SUPPORTED' };
 					msg.detail = this.el && this.el.error || { code: e.code };
 					msg.detail.reason = Props[msg.detail.code];
+					//alert('Error'+msg.detail.code); // 移动端断流后不触发error
 					break;
 				case _message.MSG.Ended:
 					this.pause(); // IE9 不会自动改变播放状态，导致伪全屏的时候出现黑屏
+					this.playState = States.PlayStates.STOP;
 					break;
 				case 'durationchange':
 					if (this.videoHeight() != 0) msg.type = _message.MSG.Resize;
 					break;
+				case _message.MSG.Playing:
+					this.playState = e.type.toUpperCase();
+					break;
+				case _message.MSG.Pause:
+					this.playState = States.PlayStates.PAUSED;
+					break;
+				case _message.MSG.Seeking:
+				case _message.MSG.Seeked:
+					this.seekState = e.type.toUpperCase();
+					break;
 			}
-
+			if (e.type != 'timeupdate') {
+				//util.console.log('H5Video notify',e.type, this.playState, this.seekState);
+				//lt(e.type);
+			}
 			this.pub(msg);
 		};
 
@@ -1797,6 +1888,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		H5Video.prototype.play = function play() {
 			this.el.play();
+		};
+
+		H5Video.prototype.togglePlay = function togglePlay() {
+			util.console.log(this);
+			var isM3u8 = this.options.src.indexOf('.m3u8') > -1;
+			if (this.options.live && isM3u8 && this.playState == States.PlayStates.IDLE && !this.metaDataLoaded) {
+				this.player.load();
+			} else {
+				if (this.paused()) {
+					this.play();
+				} else {
+					this.pause();
+				}
+			}
 		};
 
 		H5Video.prototype.pause = function pause() {
@@ -1870,7 +1975,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports["default"] = H5Video;
 
 /***/ },
-/* 12 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2032,6 +2137,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
+/* 12 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	exports.__esModule = true;
+	var PlayStates = exports.PlayStates = {
+	    IDLE: 'IDLE', //从未开始播放的初始状态，播放后不会回到这个状态
+	    PLAYING: 'PLAYING',
+	    PAUSED: 'PAUSED',
+	    STOP: 'STOP'
+	};
+
+	var SeekStates = exports.SeekStates = {
+	    IDLE: 'IDLE', //从未seek时的初始状态，seek后不可逆
+	    SEEKING: 'SEEKING',
+	    SEEKED: 'SEEKED'
+	};
+
+	// default||'' 显示默认控件，none 不显示控件，system 显示系统控件
+	var ControlsStates = exports.ControlsStates = {
+	    'DEFAULT': 'default', //显示默认控件,可以样式定制
+	    'NONE': 'none', // 隐藏控件，pc端除外
+	    'SYSTEM': '' //显示系统控件，
+	};
+
+/***/ },
 /* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -2039,7 +2171,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(12);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
@@ -2052,6 +2184,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _util = __webpack_require__(3);
 
 	var util = _interopRequireWildcard(_util);
+
+	var _States = __webpack_require__(12);
+
+	var States = _interopRequireWildcard(_States);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
 
@@ -2116,6 +2252,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		FlashVideo.prototype.setup = function setup() {
 			this.on('error', this.notify);
+			this.playState = States.PlayStates.IDLE;
+			this.seekState = States.SeekStates.IDLE;
+			this.metaDataLoaded = false;
 		};
 
 		FlashVideo.prototype.doPolling = function doPolling() {
@@ -2185,17 +2324,18 @@ return /******/ (function(modules) { // webpackBootstrap
 					this.pub({ type: e.type, src: this, ts: e.ts, detail: util.extend({ debug: true }, info) });
 				}
 
-				if (this.__m3u8 && !this.__metaloaded && eventName == 'mediaTime' && info.videoWidth != 0) {
-					// 修正flash m3u8的metaData时机
-					e.type = 'metaData';
-					this.__metaloaded = true;
-				}
+				//if (this.__m3u8 && !this.__metaloaded && eventName == 'mediaTime' && info.videoWidth != 0) {
+				//	// 修正flash m3u8的metaData时机
+				//	e.type = 'metaData';
+				//	this.__metaloaded = true;
+				//}
 
 				switch (e.type) {
 					case 'ready':
 						this.el = getFlashMovieObject(this.__id);
 						this.setup();
-						// this.el.setAutoPlay();
+						//util.console.log('autoplay', this.options.autoplay? true : false);
+						this.el.setAutoPlay(this.options.autoplay ? true : false);
 						this.__timebase = new Date() - info.time;
 						this.load(this.options.src);
 						return;
@@ -2210,14 +2350,14 @@ return /******/ (function(modules) { // webpackBootstrap
 						this.__m3u8 = info.type === util.VideoType.M3U8;
 						this.__rtmp = info.type === util.VideoType.RTMP;
 						this.__type = info.type;
-						if (this.__m3u8) {
-							this.volume(0);
-							this.__metaloaded = this.__videoWidth != 0;
-							if (!this.__metaloaded) return; // m3u8 没有播放的话是拿不到视频宽高的
-						}
-						!this.options.autoplay && this.pause();
+						//if (this.__m3u8) {
+						//	this.volume(0);
+						//	this.__metaloaded = (this.__videoWidth != 0);
+						//	if (!this.__metaloaded) return; // m3u8 没有播放的话是拿不到视频宽高的
+						//}
+						//!this.options.autoplay && this.pause();//这一步已经在flash中实现，只需要初始化的时候给flash传递 autoplay参数
 						this.__metaloaded = true;
-
+						this.metaDataLoaded = true;
 						this.doPolling();
 
 						var self = this;
@@ -2226,39 +2366,51 @@ return /******/ (function(modules) { // webpackBootstrap
 							self.owner.removeChild(self.cover); // faded out?
 							self.cover = null;
 						}, 500);
+
 						break;
 
 					case 'playState':
-						if (info.playState == State.Playing) {
+						this.playState = info.playState;
+						if (info.playState == States.PlayStates.PLAYING) {
 							this.__playing = true;
 							this.__stopped = false;
 							e.type = _message.MSG.Play;
-						} else if (info.playState == State.Paused) {
+						} else if (info.playState == States.PlayStates.PAUSED) {
 							this.__playing = false;
 							this.__stopped = false;
 							e.type = _message.MSG.Pause;
-						} else if (info.playState == State.Stop) {
+						} else if (info.playState == States.PlayStates.STOP) {
 							this.__playing = false;
 							this.__stopped = true;
 							e.type = _message.MSG.Ended;
 							this.__prevPlayState = null;
-						} else {
-							return;
+							if (this.options.live) {
+								//直播断流或者正常结束，要把状态重置，便于判断是否需要重连，点播为了重播则不需要
+								this.metaDataLoaded = false;
+							}
+						} else if (info.playState == States.PlayStates.IDLE) {
+							//flashls 在断流时会进入idle状态
+							this.__playing = false;
+							this.__stopped = true;
+							e.type = _message.MSG.Ended;
+							//return;
 						}
 						break;
 					case 'seekState':
+						this.seekState = info.seekState;
 						if (!this.__metaloaded) return;
 
-						if (info.seekState == State.Seeking) {
+						if (info.seekState == States.SeekStates.SEEKING) {
 							e.type = _message.MSG.Seeking;
-						} else if (info.seekState == State.Seeked) {
+						} else if (info.seekState == States.SeekStates.SEEKED) {
 							if (!this.__m3u8 // m3u8倒没有这个问题
-							&& info.playState == State.Paused || info.playState == State.Stop // 播放结束后seek状态不变更，所以强制play以恢复正常状态
+							&& !this.options.live //点播
+							//&& info.playState == States.PlayStates.PAUSED
+							&& info.playState == States.PlayStates.STOP // 点播播放结束后且seek 会自动播放，但是播放状态不变更，所以强制play以恢复正常状态, 另外seek也会触发 onmetadata
 							) {
 									this.play();
 									this.__prevPlayState = info.playState;
 								}
-
 							e.type = _message.MSG.Seeked;
 						} else {
 							return;
@@ -2267,21 +2419,24 @@ return /******/ (function(modules) { // webpackBootstrap
 					case 'netStatus':
 						if (!this.options.live) {
 							if (info.code == 'NetStream.Buffer.Full') {
-								if (this.__prevPlayState == State.Paused || this.__prevPlayState == State.Stop) {
-									this.pause();
+								if (this.__prevPlayState == tates.PlayStates.PAUSED || this.__prevPlayState == States.PlayStates.STOP) {
+									//this.pause();
 								}
 								this.__prevPlayState = null;
 								e.type = _message.MSG.Seeked;
 							} else if (info.code == 'NetStream.Seek.Complete') {
 								// 播放到结尾再点播放会自动停止,所以force play again
-								this.play();
+								//this.play();
 								break;
 							}
 						}
-						// todo empty
+
 						if (info.code == 'NetConnection.Connect.Closed') {
-							e.type = 'error';
-							info = { code: 1001, reason: info.code };
+							//e.type = 'error';
+							//info = {code: 1001, reason: info.code};
+						}
+						if (info.code == 'NetStream.Play.Stop') {//播放结束, flash从server获取到结束标记。
+
 						}
 						break;
 					case 'mediaTime':
@@ -2295,19 +2450,25 @@ return /******/ (function(modules) { // webpackBootstrap
 							this.currentTime(info.details);
 							return false; // adobe's bug, ignore
 						}
-
+						if (info.code == "NetStream.Play.StreamNotFound") {}
 						var code = isNaN(parseInt(info.code)) ? 1002 : info.code;
 						var reason = isNaN(parseInt(info.code)) ? info.code : info.msg;
-						var realCode = reason.match(/#(\d+)/); // example: Cannot load M3U8: crossdomain access denied:Error #2048
+						var realCode = reason.match(/#(\d+)/); // example: Cannot load M3U8: crossdomain access denied:Error #2048  Cannot load M3U8: Error #2032
 						if (realCode && realCode[1]) code = realCode[1];
 						info = { code: code, reason: reason || '' };
+						this.metaDataLoaded = false;
 						break;
 				}
 
 				var keepPrivate = eventName == 'printLog' || eventName == 'canPlay';
+
 				!keepPrivate && this.pub({ type: e.type, src: this, ts: e.ts, detail: info });
 			} catch (err) {
-				console.error(eventName + ' ' + e.type, err);
+				//console.error(eventName + ' ' + e.type, err);
+			}
+
+			if (eventName != 'mediaTime') {
+				//util.console.log('Flash notify', eventName , info , this.playState, this.seekState);
 			}
 		};
 
@@ -2334,8 +2495,26 @@ return /******/ (function(modules) { // webpackBootstrap
 		};
 
 		FlashVideo.prototype.play = function play() {
-			if (this.__stopped) this.currentTime(0);
+			//if (this.__stopped) this.currentTime(0);
 			this.el.playerResume();
+		};
+
+		FlashVideo.prototype.togglePlay = function togglePlay() {
+			//util.console.log('togglePlay', this);
+			if (!this.metaDataLoaded) {
+				this.player.load();
+			} else {
+				if (this.playState == States.PlayStates.PAUSED) {
+					this.el.playerResume();
+				} else if (this.playState == States.PlayStates.PLAYING) {
+					this.el.playerPause();
+				} else if (this.playState == States.PlayStates.STOP) {
+					this.currentTime(0); // 点播播放结束后处于STOP状态 seek触发seeked事件，在seekState特殊处理了这种情况
+					this.el.playerResume();
+				} else {
+					this.el.playerPlay();
+				}
+			}
 		};
 
 		FlashVideo.prototype.pause = function pause() {
@@ -2387,11 +2566,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		FlashVideo.prototype.load = function load(src, type) {
 			this.pub({ type: _message.MSG.Load, src: this, ts: new Date() - this.__timebase, detail: { src: src, type: type } });
-			this.el && this.el.playerLoad(src);
+			this.el && this.el.playerLoad(src); // firefox flash启动时机不准确，会报错
 		};
 
 		FlashVideo.prototype.playing = function playing() {
-			return this.el && this.el.getState && this.el.getState().playState === State.Playing;
+			return this.el && this.el.getState && this.el.getState().playState === States.PlayStates.PLAYING;
 		};
 
 		FlashVideo.prototype.type = function type() {
@@ -2441,7 +2620,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(12);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
@@ -2523,17 +2702,17 @@ return /******/ (function(modules) { // webpackBootstrap
 			this.timeline = new _Timeline2["default"](this.player);
 			this.timeline.render(this.el);
 
-			if (!B.IS_X5TBS) {
-				this.fullscreen = new _FullscreenToggle2["default"](this.player);
-				this.fullscreen.render(this.el);
-			}
+			//if (!B.IS_X5TBS) {
+			this.fullscreen = new _FullscreenToggle2["default"](this.player);
+			this.fullscreen.render(this.el);
+			//}
 
 			if (!B.IS_MOBILE) {
 				this.volume = new _Volume2["default"](this.player);
 				this.volume.render(this.el);
 			}
 
-			if (this.options.videoSource.definitions.length > 1 && !B.IS_MOBILE) {
+			if (this.options.videoSource && this.options.videoSource.definitions.length > 1 && !B.IS_MOBILE) {
 				this.claritySwitcher = new _ClaritySwitcher2["default"](this.player);
 				this.claritySwitcher.render(this.el);
 			}
@@ -2558,6 +2737,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		Panel.prototype.handleMsg = function handleMsg(msg) {
 			switch (msg.type) {
 				case _message.MSG.MetaLoaded:
+					//util.console.log('panel MetaLoaded');
 					this.timeline.percent(this.player.percent());
 					this.timeline.buffered(this.player.buffered());
 					this.player.volume(typeof this.options.volume === 'undefined' ? 0.5 : this.options.volume);
@@ -2567,6 +2747,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					if (!this.timeline.scrubbing) this.timeline.percent(this.player.percent());
 					break;
 				case _message.MSG.Pause:
+					//util.console.log('panel Pause');
 					this.show();
 					break;
 				case _message.MSG.Play:
@@ -2587,27 +2768,35 @@ return /******/ (function(modules) { // webpackBootstrap
 		};
 
 		Panel.prototype.toggle = function toggle() {
-			if (this.el.style.display === 'block') this.hide();else this.show();
+			if (dom.hasClass(this.el, 'show')) this.hide();
+			//if (this.el.style.display === 'block') this.hide();
+			else this.show();
 		};
 
 		Panel.prototype.show = function show() {
-			if (this.el.style.display === 'block') return;
-
-			dom.removeClass(this.el, 'fadeOut');
-			dom.addClass(this.el, 'fadeIn');
-			var self = this;
-			setTimeout(function () {
-				self.el.style.display = "block";
-			}, 500);
+			//if (this.el.style.display === 'block') return;
+			if (dom.hasClass(this.el, 'hide')) {
+				dom.removeClass(this.el, 'hide');
+				dom.addClass(this.el, 'show');
+			}
+			//var self = this;
+			//setTimeout(function() {
+			//	self.el.style.display = "block";
+			//}, 500);
+			//util.console.log('show()');
 		};
 
 		Panel.prototype.hide = function hide() {
-			dom.removeClass(this.el, 'fadeIn');
-			dom.addClass(this.el, 'fadeOut');
-			var self = this;
-			setTimeout(function () {
-				self.el.style.display = "none";
-			}, 500);
+			//if(dom.hasClass(this.el,'show')){
+			dom.removeClass(this.el, 'show');
+			dom.addClass(this.el, 'hide');
+			//}
+
+			//var self = this;
+			//setTimeout(function() {
+			//	self.el.style.display = "none";
+			//}, 500);
+			//util.console.log('hide()');
 		};
 
 		return Panel;
@@ -2623,7 +2812,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(12);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
@@ -2638,6 +2827,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _util = __webpack_require__(3);
 
 	var util = _interopRequireWildcard(_util);
+
+	var _States = __webpack_require__(12);
+
+	var States = _interopRequireWildcard(_States);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
 
@@ -2660,7 +2853,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		PlayToggle.prototype.render = function render(owner) {
 			this.createEl('div', { 'class': 'vcp-playtoggle' });
-
 			return _Component.prototype.render.call(this, owner);
 		};
 
@@ -2671,8 +2863,15 @@ return /******/ (function(modules) { // webpackBootstrap
 		};
 
 		PlayToggle.prototype.onClick = function onClick() {
-			var video = this.player.video;
-			if (video.paused()) video.play();else video.pause();
+			this.player.togglePlay();
+
+			/*var video = this.player.video;
+	  util.console.log('onclick', video.playState);
+	  if( video.playState == States.PlayStates.PLAYING){
+	  	this.player.pause();
+	  } else {
+	  	this.player.play();
+	  }*/
 		};
 
 		PlayToggle.prototype.handleMsg = function handleMsg(msg) {
@@ -2692,7 +2891,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(12);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
@@ -2759,7 +2958,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.__esModule = true;
 	exports.MSG = undefined;
 
-	var _Component2 = __webpack_require__(12);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
@@ -2885,7 +3084,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _Slider2 = _interopRequireDefault(_Slider);
 
-	var _Component2 = __webpack_require__(12);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
@@ -2995,7 +3194,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _Slider2 = _interopRequireDefault(_Slider);
 
-	var _Component2 = __webpack_require__(12);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
@@ -3063,7 +3262,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _Slider2 = _interopRequireDefault(_Slider);
 
-	var _Component2 = __webpack_require__(12);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
@@ -3179,7 +3378,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(12);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
@@ -3293,7 +3492,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(12);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
@@ -3335,8 +3534,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			if (B.IS_MOBILE && !video.paused()) {
 				return this.player.panel && this.player.panel.toggle();
 			}
-
-			if (video.paused()) video.play();else video.pause();
+			this.player.togglePlay();
 		};
 
 		BigPlay.prototype.handleMsg = function handleMsg(msg) {
@@ -3358,7 +3556,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-	var _Component2 = __webpack_require__(12);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
@@ -3407,12 +3605,26 @@ return /******/ (function(modules) { // webpackBootstrap
 			var poster = this.poster;
 			if (poster) {
 				this.pic = dom.createEl('img', { 'class': 'vcp-poster-pic' });
-				var stretch = this.poster.style == 'stretch';
-				if (stretch) {
-					this.pic.style.cssText = 'width: 100%; height: 100%;';
-				} else {
-					this.pic.style.cssText = '';
+				//let stretch = this.poster.style == 'stretch';
+				var posterStyle = this.poster.style;
+
+				switch (posterStyle) {
+					case 'stretch':
+						this.pic.style.cssText = 'width: 100%; height: 100%;';
+						break;
+					case 'cover':
+						this.pic.style.cssText = 'width: 100%; left: 50%; top: 50%;  transform: translateX(-50%) translateY(-50%);';
+						break;
+					default:
+						this.pic.style.cssText += 'left: 50%; top: 50%;  transform: translateX(-50%) translateY(-50%);';
 				}
+
+				/*if (stretch) {
+	   	this.pic.style.cssText = 'width: 100%; height: 100%;';
+	   } else {
+	   	this.pic.style.cssText = '';
+	   }*/
+
 				this.el.appendChild(this.pic);
 
 				// this.setPoster(this.poster.start);
@@ -3454,7 +3666,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					break;
 				case _message.MSG.Ended:
 					if (!this.__loaded) break;
-					this.setPoster(this.poster.end);
+					//this.setPoster(this.poster.end);
 					break;
 			}
 		};
@@ -3473,14 +3685,14 @@ return /******/ (function(modules) { // webpackBootstrap
 			img.onload = function () {
 				self.pic.src = img.src;
 				self.show();
-
-				var stretch = self.poster.style == 'stretch';
-				if (stretch) return;
-
-				var left = '-' + img.width / 2 + 'px',
-				    top = '-' + img.height / 2 + 'px';
-
-				self.pic.style.cssText = 'left: 50%; top: 50%; margin-left: ' + left + '; margin-top: ' + top + ';';
+				//采用translate 居中不需要计算
+				/*
+	   let stretch = self.poster.style == 'stretch';
+	   if (stretch) return;
+	   		var left = '-' + (img.width / 2) + 'px',
+	   	top = '-' + (img.height / 2) + 'px';
+	   		self.pic.style.cssText = `left: 50%; top: 50%; margin-left: ${left}; margin-top: ${top};`;
+	   */
 			};
 
 			img.src = src;
@@ -3516,7 +3728,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(12);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
@@ -3704,7 +3916,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.__esModule = true;
 
-	var _Component2 = __webpack_require__(12);
+	var _Component2 = __webpack_require__(11);
 
 	var _Component3 = _interopRequireDefault(_Component2);
 
@@ -3730,14 +3942,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var ErrorCat = { 'VideoSourceError': [1002, 4, 2032], 'NetworkError': [1001, 2048, 1, 3], 'VideoDecodeError': [2], 'ArgumentError': [] };
+	var ErrorCat = { 'VideoSourceError': [1002, 4, 2032], 'EnvError': [5], 'NetworkError': [1001, 1, 3], 'VideoDecodeError': [2], 'ArgumentError': [], 'CrossDomainError': [2048] };
 	var ErrorMap = {
-		VideoSourceError: '视频源错误，请检查播放链接是否有效',
+		EnvError: '当前系统环境不支持播放该视频格式',
+		VideoSourceError: '获取视频失败，请检查播放链接是否有效',
 		NetworkError: '网络错误，请检查网络配置或者播放链接是否正确',
 		VideoDecodeError: '视频解码错误',
 		ArgumentError: '使用参数有误，请检查播放器调用代码',
 		UrlEmpty: '请填写视频播放地址',
-		FileProtocol: '请勿在file协议下使用播放器，可能会导致视频无法播放'
+		FileProtocol: '请勿在file协议下使用播放器，可能会导致视频无法播放',
+		CrossDomainError: '无法加载视频文件，跨域访问被拒绝'
 	};
 
 	var ErrorTips = function (_Component) {
@@ -3791,6 +4005,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		ErrorTips.prototype.hide = function hide() {
 			this.el.style.display = "none";
+		};
+
+		ErrorTips.prototype.clear = function clear() {
+			this.el.innerHTML = '';
+			this.hide();
 		};
 
 		return ErrorTips;

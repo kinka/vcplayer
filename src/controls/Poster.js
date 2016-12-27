@@ -22,12 +22,26 @@ export default class Poster extends Component {
 		var poster = this.poster;
 		if (poster) {
 			this.pic = dom.createEl('img', {'class': 'vcp-poster-pic'});
-			let stretch = this.poster.style == 'stretch';
-			if (stretch) {
+			//let stretch = this.poster.style == 'stretch';
+			let posterStyle = this.poster.style;
+
+			switch (posterStyle){
+				case 'stretch':
+					this.pic.style.cssText = 'width: 100%; height: 100%;';
+					break;
+				case 'cover':
+					this.pic.style.cssText = 'width: 100%; left: 50%; top: 50%;  transform: translateX(-50%) translateY(-50%);';
+					break;
+				default:
+					this.pic.style.cssText += 'left: 50%; top: 50%;  transform: translateX(-50%) translateY(-50%);';
+			}
+
+			/*if (stretch) {
 				this.pic.style.cssText = 'width: 100%; height: 100%;';
 			} else {
 				this.pic.style.cssText = '';
-			}
+			}*/
+
 			this.el.appendChild(this.pic);
 
 			// this.setPoster(this.poster.start);
@@ -69,7 +83,7 @@ export default class Poster extends Component {
 				break;
 			case PlayerMsg.Ended:
 				if (!this.__loaded) break;
-				this.setPoster(this.poster.end);
+				//this.setPoster(this.poster.end);
 				break;
 		}
 	}
@@ -87,7 +101,8 @@ export default class Poster extends Component {
 		img.onload = function() {
 			self.pic.src = img.src;
 			self.show();
-
+			//采用translate 居中不需要计算
+			/*
 			let stretch = self.poster.style == 'stretch';
 			if (stretch) return;
 
@@ -95,6 +110,7 @@ export default class Poster extends Component {
 				top = '-' + (img.height / 2) + 'px';
 
 			self.pic.style.cssText = `left: 50%; top: 50%; margin-left: ${left}; margin-top: ${top};`;
+			*/
 		};
 
 		img.src = src;

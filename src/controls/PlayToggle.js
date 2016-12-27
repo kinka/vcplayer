@@ -2,6 +2,7 @@ import Component from '../Component'
 import * as dom from '../dom'
 import * as message from '../message'
 import * as util from '../util'
+import * as States from '../constant/States.js'
 
 export default class PlayToggle extends Component {
 	constructor(player) {
@@ -10,7 +11,6 @@ export default class PlayToggle extends Component {
 
 	render(owner) {
 		this.createEl('div', {'class': 'vcp-playtoggle'});
-
 		return super.render(owner);
 	}
 	setup() {
@@ -19,11 +19,16 @@ export default class PlayToggle extends Component {
 		// this.sub('pause', this.player.video, util.bind(this, this.handleMsg));
 	}
 	onClick() {
-		var video = this.player.video;
-		if (video.paused())
-			video.play();
-		else
-			video.pause();
+		this.player.togglePlay();
+
+		/*var video = this.player.video;
+		util.console.log('onclick', video.playState);
+		if( video.playState == States.PlayStates.PLAYING){
+			this.player.pause();
+		} else {
+			this.player.play();
+		}*/
+
 	}
 	handleMsg(msg) {
 		console.log('@' + this.name, msg);

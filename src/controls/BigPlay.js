@@ -19,11 +19,7 @@ export default class BigPlay extends Component {
 		if (B.IS_MOBILE && !video.paused()) {
 			return this.player.panel && this.player.panel.toggle();
 		}
-
-		if (video.paused())
-			video.play();
-		else
-			video.pause();
+		this.player.togglePlay();
 	}
 	handleMsg(msg) {
 		console.log('@' + this.name, msg);

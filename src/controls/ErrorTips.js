@@ -3,20 +3,22 @@ import * as dom from '../dom'
 import * as message from '../message'
 import * as util from '../util'
 
-let ErrorCat = {'VideoSourceError': [1002, 4, 2032], 'NetworkError': [1001,2048, 1, 3], 'VideoDecodeError': [2], 'ArgumentError': []};
+let ErrorCat = {'VideoSourceError': [1002, 4, 2032], 'EnvError':[5], 'NetworkError': [1001, 1, 3], 'VideoDecodeError': [2], 'ArgumentError': [], 'CrossDomainError': [2048]};
 let ErrorMap = {
-	VideoSourceError: '视频源错误，请检查播放链接是否有效',
+	EnvError: '当前系统环境不支持播放该视频格式',
+	VideoSourceError: '获取视频失败，请检查播放链接是否有效',
 	NetworkError: '网络错误，请检查网络配置或者播放链接是否正确',
 	VideoDecodeError: '视频解码错误',
 	ArgumentError: '使用参数有误，请检查播放器调用代码',
 	UrlEmpty: '请填写视频播放地址',
-	FileProtocol: '请勿在file协议下使用播放器，可能会导致视频无法播放'
+	FileProtocol: '请勿在file协议下使用播放器，可能会导致视频无法播放',
+	CrossDomainError: '无法加载视频文件，跨域访问被拒绝'
 };
 
 export default class ErrorTips extends Component {
 	constructor(player) {
 		super(player, 'ErrorTips');
-		this.customTips = util.extend({}, ErrorMap, this.options.wording)
+		this.customTips = util.extend({}, ErrorMap, this.options.wording);
 		for (let e in ErrorCat) {
 			for (let i=0; i<ErrorCat[e].length; i++) {
 				let code = ErrorCat[e][i]
@@ -57,5 +59,9 @@ export default class ErrorTips extends Component {
 	}
 	hide() {
 		this.el.style.display = "none";
+	}
+	clear(){
+		this.el.innerHTML = '';
+		this.hide();
 	}
 }

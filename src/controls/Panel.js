@@ -34,10 +34,10 @@ export default class Panel extends Component {
 		this.timeline = new Timeline(this.player);
 		this.timeline.render(this.el);
 
-		if (!B.IS_X5TBS) {
+		//if (!B.IS_X5TBS) {
 			this.fullscreen = new FullscreenToggle(this.player);
 			this.fullscreen.render(this.el);	
-		}
+		//}
 
 		if (!B.IS_MOBILE) {
 			this.volume = new Volume(this.player);
@@ -66,6 +66,7 @@ export default class Panel extends Component {
 	handleMsg(msg) {
 		switch (msg.type) {
 			case PlayerMSG.MetaLoaded:
+				//util.console.log('panel MetaLoaded');
 				this.timeline.percent(this.player.percent());
 				this.timeline.buffered(this.player.buffered());
 				this.player.volume(typeof this.options.volume === 'undefined' ? 0.5 : this.options.volume);
@@ -76,6 +77,7 @@ export default class Panel extends Component {
 					this.timeline.percent(this.player.percent());
 				break;
 			case PlayerMSG.Pause:
+				//util.console.log('panel Pause');
 				this.show();
 				break;
 			case PlayerMSG.Play:
@@ -95,25 +97,32 @@ export default class Panel extends Component {
 		}
 	}
 	toggle() {
-		if (this.el.style.display === 'block') this.hide();
+		if(dom.hasClass(this.el,'show')) this.hide();
+		//if (this.el.style.display === 'block') this.hide();
 		else this.show();
 	}
 	show() {
-		if (this.el.style.display === 'block') return;
-		
-		dom.removeClass(this.el, 'fadeOut');
-		dom.addClass(this.el, 'fadeIn');
-		var self = this;
-		setTimeout(function() {
-			self.el.style.display = "block";
-		}, 500);
+		//if (this.el.style.display === 'block') return;
+		if(dom.hasClass(this.el,'hide')){
+			dom.removeClass(this.el, 'hide');
+			dom.addClass(this.el, 'show');
+		}
+		//var self = this;
+		//setTimeout(function() {
+		//	self.el.style.display = "block";
+		//}, 500);
+		//util.console.log('show()');
 	}
 	hide() {
-		dom.removeClass(this.el, 'fadeIn');
-		dom.addClass(this.el, 'fadeOut');
-		var self = this;
-		setTimeout(function() {
-			self.el.style.display = "none";
-		}, 500);
+		//if(dom.hasClass(this.el,'show')){
+			dom.removeClass(this.el, 'show');
+			dom.addClass(this.el, 'hide');
+		//}
+
+		//var self = this;
+		//setTimeout(function() {
+		//	self.el.style.display = "none";
+		//}, 500);
+		//util.console.log('hide()');
 	}
 }

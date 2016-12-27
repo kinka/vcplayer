@@ -150,3 +150,13 @@ export function loadScript(src, callback) {
 	tag.src = src;
 	document.getElementsByTagName("head")[0].appendChild(tag);
 }
+
+export function getViewportSize(){
+	var doc = document;
+	var docE = doc.documentElement;
+	var body = doc.body;
+	return {
+		'width': (docE && docE.clientWidth) || (body && body.offsetWidth) || window.innerWidth || 0,
+		'height': (docE && docE.clientHeight) || (body && body.offsetHeight) || window.innerHeight || 0
+	};
+}
