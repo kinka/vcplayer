@@ -159,6 +159,11 @@ export class Player {
 	}
 	setup() {
 		this.__handleEvent = util.bind(this, this.handleEvent);
+		//加载mta上报
+		dom.loadScript('http://pingjs.qq.com/h5/stats.js?v2.0.2',null,{
+			'name': 'MTAH5',
+			'sid' : '500376528'
+		});
 	}
 	destroy() {
 		this.video && this.video.destroy();

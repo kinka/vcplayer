@@ -27,13 +27,16 @@ export default class Poster extends Component {
 
 			switch (posterStyle){
 				case 'stretch':
-					this.pic.style.cssText = 'width: 100%; height: 100%;';
+					dom.addClass(this.pic,'stretch');
+					//this.pic.style.cssText = 'width: 100%; height: 100%;';
 					break;
 				case 'cover':
-					this.pic.style.cssText = 'width: 100%; left: 50%; top: 50%;  transform: translateX(-50%) translateY(-50%);';
+					//this.pic.style.cssText = 'width: 100%; left: 50%; top: 50%;  transform: translateX(-50%) translateY(-50%);';
+					dom.addClass(this.pic,'cover');
 					break;
 				default:
-					this.pic.style.cssText += 'left: 50%; top: 50%;  transform: translateX(-50%) translateY(-50%);';
+					dom.addClass(this.pic,'default');
+					//this.pic.style.cssText += 'left: 50%; top: 50%;  transform: translateX(-50%) translateY(-50%);';
 			}
 
 			/*if (stretch) {

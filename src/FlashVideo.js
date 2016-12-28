@@ -3,7 +3,7 @@ import {MSG as PlayerMSG} from './message'
 import * as dom from './dom'
 import * as util from './util'
 import * as States from './constant/States.js'
-
+import * as browser from './browser'
 var State = {Playing: 'PLAYING', Paused: 'PAUSED', Stop: 'STOP', Seeking: 'SEEKING', Seeked: 'SEEKED'};
 /**
  *
@@ -151,9 +151,19 @@ export default class FlashVideo extends Component {
 					this.el = getFlashMovieObject(this.__id);
 					this.setup();
 					//util.console.log('autoplay', this.options.autoplay? true : false);
-					this.el.setAutoPlay(this.options.autoplay? true : false);
-					this.__timebase = new Date() - info.time;
-					this.load(this.options.src);
+					if(browser.IS_FIREFOX){
+						var self = this;
+						setTimeout(function () {
+							//util.console.log('autoplay', self.el.setAutoPlay);
+							self.el.setAutoPlay(self.options.autoplay? true : false);
+							self.__timebase = new Date() - info.time;
+							self.load(self.options.src);
+						}, 0);
+					}else{
+						this.el.setAutoPlay(this.options.autoplay? true : false);
+						this.__timebase = new Date() - info.time;
+						this.load(this.options.src);
+					}
 					return;
 					break;
 				case 'metaData':

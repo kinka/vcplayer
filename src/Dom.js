@@ -131,7 +131,7 @@ export function getPointerPosition(el, event, pos) {
 	return position;
 }
 
-export function loadScript(src, callback) {
+export function loadScript(src, callback, attrs) {
 	var tag = document.createElement("script");
 
 	tag.onload = tag.onreadystatechange = function() {
@@ -146,9 +146,19 @@ export function loadScript(src, callback) {
 			}
 		}
 	};
-
+	if(attrs){
+		for (let k in attrs) {
+			if (!attrs.hasOwnProperty(k)) continue;
+			var attr = attrs[k];
+			if (attr === null)
+				tag.removeAttribute(attr);
+			else
+				tag.setAttribute(k, attr);
+		}
+	}
 	tag.src = src;
 	document.getElementsByTagName("head")[0].appendChild(tag);
+	//document.getElementsByTagName("body")[0].appendChild(tag);
 }
 
 export function getViewportSize(){
