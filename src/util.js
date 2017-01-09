@@ -33,7 +33,7 @@ export function covertTime(s) {
 	var sec = s - hours * h - minutes * m;
 
 	hours = hours > 0 ? (hours + ':') : '';
-	minutes = minutes > 0 ? (minutes + ':') : (hours > 0 ? '00:' : '');
+	minutes = minutes > 0 ? (minutes + ':') : (parseInt(hours) > 0 ? '00:' : '');
 	sec = sec > 0 ? (sec + '') : '00';
 
 	hours = hours.length == 2 ? ('0' + hours) : hours;

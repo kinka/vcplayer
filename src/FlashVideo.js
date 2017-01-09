@@ -243,20 +243,28 @@ export default class FlashVideo extends Component {
 				case 'netStatus':
 					if (!this.options.live) {
 						if (info.code == 'NetStream.Buffer.Full') {
-							if (this.__prevPlayState == tates.PlayStates.PAUSED || this.__prevPlayState == States.PlayStates.STOP) {
+							if (this.__prevPlayState == States.PlayStates.PAUSED || this.__prevPlayState == States.PlayStates.STOP) {
 								//this.pause();
 							}
 							this.__prevPlayState = null;
 							e.type = PlayerMSG.Seeked;
 						} else if (info.code == 'NetStream.Seek.Complete') { // 播放到结尾再点播放会自动停止,所以force play again
 							//this.play();
-							break;
+							//break;
 						}
 					}
 
 					if (info.code == 'NetConnection.Connect.Closed') {
 						//e.type = 'error';
 						//info = {code: 1001, reason: info.code};
+						if(this.options.src.indexOf('rtmp://')>-1){ //rtmp 正常断流和拉流失败最终都会触发 NetConnection.Connect.Closed， 正常断流需要判断前一个状态是否是Playing, 这个判断已在flash播放器中实现
+							if(this.playState == States.PlayStates.STOP){
+								 //正常断流
+							}else{ // 拉流失败
+								e.type = 'error';
+								info = {code: 1002, reason: info.code};
+							}
+						}
 					}
 					if (info.code == 'NetStream.Play.Stop') {//播放结束, flash从server获取到结束标记。
 
@@ -289,7 +297,7 @@ export default class FlashVideo extends Component {
 
 			!keepPrivate && this.pub({type: e.type, src: this, ts: e.ts, detail: info});
 		} catch (err) {
-			//console.error(eventName + ' ' + e.type, err);
+			util.console.error(eventName + ' ' + e.type, err);
 		}
 
 		if(eventName != 'mediaTime'){

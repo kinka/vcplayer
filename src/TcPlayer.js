@@ -39,6 +39,8 @@ export class TcPlayer extends Player {
      *  width auto px %
      *  height auto px %
      *  wording 自定义文案
+     *  x5_type
+     *  x5_fullscreen
      */
     constructor(container, options) {
         //this.player = new Player(options);
@@ -60,7 +62,9 @@ export class TcPlayer extends Player {
             height: options.height ,
             listener: options.listener,
             wording: options.wording,
-            controls: options.controls
+            controls: options.controls,
+            x5_type: options.x5_type,
+            x5_fullscreen: options.x5_fullscreen
         };
         //tips.init(options.wording);
         super(_options);

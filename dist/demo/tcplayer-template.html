@@ -47,12 +47,14 @@
          */
         var options = {
             rtmp: rtmp ,
-            flv: flv || 'http://2157.liveplay.myqcloud.com/live/2157_358556a1088511e6b91fa4dcbef5e35a.flv',
-            m3u8: m3u8 || 'http://2157.liveplay.myqcloud.com/2157_358556a1088511e6b91fa4dcbef5e35a.m3u8',
+            flv: flv ,
+//            m3u8: m3u8 || 'http://2157.liveplay.myqcloud.com/2157_358556a1088511e6b91fa4dcbef5e35a.m3u8',
+//            m3u8: m3u8 || 'http://2527.vod.myqcloud.com/2527_b3907044441c11e6a46d294f954f93eb.f230.av.m3u8',
+            m3u8: m3u8 || 'http://200019131.vod.myqcloud.com/200019131_969d027e5ed711e6945343be21257ac1.f230.av.m3u8',
             mp4 : mp4 ,
-            coverpic: coverpic || 'http://vodplayerinfo-10005041.file.myqcloud.com/3035579109/vod_paster_pause/paster_pause1469013308.jpg',
+            coverpic: coverpic || {style:'cover', src:'//vodplayerinfo-10005041.file.myqcloud.com/3035579109/vod_paster_pause/paster_pause1469013308.jpg'},
             autoplay: autoplay ? true : false,
-            live: true,
+            live: false,
             width : width || '480',
             height : height || '320',
             wording: {
@@ -61,10 +63,13 @@
                 2032: '请求视频失败，请检查网络',
                 2048: '请求m3u8文件失败，可能是网络错误或者跨域问题'
             },
+            //controls: '', //default||'' 显示默认控件，none 不显示控件，system H5显示系统控件
+//            x5_type: 'h5',
+//            x5_fullscreen: true,
             listener: function (msg) {
                 // console.log('listener',msg);
-            },
-            controls: false
+            }
+
         };
         var player = new TcPlayer('video-container', options);
         window.qcplayer  = player;

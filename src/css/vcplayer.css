@@ -4,6 +4,10 @@
     font-family: Tahoma, '微软雅黑', \u5b8b\u4f53,Verdana,Arial,sans-serif;
     background-color: black;
 }
+.vcp-player video{
+    display: block;
+    overflow: hidden;
+}
 .vcp-fullscreen.vcp-player, .vcp-fullscreen video {
     width: 100%!important;
     height: 100%!important;

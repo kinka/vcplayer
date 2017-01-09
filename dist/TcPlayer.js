@@ -122,6 +122,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *  width auto px %
 	     *  height auto px %
 	     *  wording 自定义文案
+	     *  x5_type
+	     *  x5_fullscreen
 	     */
 	    function TcPlayer(container, options) {
 	        _classCallCheck(this, TcPlayer);
@@ -145,7 +147,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            height: options.height,
 	            listener: options.listener,
 	            wording: options.wording,
-	            controls: options.controls
+	            controls: options.controls,
+	            x5_type: options.x5_type,
+	            x5_fullscreen: options.x5_fullscreen
 	        };
 	        //tips.init(options.wording);
 
@@ -450,6 +454,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var IS_FILE_PROTOCOL = exports.IS_FILE_PROTOCOL = /file:/.test(location.protocol);
 
+	//check Flash enabled or not
+
 /***/ },
 /* 2 */
 /***/ function(module, exports) {
@@ -684,7 +690,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		var sec = s - hours * h - minutes * m;
 
 		hours = hours > 0 ? hours + ':' : '';
-		minutes = minutes > 0 ? minutes + ':' : hours > 0 ? '00:' : '';
+		minutes = minutes > 0 ? minutes + ':' : parseInt(hours) > 0 ? '00:' : '';
 		sec = sec > 0 ? sec + '' : '00';
 
 		hours = hours.length == 2 ? '0' + hours : hours;
@@ -1031,7 +1037,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * @param {options}
 	 * @param options.owner {String} container id
-	 * @param options.controls {Boolean} 是否显示原生控件。default||'' 显示默认控件，none 不显示控件，system 显示系统控件
+	 * @param options.controls {Boolean} 是否显示原生控件。
+	 * @param options.controls {String} 是否显示控件或者显示H5原生控件。default||'' 显示默认控件，none 不显示控件，system H5显示系统控件
 	 * @param options.volume {Number} 音量初始化，传0则静音
 	 * @param options.listener {Function}
 	 * @param options.poster {Object|String} src:图片地址，style：default 居中1:1显示 stretch 拉伸铺满，图片可能会变形 cover 等比横向铺满，图片某些部分可能无法显示在区域内
@@ -1080,17 +1087,24 @@ return /******/ (function(modules) { // webpackBootstrap
 				flash.render(this.el);
 				this.video = flash;
 			}
-			if (!this.video) return console.error('create video failed');
+			if (!this.video) return util.console.error('create video failed');
 
 			owner.appendChild(this.el);
 
-			if (!this.options.controls) {
-				this.poster = new _Poster2["default"](this);
-				this.poster.render(this.el);
+			this.poster = new _Poster2["default"](this);
+			this.poster.render(this.el);
 
-				this.bigplay = new _BigPlay2["default"](this);
-				this.bigplay.render(this.el);
+			this.bigplay = new _BigPlay2["default"](this);
+			this.bigplay.render(this.el);
 
+			var enableControls = void 0; //是否显示自定义控件
+			if (!this.options.controls || this.options.controls == 'default' || this.options.flash && this.options.controls == 'system') {
+				enableControls = true;
+			} else {
+				enableControls = false;
+			}
+			//if (!this.options.controls) {
+			if (enableControls) {
 				this.panel = new _Panel2["default"](this);
 				this.panel.render(this.el);
 			}
@@ -1103,24 +1117,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 			this.options.width = this.options.width || owner.offsetWidth;
 			this.options.height = this.options.height || owner.offsetHeight;
+			//util.console.log(this.options.width);
 			this.size(this.options.width, this.options.height);
 
 			this.setup();
-
-			if (browser.IS_MOBILE) {
-				if (this.options.autoplay || browser.IOS_VERSION != 10) {
-					//ios 10 非 autoplay 不调用loading.show()
-					this.loading.show();
-					if (this.options.autoplay) {
-						var self = this;
-						document.addEventListener("WeixinJSBridgeReady", function () {
-							self.play();
-						}, !1);
-					}
-				}
-			} else {
-				this.loading.show();
-			}
 		};
 
 		/**
@@ -1136,6 +1136,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			var percent = /^\d+\.?\d{0,2}%$/;
 			var dW = void 0,
 			    dH = void 0;
+			//util.console.log(mW, mH);
 			if (percent.test(mW) || percent.test(mH)) {
 				//百分数
 				dW = mW;
@@ -1167,7 +1168,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					dW = viewWH.width;
 				}
 			}
-
+			//util.console.log(dW,dH);
 			dW += percent.test(dW) ? '' : 'px';
 			dH += percent.test(dH) ? '' : 'px';
 			this.el.style.width = dW;
@@ -1180,10 +1181,28 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		Player.prototype.setup = function setup() {
 			this.__handleEvent = util.bind(this, this.handleEvent);
+
+			if (browser.IS_MOBILE) {
+				if (this.options.autoplay || browser.IOS_VERSION != 10) {
+					//ios 10 非 autoplay 不调用loading.show() , ios10 preload不起作用，导致初始化时MetaData不触发，需要手动调用play才开始加载视频
+					this.loading.show();
+					if (this.options.autoplay) {
+						var self = this;
+						document.addEventListener("WeixinJSBridgeReady", function () {
+							//微信的黑科技，目前ios9 ios10 Android的微信6.5.2均可自动播放
+							self.play();
+						});
+					}
+				}
+			} else {
+				this.loading.show();
+			}
+
 			//加载mta上报
-			dom.loadScript('http://pingjs.qq.com/h5/stats.js?v2.0.2', null, {
+			dom.loadScript('//pingjs.qq.com/h5/stats.js?v2.0.2', null, {
 				'name': 'MTAH5',
-				'sid': '500376528'
+				'sid': '500376528',
+				'cid': '500383222'
 			});
 		};
 
@@ -1286,6 +1305,9 @@ return /******/ (function(modules) { // webpackBootstrap
 					this.loading.hide();
 					this.errortips.show(msg.detail);
 					this.panel && this.panel.show();
+					try {
+						MtaH5.clickStat('error', { 'error': 'true' });
+					} catch (e) {}
 					break;
 			}
 
@@ -1386,7 +1408,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	// module
-	exports.push([module.id, ".vcp-player {\r\n    position: relative;\r\n    z-index: 0;\r\n    font-family: Tahoma, '\\5FAE\\8F6F\\96C5\\9ED1', \\u5b8b\\u4f53,Verdana,Arial,sans-serif;\r\n    background-color: black;\r\n}\r\n.vcp-fullscreen.vcp-player, .vcp-fullscreen video {\r\n    width: 100%!important;\r\n    height: 100%!important;\r\n}\r\n/* 伪全屏 */\r\nbody.vcp-full-window {\r\n    width: 100%!important;\r\n    height: 100%!important;\r\n    overflow-y: auto;\r\n}\r\n.vcp-full-window .vcp-player {\r\n    position: fixed;\r\n    left: 0;\r\n    top: 0;\r\n}\r\n\r\n/* chrome flash 成功加载到DOM之前会闪白屏，所以加个黑屏遮一遮 */\r\n.vcp-pre-flash {\r\n    z-index: 1000; background: black; width: 100%; height: 100%; position: absolute; top: 0; left: 0;\r\n}\r\n.vcp-controls-panel {\r\n    position: absolute;\r\n    bottom: 0;\r\n    width: 100%;\r\n    font-size: 16px;\r\n    height: 3em;\r\n    z-index: 1000;\r\n}\r\n.vcp-controls-panel.show{\r\n    -webkit-animation: fadeIn ease 0.8s;\r\n    animation: fadeIn ease 0.8s;\r\n    animation-fill-mode: forwards;\r\n    -webkit-animation-fill-mode: forwards;\r\n}\r\n.vcp-controls-panel.hide{\r\n    -webkit-animation: fadeOut ease 0.8s;\r\n    animation: fadeOut ease 0.8s;\r\n    animation-fill-mode: forwards;\r\n    -webkit-animation-fill-mode: forwards;\r\n}\r\n.vcp-panel-bg {\r\n    width: 100%;\r\n    height: 100%;\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n    background-color: rgb(36, 36, 36);\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n    z-index: 1000;\r\n}\r\n\r\n.vcp-playtoggle {\r\n    cursor: pointer;\r\n    position: relative;\r\n    z-index: 1001;\r\n    width: 3em;\r\n    height: 100%;\r\n    float: left;\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/play_btn.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/play_btn.svg), none;\r\n}\r\n.vcp-playtoggle:hover, .vcp-playtoggle:focus {\r\n    background-color: slategray;\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n}\r\n.touchable .vcp-playtoggle:hover {\r\n    background-color: transparent;\r\n    opacity: 1;\r\n}\r\n.vcp-playing .vcp-playtoggle {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/stop_btn.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/stop_btn.svg), none;\r\n}\r\n.vcp-bigplay {\r\n    width: 100%;\r\n    height: 80%; /*会遮住原生控制栏*/\r\n    position: absolute;\r\n    background-color: white\\0;\r\n    filter: alpha(opacity=0); /*奇怪的IE8/9鼠标事件穿透*/\r\n    opacity: 0;\r\n    z-index: 1000;\r\n    top: 0;\r\n    left: 0;\r\n}\r\n\r\n.vcp-slider {\r\n    position: relative;\r\n    z-index: 1001;\r\n    float: left;\r\n    background: rgb(196, 196, 196);\r\n    height: 10px;\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n    cursor: pointer;\r\n}\r\n.vcp-slider .vcp-slider-track {\r\n    width: 0;\r\n    height: 100%;\r\n    margin-top: 0;\r\n    opacity: 1;\r\n    filter: alpha(opacity=100);\r\n    background-color: dodgerblue; /*beautiful blue*/\r\n}\r\n.vcp-slider .vcp-slider-thumb {\r\n    cursor: pointer;\r\n    background-color: white;\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    border-radius: 1em!important;\r\n    height: 10px;\r\n    margin-left: -5px;\r\n    width: 10px;\r\n}\r\n\r\n.vcp-slider-vertical {\r\n    position: relative;\r\n    width: 0.5em;\r\n    height: 8em;\r\n    top: -5.6em;\r\n    z-index: 1001;\r\n    background-color: rgb(28, 28, 28);\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n    cursor: pointer;\r\n}\r\n.vcp-slider-vertical .vcp-slider-track {\r\n    background-color: rgb(18, 117, 207);\r\n    width: 0.5em;\r\n    height: 100%;\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n}\r\n.vcp-slider-vertical .vcp-slider-thumb {\r\n    cursor: pointer;\r\n    position: absolute;\r\n    background-color: aliceblue;\r\n    width: 0.8em;\r\n    height: 0.8em;\r\n    border-radius: 0.8em!important;\r\n    margin-top: -0.4em;\r\n    top: 0;\r\n    left: -0.15em;\r\n}\r\n/* 时间线/进度条 */\r\n.vcp-timeline {\r\n    top: -10px;\r\n    left: 0;\r\n    height: 10px;\r\n    position: absolute;\r\n    z-index: 1001;\r\n    width: 100%;\r\n}\r\n.vcp-timeline .vcp-slider-thumb {\r\n    top: -4px;\r\n}\r\n.vcp-timeline .vcp-slider {\r\n    margin-top: 8px;\r\n    height: 2px;\r\n    width: 100%;\r\n}\r\n.vcp-timeline:hover .vcp-slider {\r\n    margin-top: 0;\r\n    height: 10px;\r\n}\r\n.vcp-timeline:hover .vcp-slider-thumb {\r\n    display: block;\r\n    width: 16px;\r\n    height: 16px;\r\n    top: -3px;\r\n    margin-left: -8px;\r\n}\r\n/* 时间展示 */\r\n.vcp-timelabel {\r\n    display: inline-block;\r\n    line-height: 3em;\r\n    height: 3em;\r\n    width: 3em;\r\n    float: left;\r\n    color: white;\r\n    padding: 0 9px;\r\n    z-index: 1001;\r\n    position: relative;\r\n}\r\n/* 音量控制 */\r\n.vcp-volume {\r\n    height: 3em;\r\n    width: 3em;\r\n    cursor: pointer;\r\n    position: relative;\r\n    z-index: 1001;\r\n    float: right;\r\n    background-color: transparent;\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n}\r\n.vcp-volume-icon {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/volume.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/volume.svg), none;\r\n    display: inline-block;\r\n    width: 3em;\r\n    height: 3em;\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n}\r\n.vcp-volume-muted .vcp-volume-icon {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/muted.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/muted.svg), none;\r\n}\r\n.vcp-volume .vcp-slider-vertical {\r\n    top: -8.4em;\r\n    left: 1em;\r\n    display: none;\r\n}\r\n.vcp-volume .vcp-slider-track {\r\n    position: absolute;\r\n    bottom: 0;\r\n}\r\n.vcp-volume:hover .vcp-slider-vertical {\r\n    display: block;\r\n}\r\n.vcp-volume .vcp-volume-bg {\r\n    height: 8.8em;\r\n    width: 2em;\r\n    position: absolute;\r\n    left: 0.25em;\r\n    top: -8.8em;\r\n    background: rgb(36,36,36);\r\n    display: none;\r\n}\r\n.vcp-volume:hover .vcp-volume-bg, .vcp-volume:hover .vcp-slider-vertical {\r\n    display: block;\r\n}\r\n/* 全屏控件 */\r\n.vcp-fullscreen-toggle {\r\n    position: relative;\r\n    width: 3em;\r\n    height: 3em;\r\n    float: right;\r\n    cursor: pointer;\r\n    z-index: 1001;\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen.svg), none;\r\n}\r\n.vcp-fullscreen .vcp-fullscreen-toggle {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen_exit.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen_exit.svg), none;\r\n}\r\n\r\n.vcp-loading {\r\n    position: absolute;\r\n    left: 50%;\r\n    top: 50%;\r\n    margin-top: -3em;\r\n    display: none;\r\n}\r\n\r\n.vcp-poster {\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n    overflow: hidden;\r\n    z-index: 1000;\r\n    width: 100%;\r\n    height: 100%;\r\n    display: none;\r\n}\r\n.vcp-poster-pic {\r\n    position: relative;\r\n}\r\n.vcp-poster-pic.default{\r\n    left: 50%;\r\n    top: 50%;\r\n    -ms-transform: translate(-50%, -50%); /* IE 9 */\r\n    -webkit-transform: translate(-50%, -50%); /* Safari */\r\n    transform: translate(-50%, -50%);\r\n}\r\n.vcp-poster-pic.cover{\r\n    width: 100%;\r\n    left: 50%;\r\n    top: 50%;\r\n    -ms-transform: translate(-50%, -50%); /* IE 9 */\r\n    -webkit-transform: translate(-50%, -50%); /* Safari */\r\n    transform: translate(-50%, -50%);\r\n}\r\n.vcp-poster-pic.stretch{\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n\r\n.vcp-error-tips {\r\n    position: absolute;\r\n    z-index: 1001;\r\n    width: 100%;\r\n    height: 4.5em;\r\n    left: 0;\r\n    top: 50%;\r\n    color: orangered;\r\n    margin-top: -5.25em;\r\n    text-align: center;\r\n    display: none;\r\n}\r\n\r\n.vcp-clarityswitcher{\r\n    height: 3em;\r\n    width: 3em;\r\n    cursor: pointer;\r\n    position: relative;\r\n    z-index: 1001;\r\n    float: right;\r\n    background-color: transparent;\r\n    opacity: 0.9;\r\n}\r\n.vcp-vertical-switcher-container{\r\n    width: 3em;\r\n    position: absolute;\r\n    left: 0em;\r\n    bottom: 2.4em;\r\n    background: rgb(36,36,36);\r\n    display: none;\r\n}\r\n.vcp-vertical-switcher-current{\r\n    display: block;\r\n    color: #fff;\r\n    text-align: center;\r\n    line-height:3em;\r\n}\r\n.vcp-vertical-switcher-item{\r\n    display: block;\r\n    color: #fff;\r\n    text-align: center;\r\n    line-height:2em;\r\n}\r\n.vcp-vertical-switcher-item.current{\r\n    color: #888;\r\n}\r\n/* animations */\r\n@-webkit-keyframes fadeOut {\r\n    from {\r\n        opacity: 1;\r\n    }\r\n    to {\r\n        opacity: 0;\r\n    }\r\n}\r\n\r\n@keyframes fadeOut {\r\n    from {\r\n        opacity: 1;\r\n    }\r\n    to {\r\n        opacity: 0;\r\n    }\r\n}\r\n\r\n.fadeOut {\r\n    -webkit-animation: fadeOut ease 0.8s;\r\n    animation: fadeOut ease 0.8s;\r\n    animation-fill-mode: forwards;\r\n    -webkit-animation-fill-mode: forwards;\r\n}\r\n\r\n@-webkit-keyframes fadeIn {\r\n    from {\r\n        opacity: 0;\r\n    }\r\n    to {\r\n        opacity: 1;\r\n    }\r\n}\r\n\r\n@keyframes fadeIn {\r\n    from {\r\n        opacity: 0;\r\n    }\r\n    to {\r\n        opacity: 1;\r\n    }\r\n}\r\n\r\n.fadeIn {\r\n    -webkit-animation: fadeIn ease 0.8s;\r\n    animation: fadeIn ease 0.8s;\r\n    animation-fill-mode: forwards;\r\n    -webkit-animation-fill-mode: forwards;\r\n}", ""]);
+	exports.push([module.id, ".vcp-player {\r\n    position: relative;\r\n    z-index: 0;\r\n    font-family: Tahoma, '\\5FAE\\8F6F\\96C5\\9ED1', \\u5b8b\\u4f53,Verdana,Arial,sans-serif;\r\n    background-color: black;\r\n}\r\n.vcp-player video{\r\n    display: block;\r\n    overflow: hidden;\r\n}\r\n.vcp-fullscreen.vcp-player, .vcp-fullscreen video {\r\n    width: 100%!important;\r\n    height: 100%!important;\r\n}\r\n/* 伪全屏 */\r\nbody.vcp-full-window {\r\n    width: 100%!important;\r\n    height: 100%!important;\r\n    overflow-y: auto;\r\n}\r\n.vcp-full-window .vcp-player {\r\n    position: fixed;\r\n    left: 0;\r\n    top: 0;\r\n}\r\n\r\n/* chrome flash 成功加载到DOM之前会闪白屏，所以加个黑屏遮一遮 */\r\n.vcp-pre-flash {\r\n    z-index: 1000; background: black; width: 100%; height: 100%; position: absolute; top: 0; left: 0;\r\n}\r\n.vcp-controls-panel {\r\n    position: absolute;\r\n    bottom: 0;\r\n    width: 100%;\r\n    font-size: 16px;\r\n    height: 3em;\r\n    z-index: 1000;\r\n}\r\n.vcp-controls-panel.show{\r\n    -webkit-animation: fadeIn ease 0.8s;\r\n    animation: fadeIn ease 0.8s;\r\n    animation-fill-mode: forwards;\r\n    -webkit-animation-fill-mode: forwards;\r\n}\r\n.vcp-controls-panel.hide{\r\n    -webkit-animation: fadeOut ease 0.8s;\r\n    animation: fadeOut ease 0.8s;\r\n    animation-fill-mode: forwards;\r\n    -webkit-animation-fill-mode: forwards;\r\n}\r\n.vcp-panel-bg {\r\n    width: 100%;\r\n    height: 100%;\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n    background-color: rgb(36, 36, 36);\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n    z-index: 1000;\r\n}\r\n\r\n.vcp-playtoggle {\r\n    cursor: pointer;\r\n    position: relative;\r\n    z-index: 1001;\r\n    width: 3em;\r\n    height: 100%;\r\n    float: left;\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/play_btn.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/play_btn.svg), none;\r\n}\r\n.vcp-playtoggle:hover, .vcp-playtoggle:focus {\r\n    background-color: slategray;\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n}\r\n.touchable .vcp-playtoggle:hover {\r\n    background-color: transparent;\r\n    opacity: 1;\r\n}\r\n.vcp-playing .vcp-playtoggle {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/stop_btn.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/stop_btn.svg), none;\r\n}\r\n.vcp-bigplay {\r\n    width: 100%;\r\n    height: 80%; /*会遮住原生控制栏*/\r\n    position: absolute;\r\n    background-color: white\\0;\r\n    filter: alpha(opacity=0); /*奇怪的IE8/9鼠标事件穿透*/\r\n    opacity: 0;\r\n    z-index: 1000;\r\n    top: 0;\r\n    left: 0;\r\n}\r\n\r\n.vcp-slider {\r\n    position: relative;\r\n    z-index: 1001;\r\n    float: left;\r\n    background: rgb(196, 196, 196);\r\n    height: 10px;\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n    cursor: pointer;\r\n}\r\n.vcp-slider .vcp-slider-track {\r\n    width: 0;\r\n    height: 100%;\r\n    margin-top: 0;\r\n    opacity: 1;\r\n    filter: alpha(opacity=100);\r\n    background-color: dodgerblue; /*beautiful blue*/\r\n}\r\n.vcp-slider .vcp-slider-thumb {\r\n    cursor: pointer;\r\n    background-color: white;\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    border-radius: 1em!important;\r\n    height: 10px;\r\n    margin-left: -5px;\r\n    width: 10px;\r\n}\r\n\r\n.vcp-slider-vertical {\r\n    position: relative;\r\n    width: 0.5em;\r\n    height: 8em;\r\n    top: -5.6em;\r\n    z-index: 1001;\r\n    background-color: rgb(28, 28, 28);\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n    cursor: pointer;\r\n}\r\n.vcp-slider-vertical .vcp-slider-track {\r\n    background-color: rgb(18, 117, 207);\r\n    width: 0.5em;\r\n    height: 100%;\r\n    opacity: 0.8;\r\n    filter: alpha(opacity=80);\r\n}\r\n.vcp-slider-vertical .vcp-slider-thumb {\r\n    cursor: pointer;\r\n    position: absolute;\r\n    background-color: aliceblue;\r\n    width: 0.8em;\r\n    height: 0.8em;\r\n    border-radius: 0.8em!important;\r\n    margin-top: -0.4em;\r\n    top: 0;\r\n    left: -0.15em;\r\n}\r\n/* 时间线/进度条 */\r\n.vcp-timeline {\r\n    top: -10px;\r\n    left: 0;\r\n    height: 10px;\r\n    position: absolute;\r\n    z-index: 1001;\r\n    width: 100%;\r\n}\r\n.vcp-timeline .vcp-slider-thumb {\r\n    top: -4px;\r\n}\r\n.vcp-timeline .vcp-slider {\r\n    margin-top: 8px;\r\n    height: 2px;\r\n    width: 100%;\r\n}\r\n.vcp-timeline:hover .vcp-slider {\r\n    margin-top: 0;\r\n    height: 10px;\r\n}\r\n.vcp-timeline:hover .vcp-slider-thumb {\r\n    display: block;\r\n    width: 16px;\r\n    height: 16px;\r\n    top: -3px;\r\n    margin-left: -8px;\r\n}\r\n/* 时间展示 */\r\n.vcp-timelabel {\r\n    display: inline-block;\r\n    line-height: 3em;\r\n    height: 3em;\r\n    width: 3em;\r\n    float: left;\r\n    color: white;\r\n    padding: 0 9px;\r\n    z-index: 1001;\r\n    position: relative;\r\n}\r\n/* 音量控制 */\r\n.vcp-volume {\r\n    height: 3em;\r\n    width: 3em;\r\n    cursor: pointer;\r\n    position: relative;\r\n    z-index: 1001;\r\n    float: right;\r\n    background-color: transparent;\r\n    opacity: 0.9;\r\n    filter: alpha(opacity=90);\r\n}\r\n.vcp-volume-icon {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/volume.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/volume.svg), none;\r\n    display: inline-block;\r\n    width: 3em;\r\n    height: 3em;\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n}\r\n.vcp-volume-muted .vcp-volume-icon {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/muted.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/muted.svg), none;\r\n}\r\n.vcp-volume .vcp-slider-vertical {\r\n    top: -8.4em;\r\n    left: 1em;\r\n    display: none;\r\n}\r\n.vcp-volume .vcp-slider-track {\r\n    position: absolute;\r\n    bottom: 0;\r\n}\r\n.vcp-volume:hover .vcp-slider-vertical {\r\n    display: block;\r\n}\r\n.vcp-volume .vcp-volume-bg {\r\n    height: 8.8em;\r\n    width: 2em;\r\n    position: absolute;\r\n    left: 0.25em;\r\n    top: -8.8em;\r\n    background: rgb(36,36,36);\r\n    display: none;\r\n}\r\n.vcp-volume:hover .vcp-volume-bg, .vcp-volume:hover .vcp-slider-vertical {\r\n    display: block;\r\n}\r\n/* 全屏控件 */\r\n.vcp-fullscreen-toggle {\r\n    position: relative;\r\n    width: 3em;\r\n    height: 3em;\r\n    float: right;\r\n    cursor: pointer;\r\n    z-index: 1001;\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen.svg), none;\r\n}\r\n.vcp-fullscreen .vcp-fullscreen-toggle {\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen_exit.png);\r\n    background-image: url(//imgcache.qq.com/open/qcloud/video/vcplayer/img/fullscreen_exit.svg), none;\r\n}\r\n\r\n.vcp-loading {\r\n    position: absolute;\r\n    left: 50%;\r\n    top: 50%;\r\n    margin-top: -3em;\r\n    display: none;\r\n}\r\n\r\n.vcp-poster {\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n    overflow: hidden;\r\n    z-index: 1000;\r\n    width: 100%;\r\n    height: 100%;\r\n    display: none;\r\n}\r\n.vcp-poster-pic {\r\n    position: relative;\r\n}\r\n.vcp-poster-pic.default{\r\n    left: 50%;\r\n    top: 50%;\r\n    -ms-transform: translate(-50%, -50%); /* IE 9 */\r\n    -webkit-transform: translate(-50%, -50%); /* Safari */\r\n    transform: translate(-50%, -50%);\r\n}\r\n.vcp-poster-pic.cover{\r\n    width: 100%;\r\n    left: 50%;\r\n    top: 50%;\r\n    -ms-transform: translate(-50%, -50%); /* IE 9 */\r\n    -webkit-transform: translate(-50%, -50%); /* Safari */\r\n    transform: translate(-50%, -50%);\r\n}\r\n.vcp-poster-pic.stretch{\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n\r\n.vcp-error-tips {\r\n    position: absolute;\r\n    z-index: 1001;\r\n    width: 100%;\r\n    height: 4.5em;\r\n    left: 0;\r\n    top: 50%;\r\n    color: orangered;\r\n    margin-top: -5.25em;\r\n    text-align: center;\r\n    display: none;\r\n}\r\n\r\n.vcp-clarityswitcher{\r\n    height: 3em;\r\n    width: 3em;\r\n    cursor: pointer;\r\n    position: relative;\r\n    z-index: 1001;\r\n    float: right;\r\n    background-color: transparent;\r\n    opacity: 0.9;\r\n}\r\n.vcp-vertical-switcher-container{\r\n    width: 3em;\r\n    position: absolute;\r\n    left: 0em;\r\n    bottom: 2.4em;\r\n    background: rgb(36,36,36);\r\n    display: none;\r\n}\r\n.vcp-vertical-switcher-current{\r\n    display: block;\r\n    color: #fff;\r\n    text-align: center;\r\n    line-height:3em;\r\n}\r\n.vcp-vertical-switcher-item{\r\n    display: block;\r\n    color: #fff;\r\n    text-align: center;\r\n    line-height:2em;\r\n}\r\n.vcp-vertical-switcher-item.current{\r\n    color: #888;\r\n}\r\n/* animations */\r\n@-webkit-keyframes fadeOut {\r\n    from {\r\n        opacity: 1;\r\n    }\r\n    to {\r\n        opacity: 0;\r\n    }\r\n}\r\n\r\n@keyframes fadeOut {\r\n    from {\r\n        opacity: 1;\r\n    }\r\n    to {\r\n        opacity: 0;\r\n    }\r\n}\r\n\r\n.fadeOut {\r\n    -webkit-animation: fadeOut ease 0.8s;\r\n    animation: fadeOut ease 0.8s;\r\n    animation-fill-mode: forwards;\r\n    -webkit-animation-fill-mode: forwards;\r\n}\r\n\r\n@-webkit-keyframes fadeIn {\r\n    from {\r\n        opacity: 0;\r\n    }\r\n    to {\r\n        opacity: 1;\r\n    }\r\n}\r\n\r\n@keyframes fadeIn {\r\n    from {\r\n        opacity: 0;\r\n    }\r\n    to {\r\n        opacity: 1;\r\n    }\r\n}\r\n\r\n.fadeIn {\r\n    -webkit-animation: fadeIn ease 0.8s;\r\n    animation: fadeIn ease 0.8s;\r\n    animation-fill-mode: forwards;\r\n    -webkit-animation-fill-mode: forwards;\r\n}", ""]);
 
 	// exports
 
@@ -1750,10 +1772,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		H5Video.prototype.render = function render(owner) {
 			var options = this.player.options;
-			var controls = !options.controls ? null : options.controls;
+			//controls default||'' 显示默认控件，none 不显示控件，system H5显示系统控件
+			var controls = options.controls == 'system' ? '' : null;
 			var autoplay = options.autoplay ? true : null;
-			//使用video poster属性，不用自定义
-			var poster = {};
+			//使用video poster属性，不用自定义的方式
+			var poster;
 			if (options.poster && _typeof(options.poster) == 'object') {
 				poster = options.poster.src;
 			} else if (typeof options.poster == 'string') {
@@ -1763,13 +1786,20 @@ return /******/ (function(modules) { // webpackBootstrap
 			}
 
 			this.createEl('video', {
-				controls: controls,
-				preload: 'auto',
-				autoplay: autoplay,
-				'webkit-playsinline': true,
-				'playsinline': true,
-				'x-webkit-airplay': true
+				'controls': controls,
+				'preload': 'auto',
+				'autoplay': autoplay,
+				'webkit-playsinline': '', //空值即设置空值属性，符合w3c标准
+				'playsinline': '',
+				'x-webkit-airplay': 'allow', //查资料准确的值应该是allow
+				'x5-video-player-type': options.x5_type == 'h5' ? 'h5' : null, //设置后激活播放的视频无法playinline，可以覆盖，只能伪全屏
+				'x5-video-player-fullscreen': options.x5_fullscreen ? true : null //设置后激活播放的视频无法playinline，可以覆盖，可以全屏
 			});
+			/**
+	   *
+	   'x5-video-player-type': 'h5',
+	   'x5-video-player-fullscreen' : 'true'
+	   */
 			return _Component.prototype.render.call(this, owner);
 		};
 
@@ -1784,7 +1814,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		};
 
 		H5Video.prototype.__hlsOnManifestParsed = function __hlsOnManifestParsed(event, data) {
-			util.console.log('__hlsOnManifestParsed', event, data);
+			//util.console.log('__hlsOnManifestParsed', event, data);
 			this.metaDataLoaded = true;
 		};
 
@@ -1793,7 +1823,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			var errorDetails = data.details;
 			var errorFatal = data.fatal;
 			var hls = this.hls;
-			util.console.log('hlsOnError', event, data);
+			//util.console.log('hlsOnError',event , data);
 			if (errorFatal) {
 				//无法播放且无法恢复播放的错误
 				switch (errorType) {
@@ -1881,7 +1911,13 @@ return /******/ (function(modules) { // webpackBootstrap
 			}
 			if (e.type != 'timeupdate') {
 				//util.console.log('H5Video notify',e.type, this.playState, this.seekState);
-				//lt(e.type);
+				try {
+					lt(e.type);
+					for (var key in e) {
+						lt(key + '|' + e[key]);
+					}
+					lt('------------------------------------');
+				} catch (e) {}
 			}
 			this.pub(msg);
 		};
@@ -1907,7 +1943,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		};
 
 		H5Video.prototype.togglePlay = function togglePlay() {
-			util.console.log(this);
+			//util.console.log('togglePlay',this);
 			var isM3u8 = this.options.src.indexOf('.m3u8') > -1;
 			if (this.options.live && isM3u8 && this.playState == States.PlayStates.IDLE && !this.metaDataLoaded) {
 				this.player.load();
@@ -2449,21 +2485,30 @@ return /******/ (function(modules) { // webpackBootstrap
 					case 'netStatus':
 						if (!this.options.live) {
 							if (info.code == 'NetStream.Buffer.Full') {
-								if (this.__prevPlayState == tates.PlayStates.PAUSED || this.__prevPlayState == States.PlayStates.STOP) {
+								if (this.__prevPlayState == States.PlayStates.PAUSED || this.__prevPlayState == States.PlayStates.STOP) {
 									//this.pause();
 								}
 								this.__prevPlayState = null;
 								e.type = _message.MSG.Seeked;
-							} else if (info.code == 'NetStream.Seek.Complete') {
-								// 播放到结尾再点播放会自动停止,所以force play again
+							} else if (info.code == 'NetStream.Seek.Complete') {// 播放到结尾再点播放会自动停止,所以force play again
 								//this.play();
-								break;
+								//break;
 							}
 						}
 
 						if (info.code == 'NetConnection.Connect.Closed') {
 							//e.type = 'error';
 							//info = {code: 1001, reason: info.code};
+							if (this.options.src.indexOf('rtmp://') > -1) {
+								//rtmp 正常断流和拉流失败最终都会触发 NetConnection.Connect.Closed， 正常断流需要判断前一个状态是否是Playing, 这个判断已在flash播放器中实现
+								if (this.playState == States.PlayStates.STOP) {
+									//正常断流
+								} else {
+									// 拉流失败
+									e.type = 'error';
+									info = { code: 1002, reason: info.code };
+								}
+							}
 						}
 						if (info.code == 'NetStream.Play.Stop') {//播放结束, flash从server获取到结束标记。
 
@@ -2494,7 +2539,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 				!keepPrivate && this.pub({ type: e.type, src: this, ts: e.ts, detail: info });
 			} catch (err) {
-				//console.error(eventName + ' ' + e.type, err);
+				util.console.error(eventName + ' ' + e.type, err);
 			}
 
 			if (eventName != 'mediaTime') {
@@ -3673,6 +3718,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			this.sub(_message.MSG.Play, this.player.video, util.bind(this, this.handleMsg));
 			this.sub(_message.MSG.Pause, this.player.video, util.bind(this, this.handleMsg));
 			this.sub(_message.MSG.Ended, this.player.video, util.bind(this, this.handleMsg));
+			this.sub(_message.MSG.Error, this.player.video, util.bind(this, this.handleMsg));
 		};
 
 		Poster.prototype.onClick = function onClick() {
@@ -3700,6 +3746,10 @@ return /******/ (function(modules) { // webpackBootstrap
 				case _message.MSG.Ended:
 					if (!this.__loaded) break;
 					//this.setPoster(this.poster.end);
+					break;
+				case _message.MSG.Error:
+					if (!this.__loaded) break;
+					//this.hide();
 					break;
 			}
 		};
@@ -3984,6 +4034,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		ArgumentError: '使用参数有误，请检查播放器调用代码',
 		UrlEmpty: '请填写视频播放地址',
 		FileProtocol: '请勿在file协议下使用播放器，可能会导致视频无法播放',
+		LiveFinish: '直播已结束,请稍后再来', // live 状态由 PLAYING或PAUSE -> STOP
 		CrossDomainError: '无法加载视频文件，跨域访问被拒绝'
 	};
 

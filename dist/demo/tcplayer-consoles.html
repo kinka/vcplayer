@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
-    <title>播放器例子-重连</title>
+    <title>播放器例子-控制栏</title>
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -16,7 +16,13 @@
     </style>
 </head>
 <body>
-<div id="video-container" style="margin: 0px auto;">
+<div id="video-container1" style="margin: 0px auto;">
+
+</div>
+<div id="video-container2" style="margin: 0px auto;">
+
+</div>
+<div id="video-container3" style="margin: 0px auto;">
 
 </div>
 <div id="log"></div>
@@ -47,30 +53,25 @@
          */
         var options = {
             rtmp: rtmp ,
-            flv: flv || 'http://2157.liveplay.myqcloud.com/live/2157_358556a1088511e6b91fa4dcbef5e34a.flv',
-            m3u8: m3u8 || 'http://2157.liveplay.myqcloud.com/live/2157_358556a1088511e6b91fa4dcbef5e34a.m3u8',
+            flv: flv ,
+            m3u8: m3u8 || 'http://2527.vod.myqcloud.com/2527_b3907044441c11e6a46d294f954f93eb.f230.av.m3u8',
             mp4 : mp4 ,
-            coverpic: coverpic || 'http://imgcache.qq.com/open/qcloud/video/share/img/back-img.png',
             autoplay: autoplay ? true : false,
-            live: true,
+            live: live,
             width : width || '480',
             height : height || '320',
-            wording: {
-                1002: '即将直播，请稍等',
-                2032: '请求视频失败，请检查网络',
-                2048: '请求m3u8文件失败，可能是网络错误或者跨域问题'
-            },
+            controls: '', //default||'' 显示默认控件，none 不显示控件，system 移动端显示系统控件
             listener: function (msg) {
                 // console.log('listener',msg);
-                if(msg.type == 'error'){
-                    window.setTimeout(function(){
-                        player.load();//进行重连
-                    },5000);
-                }
             }
+
         };
-        var player = new TcPlayer('video-container', options);
-        window.qcplayer  = player;
+        var player1 = new TcPlayer('video-container1', options);
+        options.controls='none';
+        var player2 = new TcPlayer('video-container2', options);
+        options.controls='system';
+        var player3 = new TcPlayer('video-container3', options);
+        window.qcplayer  = player1;
     })();
 </script>
 </body>

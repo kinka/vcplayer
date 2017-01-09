@@ -21,7 +21,8 @@ export var dom = __dom;
 /**
  * @param {options}
  * @param options.owner {String} container id
- * @param options.controls {Boolean} 是否显示原生控件。default||'' 显示默认控件，none 不显示控件，system 显示系统控件
+ * @param options.controls {Boolean} 是否显示原生控件。
+ * @param options.controls {String} 是否显示控件或者显示H5原生控件。default||'' 显示默认控件，none 不显示控件，system H5显示系统控件
  * @param options.volume {Number} 音量初始化，传0则静音
  * @param options.listener {Function}
  * @param options.poster {Object|String} src:图片地址，style：default 居中1:1显示 stretch 拉伸铺满，图片可能会变形 cover 等比横向铺满，图片某些部分可能无法显示在区域内
@@ -66,17 +67,24 @@ export class Player {
 			flash.render(this.el);
 			this.video = flash;
 		}
-		if (!this.video) return console.error('create video failed');
+		if (!this.video) return util.console.error('create video failed');
 
 		owner.appendChild(this.el);
 
-		if (!this.options.controls) {
-			this.poster = new Poster(this);
-			this.poster.render(this.el);
+		this.poster = new Poster(this);
+		this.poster.render(this.el);
 
-			this.bigplay = new BigPlay(this);
-			this.bigplay.render(this.el);
+		this.bigplay = new BigPlay(this);
+		this.bigplay.render(this.el);
 
+		let enableControls;//是否显示自定义控件
+		if(!this.options.controls || this.options.controls == 'default' || (this.options.flash && this.options.controls == 'system')){
+			enableControls = true ;
+		}else{
+			enableControls = false ;
+		}
+		//if (!this.options.controls) {
+		if (enableControls) {
 			this.panel = new Panel(this);
 			this.panel.render(this.el);
 		}
@@ -89,24 +97,10 @@ export class Player {
 
 		this.options.width = this.options.width || owner.offsetWidth;
 		this.options.height = this.options.height || owner.offsetHeight;
+		//util.console.log(this.options.width);
 		this.size(this.options.width, this.options.height);
 
 		this.setup();
-
-		if(browser.IS_MOBILE){
-			if(this.options.autoplay || browser.IOS_VERSION != 10){//ios 10 非 autoplay 不调用loading.show()
-				this.loading.show();
-				if(this.options.autoplay){
-					var self = this;
-					document.addEventListener("WeixinJSBridgeReady", function () {
-						self.play();
-					}, !1);
-				}
-			}
-		}else{
-			this.loading.show();
-		}
-
 	}
 
 	/**
@@ -119,6 +113,7 @@ export class Player {
 		style = style || 'cover';
 		let percent = /^\d+\.?\d{0,2}%$/;
 		let dW, dH;
+		//util.console.log(mW, mH);
 		if(percent.test(mW) || percent.test(mH)){ //百分数
 			dW = mW;
 			dH = mH;
@@ -147,7 +142,7 @@ export class Player {
 				dW = viewWH.width;
 			}
 		}
-
+		//util.console.log(dW,dH);
 		dW += (percent.test(dW)? '' : 'px');
 		dH += (percent.test(dH)? '' : 'px');
  		this.el.style.width = dW;
@@ -159,10 +154,26 @@ export class Player {
 	}
 	setup() {
 		this.__handleEvent = util.bind(this, this.handleEvent);
+
+		if(browser.IS_MOBILE){
+			if(this.options.autoplay || browser.IOS_VERSION != 10){//ios 10 非 autoplay 不调用loading.show() , ios10 preload不起作用，导致初始化时MetaData不触发，需要手动调用play才开始加载视频
+				this.loading.show();
+				if(this.options.autoplay){
+					var self = this;
+					document.addEventListener("WeixinJSBridgeReady", function () {//微信的黑科技，目前ios9 ios10 Android的微信6.5.2均可自动播放
+						self.play();
+					});
+				}
+			}
+		}else{
+			this.loading.show();
+		}
+
 		//加载mta上报
-		dom.loadScript('http://pingjs.qq.com/h5/stats.js?v2.0.2',null,{
+		dom.loadScript('//pingjs.qq.com/h5/stats.js?v2.0.2',null,{
 			'name': 'MTAH5',
-			'sid' : '500376528'
+			'sid' : '500376528',
+			'cid' : '500383222'
 		});
 	}
 	destroy() {
@@ -260,6 +271,10 @@ export class Player {
 				this.loading.hide();
 				this.errortips.show(msg.detail);
 				this.panel && this.panel.show();
+				try{
+					MtaH5.clickStat('error',{'error':'true'});
+				}catch (e){
+				}
 				break;
 		}
 

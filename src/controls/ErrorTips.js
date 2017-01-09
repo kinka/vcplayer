@@ -12,6 +12,7 @@ let ErrorMap = {
 	ArgumentError: '使用参数有误，请检查播放器调用代码',
 	UrlEmpty: '请填写视频播放地址',
 	FileProtocol: '请勿在file协议下使用播放器，可能会导致视频无法播放',
+	LiveFinish: '直播已结束,请稍后再来', // live 状态由 PLAYING或PAUSE -> STOP
 	CrossDomainError: '无法加载视频文件，跨域访问被拒绝'
 };
 

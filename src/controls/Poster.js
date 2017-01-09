@@ -59,6 +59,7 @@ export default class Poster extends Component {
 		this.sub(PlayerMsg.Play, this.player.video, util.bind(this, this.handleMsg));
 		this.sub(PlayerMsg.Pause, this.player.video, util.bind(this, this.handleMsg));
 		this.sub(PlayerMsg.Ended, this.player.video, util.bind(this, this.handleMsg));
+		this.sub(PlayerMsg.Error, this.player.video, util.bind(this, this.handleMsg));
 	}
 	onClick() {
 		this.pub({type: 'click', src: this});
@@ -87,6 +88,10 @@ export default class Poster extends Component {
 			case PlayerMsg.Ended:
 				if (!this.__loaded) break;
 				//this.setPoster(this.poster.end);
+				break;
+			case PlayerMsg.Error:
+				if (!this.__loaded) break;
+				//this.hide();
 				break;
 		}
 	}

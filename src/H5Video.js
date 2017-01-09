@@ -13,10 +13,11 @@ export default class H5Video extends Component {
 	
 	render(owner) {
 		var options = this.player.options;
-		var controls = !options.controls ? null : options.controls;
+		//controls default||'' 显示默认控件，none 不显示控件，system H5显示系统控件
+		var controls = options.controls == 'system' ? '' : null;
 		var autoplay = options.autoplay ? true : null;
-		//使用video poster属性，不用自定义
-		var poster = {};
+		//使用video poster属性，不用自定义的方式
+		var poster;
 		if (options.poster && typeof options.poster == 'object') {
 			poster = options.poster.src;
 		} else if (typeof options.poster == 'string') {
@@ -26,13 +27,20 @@ export default class H5Video extends Component {
 		}
 
 		this.createEl('video', {
-			controls: controls,
-			preload: 'auto',
-			autoplay: autoplay,
-			'webkit-playsinline': true,
-			'playsinline': true,
-			'x-webkit-airplay': true
+			'controls': controls,
+			'preload': 'auto',
+			'autoplay': autoplay,
+			'webkit-playsinline': '',//空值即设置空值属性，符合w3c标准
+			'playsinline': '',
+			'x-webkit-airplay': 'allow', //查资料准确的值应该是allow
+			'x5-video-player-type': options.x5_type == 'h5'? 'h5' : null, //设置后激活播放的视频无法playinline，可以覆盖，只能伪全屏
+			'x5-video-player-fullscreen' :  options.x5_fullscreen ? true : null//设置后激活播放的视频无法playinline，可以覆盖，可以全屏
 		});
+		/**
+		 *
+		 'x5-video-player-type': 'h5',
+		 'x5-video-player-fullscreen' : 'true'
+		 */
 		return super.render(owner);
 	}
 	__hlsLoaded(src) {
@@ -46,7 +54,7 @@ export default class H5Video extends Component {
 		this.hls = hls;
 	}
 	__hlsOnManifestParsed(event, data){
-		util.console.log('__hlsOnManifestParsed', event, data);
+		//util.console.log('__hlsOnManifestParsed', event, data);
 		this.metaDataLoaded = true;
 	}
 	__hlsOnError(event, data){
@@ -54,7 +62,7 @@ export default class H5Video extends Component {
 		var errorDetails = data.details;
 		var errorFatal = data.fatal;
 		var hls = this.hls;
-		util.console.log('hlsOnError',event , data);
+		//util.console.log('hlsOnError',event , data);
 		if(errorFatal){//无法播放且无法恢复播放的错误
 			switch(errorType) {
 				case Hls.ErrorTypes.NETWORK_ERROR:
@@ -144,7 +152,15 @@ export default class H5Video extends Component {
 		}
 		if(e.type != 'timeupdate'){
 			//util.console.log('H5Video notify',e.type, this.playState, this.seekState);
-			//lt(e.type);
+			try{
+				lt(e.type);
+				for(var key in e){
+					lt(key+'|'+e[key]);
+				}
+				lt('------------------------------------')
+			}catch (e){
+
+			}
 		}
 		this.pub(msg);
 	}
@@ -167,7 +183,7 @@ export default class H5Video extends Component {
 		this.el.play();
 	}
 	togglePlay(){
-		util.console.log(this);
+		//util.console.log('togglePlay',this);
 		var isM3u8 = this.options.src.indexOf('.m3u8') > -1;
 		if(this.options.live && isM3u8 && this.playState == States.PlayStates.IDLE && !this.metaDataLoaded){
 			this.player.load();
